@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+  <title>Colegio - Guardería Wawalu</title>
+</head>
+<body class="bg-gray-50">
+  <div class="container mx-auto py-12 px-6">
+    <h1 class="text-3xl font-bold text-blue-500 mb-6">Nuestro Colegio</h1>
+
+    <!-- Quiénes Somos -->
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-blue-600 mb-3">¿Quiénes Somos?</h2>
+      <p class="text-gray-700 mb-2">Wawalu está inspirada en la propuesta educativa Reggio Emilia, promoviendo que los niños y niñas sean protagonistas de su propio aprendizaje. Somos una cálida comunidad que asume con responsabilidad el sentido de vivir en armonía y contribuye activamente a la transformación educativa en Cañete.</p>
+      <p class="text-gray-700">"Lo que se dé a los niños, los niños darán a la sociedad" <span class="italic">- Karl Menninger</span></p>
+    </section>
+
+    <!-- Misión, Visión y Objetivo -->
+    <section class="mb-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="bg-white rounded-xl shadow p-6">
+        <h3 class="text-xl font-bold text-blue-500 mb-2">Misión</h3>
+        <p class="text-gray-700">Promover que los niños y niñas sean protagonistas de su propio aprendizaje, creando experiencias que conecten con la naturaleza y fomenten la autonomía, el trabajo en equipo y el cariño.</p>
+      </div>
+      <div class="bg-white rounded-xl shadow p-6">
+        <h3 class="text-xl font-bold text-blue-500 mb-2">Visión</h3>
+        <p class="text-gray-700">Ser un referente en educación inicial, donde cada niño y niña aprende a su propio ritmo y manera, en un entorno seguro, acogedor y lleno de color.</p>
+      </div>
+      <div class="bg-white rounded-xl shadow p-6">
+        <h3 class="text-xl font-bold text-blue-500 mb-2">Objetivo</h3>
+        <p class="text-gray-700">Ofrecer espacios diseñados por profesionales en educación, listos para potenciar el desarrollo integral de los niños y niñas, basados en la filosofía Reggio Emilia.</p>
+      </div>
+    </section>
+
+    <!-- Historia del Colegio -->
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-blue-600 mb-3">Nuestra Historia</h2>
+      <p class="text-gray-700 mb-2">Wawalu se considera parte de una comunidad comprometida en contribuir con la transformación de la educación en Cañete. Fue diseñado por profesionales en educación y cada espacio está listo para potenciar el desarrollo cognitivo, social y emocional de los bebés. Promovemos la exploración y el juego en un contexto seguro y acogedor, creando experiencias que conectan a los niños con la naturaleza y la armonía.</p>
+      <p class="text-gray-700">El único lugar donde existe la armonía y la perfección es la naturaleza. Nuestra aula psicomotriz es un espacio acondicionado con módulos y espejos que ayuda a conocer y controlar el cuerpo. Los bebés están invitados a explorar cada material propuesto, en un espacio visual preferido por los niños.</p>
+    </section>
+
+    <!-- Video Institucional (espacio reservado) -->
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-blue-600 mb-3">Video Institucional</h2>
+      <div class="bg-gray-200 rounded-xl flex items-center justify-center h-56">
+        <span class="text-gray-500">[Aquí irá el video institucional]</span>
+      </div>
+    </section>
+
+    <!-- Collage de 3 fotos -->
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-blue-600 mb-3">Galería</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <img src="{{ url_for('static', filename='img/collage1.jpg') }}" alt="Foto 1" class="rounded-xl shadow h-48 w-full object-cover">
+        <img src="{{ url_for('static', filename='img/collage2.jpg') }}" alt="Foto 2" class="rounded-xl shadow h-48 w-full object-cover">
+        <img src="{{ url_for('static', filename='img/collage3.jpg') }}" alt="Foto 3" class="rounded-xl shadow h-48 w-full object-cover">
+      </div>
+    </section>
+
+    <!-- Información de la Directora y Docentes -->
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-blue-600 mb-3">Nuestro Equipo</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white rounded-xl shadow p-6 flex flex-col items-center">
+          <img src="{{ url_for('static', filename='img/directora.jpg') }}" alt="Directora" class="h-24 w-24 rounded-full mb-3 object-cover shadow">
+          <span class="font-bold text-blue-500">Directora</span>
+          <span class="text-gray-700">Lic. [Nombre Directora]</span>
+        </div>
+        <div class="bg-white rounded-xl shadow p-6 flex flex-col items-center">
+          <img src="{{ url_for('static', filename='img/docente1.jpg') }}" alt="Docente 1" class="h-24 w-24 rounded-full mb-3 object-cover shadow">
+          <span class="font-bold text-blue-500">Docente</span>
+          <span class="text-gray-700">Lic. [Nombre Docente 1]</span>
+        </div>
+        <div class="bg-white rounded-xl shadow p-6 flex flex-col items-center">
+          <img src="{{ url_for('static', filename='img/docente2.jpg') }}" alt="Docente 2" class="h-24 w-24 rounded-full mb-3 object-cover shadow">
+          <span class="font-bold text-blue-500">Docente</span>
+          <span class="text-gray-700">Lic. [Nombre Docente 2]</span>
+        </div>
+        <div class="bg-white rounded-xl shadow p-6 flex flex-col items-center">
+          <img src="{{ url_for('static', filename='img/docente3.jpg') }}" alt="Docente 3" class="h-24 w-24 rounded-full mb-3 object-cover shadow">
+          <span class="font-bold text-blue-500">Docente</span>
+          <span class="text-gray-700">Lic. [Nombre Docente 3]</span>
+        </div>
+        <div class="bg-white rounded-xl shadow p-6 flex flex-col items-center">
+          <img src="{{ url_for('static', filename='img/docente4.jpg') }}" alt="Docente 4" class="h-24 w-24 rounded-full mb-3 object-cover shadow">
+          <span class="font-bold text-blue-500">Docente</span>
+          <span class="text-gray-700">Lic. [Nombre Docente 4]</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

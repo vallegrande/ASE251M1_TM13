@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+  <title>Programas - Guardería Wawalu</title>
+</head>
+<body class="bg-gray-50">
+  <div class="container mx-auto py-12 px-6">
+    <h1 class="text-3xl font-bold text-blue-500 mb-6">Nuestros Programas</h1>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="bg-white p-6 rounded-lg shadow flex flex-col items-center">
+        <span class="material-icons text-blue-600 text-5xl mb-2">child_care</span>
+        <h4 class="font-semibold text-lg mb-1">Primer Grupo (1.5 a 2 años)</h4>
+        <p class="text-center text-gray-600 text-sm">Estimulación temprana, juegos y socialización.</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow flex flex-col items-center">
+        <span class="material-icons text-blue-600 text-5xl mb-2">toys</span>
+        <h4 class="font-semibold text-lg mb-1">Segundo Grupo (3 a 4 años)</h4>
+        <p class="text-center text-gray-600 text-sm">Desarrollo de habilidades motoras, cognitivas y emocionales.</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow flex flex-col items-center">
+        <span class="material-icons text-blue-600 text-5xl mb-2">star</span>
+        <h4 class="font-semibold text-lg mb-1">Tercer Grupo (5 años)</h4>
+        <p class="text-center text-gray-600 text-sm">Preparación para la primaria, creatividad y autonomía.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

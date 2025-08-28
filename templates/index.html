@@ -1,0 +1,264 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <!-- Header -->
+  <header class="bg-white shadow">
+    <div class="container mx-auto flex items-center justify-between py-4 px-6">
+      <div class="flex items-center gap-2">
+  <img src="{{ url_for('static', filename='icons/logo.png') }}" alt="Wawalu Logo" class="h-10 w-auto">
+        <span class="font-bold text-xl text-blue-600">Wawalu</span>
+      </div>
+      <nav class="hidden md:flex gap-6">
+  <a href="{{ url_for('inicio') }}" class="hover:text-blue-600">Inicio</a>
+  <a href="{{ url_for('colegio') }}" class="hover:text-blue-600">Colegio</a>
+  <a href="{{ url_for('programas') }}" class="hover:text-blue-600">Programas</a>
+  <a href="{{ url_for('agenda') }}" class="hover:text-blue-600">Agenda</a>
+  <a href="{{ url_for('galeria') }}" class="hover:text-blue-600">Galería</a>
+  <a href="{{ url_for('noticias') }}" class="hover:text-blue-600">Noticias</a>
+  <a href="{{ url_for('producto') }}" class="hover:text-blue-600">Producto</a>
+  <a href="{{ url_for('contacto') }}" class="hover:text-blue-600">Contacto</a>
+      </nav>
+      <div class="flex gap-3">
+  <a href="{{ url_for('login') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 font-semibold transition">Iniciar Sesión</a>
+  <a href="{{ url_for('register') }}" class="bg-white text-blue-500 border border-blue-500 px-4 py-2 rounded hover:bg-blue-50 font-semibold transition">Registrarse</a>
+  <a href="{{ url_for('admission') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 font-semibold">Admisión</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="container mx-auto flex flex-col md:flex-row items-center justify-between py-12 px-6 gap-8">
+  <div class="relative w-full h-screen flex items-center justify-center overflow-hidden">
+      <!-- Carrusel de colores -->
+      <div id="carousel-bg" class="absolute inset-0 w-full h-full transition-all duration-500"></div>
+  <!-- Aseguramos que el fondo esté detrás de todo -->
+  <div id="carousel-bg" class="absolute inset-0 w-full h-full transition-all duration-500 -z-10"></div>
+      <!-- Texto principal centrado -->
+      <div class="relative z-10 w-full flex flex-col items-center justify-center px-8 py-12">
+        <h2 class="text-4xl md:text-5xl font-bold mb-4 text-center">Invierte en el futuro de sus hijos</h2>
+        <p class="mb-6 text-lg text-center">¡Inscribe a tu hijo en un ambiente educativo excepcional! Matrícula abierta para nuestro colegio: educación de calidad, profesores dedicados y enriquecimiento integral. ¡Únete hoy!</p>
+        <a href="{{ url_for('admission') }}" class="bg-blue-600 text-white px-6 py-3 rounded shadow hover:bg-blue-700 font-semibold">Matricular</a>
+      </div>
+      <!-- Controles laterales -->
+      <button id="prev-slide" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/70 text-blue-600 rounded-full p-3 shadow hover:bg-blue-100 z-20"><span class="material-icons">chevron_left</span></button>
+      <button id="next-slide" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/70 text-blue-600 rounded-full p-3 shadow hover:bg-blue-100 z-20"><span class="material-icons">chevron_right</span></button>
+      <!-- Paginación tipo barra -->
+      <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+        {% for i in range(1, 7) %}
+          <span class="inline-block w-8 h-2 rounded bg-gray-300 transition-all duration-300" id="carousel-bar-{{ i }}"></span>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+<script src="{{ url_for('static', filename='js/carrusel.js') }}"></script>
+
+  <!-- Programas -->
+  <!-- Nuestra Propuesta -->
+  <section class="container mx-auto px-6 mt-12">
+    <h3 class="text-2xl font-bold text-gray-500 mb-4">Nuestra Propuesta</h3>
+    <div class="bg-white rounded-xl shadow p-6 mb-2">
+      <p class="text-gray-700 mb-2">Wawalu está inspirada en la propuesta educativa Reggio Emilia, promoviendo que los niños y niñas sean protagonistas de su propio aprendizaje.</p>
+      <p class="text-gray-700 mb-2">Creamos experiencias que conectan a los niños con la naturaleza, la autonomía y el trabajo en equipo.</p>
+      <p class="text-blue-600 font-semibold mt-4">"Lo que se dé a los niños, los niños darán a la sociedad" <span class="italic text-gray-500">- Karl Menninger</span></p>
+    </div>
+  </section>
+  <section class="bg-white py-12">
+    <div class="container mx-auto px-6">
+      <h3 class="text-3xl font-bold text-center mb-2">Nuestros Programas</h3>
+      <p class="text-center mb-10">Guardería especializada en el desarrollo integral de los niños</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-gray-50 p-6 rounded-lg shadow flex flex-col items-center">
+          <span class="material-icons text-blue-600 text-5xl mb-2">child_care</span>
+          <h4 class="font-semibold text-lg mb-1">Primer Grupo</h4>
+          <p class="text-center text-gray-600 text-sm">Niños de 1.5 a 2 años. Estimulación temprana, juegos y socialización.</p>
+        </div>
+        <div class="bg-gray-50 p-6 rounded-lg shadow flex flex-col items-center">
+          <span class="material-icons text-blue-600 text-5xl mb-2">toys</span>
+          <h4 class="font-semibold text-lg mb-1">Segundo Grupo</h4>
+          <p class="text-center text-gray-600 text-sm">Niños de 3 a 4 años. Desarrollo de habilidades motoras, cognitivas y emocionales.</p>
+        </div>
+        <div class="bg-gray-50 p-6 rounded-lg shadow flex flex-col items-center">
+          <span class="material-icons text-blue-600 text-5xl mb-2">star</span>
+          <h4 class="font-semibold text-lg mb-1">Tercer Grupo</h4>
+          <p class="text-center text-gray-600 text-sm">Niños de 5 años. Preparación para la primaria, creatividad y autonomía.</p>
+        </div>
+      </div>
+        <div class="mt-10">
+      <h3 class="text-2xl font-bold text-gray-500 mb-2 text-center">Misión, Visión y Objetivo</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white rounded-xl shadow p-6">
+        <h4 class="text-xl font-bold text-blue-500 mb-2 text-center">Misión</h4>
+              <p class="text-gray-700">Promover que los niños y niñas sean protagonistas de su propio aprendizaje, creando experiencias que conecten con la naturaleza y fomenten la autonomía, el trabajo en equipo y el cariño.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow p-6">
+        <h4 class="text-xl font-bold text-blue-500 mb-2 text-center">Visión</h4>
+              <p class="text-gray-700">Ser un referente en educación inicial, donde cada niño y niña aprende a su propio ritmo y manera, en un entorno seguro, acogedor y lleno de color.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow p-6">
+        <h4 class="text-xl font-bold text-blue-500 mb-2 text-center">Objetivo</h4>
+              <p class="text-gray-700">Ofrecer espacios diseñados por profesionales en educación, listos para potenciar el desarrollo integral de los niños y niñas, basados en la filosofía Reggio Emilia.</p>
+            </div>
+          </div>
+        </div>
+    </div>
+  </section>
+
+  <!-- Agenda Escolar -->
+  <section class="container mx-auto py-12 px-6">
+    <h3 class="text-3xl font-bold text-center mb-2">Agenda Escolar</h3>
+    <p class="text-center mb-10">Mantente informado sobre los eventos y actividades importantes</p>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="bg-white p-4 rounded-lg shadow">
+        <span class="block font-bold text-blue-600 mb-1">15 Marzo</span>
+        <span class="font-semibold">Reunión de Padres</span>
+        <p class="text-sm text-gray-600">Información sobre el progreso académico</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow">
+        <span class="block font-bold text-blue-600 mb-1">22 Marzo</span>
+        <span class="font-semibold">Feria de Ciencias</span>
+        <p class="text-sm text-gray-600">Exposición de proyectos estudiantiles</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow">
+        <span class="block font-bold text-blue-600 mb-1">29 Marzo</span>
+        <span class="font-semibold">Torneo Deportivo</span>
+        <p class="text-sm text-gray-600">Competencia intercolegial</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow">
+        <span class="block font-bold text-blue-600 mb-1">5 Abril</span>
+        <span class="font-semibold">Día de las Artes</span>
+        <p class="text-sm text-gray-600">Celebración cultural estudiantil</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contacto Mejorado -->
+  <section class="bg-white py-16">
+    <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 rounded-2xl shadow-2xl bg-white">
+      <div class="bg-white p-8 rounded-2xl shadow-lg flex flex-col justify-center">
+        <h3 class="text-2xl font-bold mb-6 text-blue-500">Información de Contacto</h3>
+        <div class="flex flex-col gap-2 mb-8">
+          <div class="grid grid-cols-1 gap-4">
+            <div class="flex flex-col gap-4">
+              <div class="flex flex-row items-center gap-3">
+                <span class="material-icons text-blue-500 text-2xl">location_on</span>
+                <div class="flex flex-col">
+                  <span class="text-lg font-bold text-blue-600">Dirección</span>
+                  <span class="font-medium text-gray-800">Av. Principal 123, Ciudad</span>
+                </div>
+              </div>
+              <div class="flex flex-row items-center gap-3">
+                <span class="material-icons text-blue-500 text-2xl">call</span>
+                <div class="flex flex-col">
+                  <span class="text-lg font-bold text-blue-600">Teléfono</span>
+                  <span class="font-medium text-gray-800">+51 934 567 890</span>
+                </div>
+              </div>
+              <div class="flex flex-row items-center gap-3">
+                <span class="material-icons text-blue-500 text-2xl">email</span>
+                <div class="flex flex-col">
+                  <span class="text-lg font-bold text-blue-600">Email</span>
+                  <span class="font-medium text-gray-800">info@ColegioWawalu.edu</span>
+                </div>
+              </div>
+              <div class="flex flex-row items-center gap-3">
+                <span class="material-icons text-blue-500 text-2xl">schedule</span>
+                <div class="flex flex-col">
+                  <span class="text-lg font-bold text-blue-600">Horario</span>
+                  <span class="font-medium text-gray-800">8:00 AM hasta las 6:00 PM</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+          <!-- Mapa de ubicación -->
+        <div class="mt-8">
+          <span class="block font-semibold text-blue-500 mb-3">Síguenos en:</span>
+          <div class="flex gap-6 items-center">
+            <a href="#" class="hover:scale-110 transition"><img src="{{ url_for('static', filename='icons/instagram.png') }}" alt="Instagram" class="h-10 w-10 rounded-full shadow-md object-cover border-2 border-white"></a>
+            <a href="#" class="hover:scale-110 transition"><img src="{{ url_for('static', filename='icons/facebook.png') }}" alt="Facebook" class="h-10 w-10 rounded-full shadow-md object-cover border-2 border-white"></a>
+            <a href="#" class="hover:scale-110 transition"><img src="{{ url_for('static', filename='icons/whatsapp.png') }}" alt="Whatsapp" class="h-10 w-10 rounded-full shadow-md object-cover border-2 border-white"></a>
+          </div>
+        </div>
+      </div>
+  <div class="bg-white p-8 rounded-2xl shadow-lg flex flex-col justify-center">
+        <h3 class="text-2xl font-bold mb-6 text-blue-500">Contacto</h3>
+        <form class="space-y-5">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+                <label class="mb-2 flex items-center gap-2">
+                  <span class="material-icons text-blue-500 text-xl">person</span>
+                  <span class="font-bold text-blue-600">Nombre</span>
+                </label>
+              <input type="text" class="w-full bg-white border border-blue-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition placeholder-gray-400 shadow-sm" placeholder="Tu nombre" required>
+            </div>
+            <div>
+                <label class="mb-2 flex items-center gap-2">
+                  <span class="material-icons text-blue-500 text-xl">badge</span>
+                  <span class="font-bold text-blue-600">Apellido</span>
+                </label>
+              <input type="text" class="w-full bg-white border border-blue-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition placeholder-gray-400 shadow-sm" placeholder="Tu apellido" required>
+            </div>
+          </div>
+          <div>
+              <label class="mb-2 flex items-center gap-2">
+                <span class="material-icons text-blue-500 text-xl">email</span>
+                <span class="font-bold text-blue-600">Email</span>
+              </label>
+            <input type="email" class="w-full bg-white border border-blue-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition placeholder-gray-400 shadow-sm" placeholder="ejemplo@email.com" required>
+          </div>
+          <div>
+              <label class="mb-2 flex items-center gap-2">
+                <span class="material-icons text-blue-500 text-xl">message</span>
+                <span class="font-bold text-blue-600">Mensaje</span>
+              </label>
+            <textarea class="w-full bg-white border border-blue-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition placeholder-gray-400 shadow-sm" rows="4" placeholder="Escribe tu mensaje..." required></textarea>
+          </div>
+          <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white px-8 py-3 rounded-xl hover:from-blue-600 hover:to-blue-800 font-bold shadow-lg transition flex items-center justify-center gap-2"><span class="material-icons">send</span>Enviar Mensaje</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Mejorado -->
+  <footer class="bg-blue-500 text-white py-10 mt-16">
+    <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10 items-start">
+      <div class="flex flex-col items-start">
+        <img src="{{ url_for('static', filename='icons/logo.png') }}" alt="Wawalu Logo" class="h-10 mb-3 rounded shadow">
+        <p class="text-sm leading-relaxed">Educación de excelencia para el futuro de nuestros estudiantes.</p>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-3">Enlaces Rápidos :</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="{{ url_for('inicio') }}" class="hover:underline">Inicio</a></li>
+          <li><a href="{{ url_for('programas') }}" class="hover:underline">Programas</a></li>
+          <li><a href="{{ url_for('agenda') }}" class="hover:underline">Agenda</a></li>
+          <li><a href="{{ url_for('contacto') }}" class="hover:underline">Contactos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-3">Recursos :</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="{{ url_for('noticias') }}" class="hover:underline">Noticia</a></li>
+          <li><a href="{{ url_for('galeria') }}" class="hover:underline">Galería</a></li>
+          <li><a href="{{ url_for('colegio') }}" class="hover:underline">Colegio</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-3">Síguenos :</h4>
+        <div class="flex gap-6 mt-2">
+          <a href="#" class="hover:scale-110 transition"><img src="{{ url_for('static', filename='icons/instagram.png') }}" alt="Instagram" class="h-10 w-10 rounded-full shadow-md object-cover"></a>
+          <a href="#" class="hover:scale-110 transition"><img src="{{ url_for('static', filename='icons/facebook.png') }}" alt="Facebook" class="h-10 w-10 rounded-full shadow-md object-cover"></a>
+          <a href="#" class="hover:scale-110 transition"><img src="{{ url_for('static', filename='icons/whatsapp.png') }}" alt="Whatsapp" class="h-10 w-10 rounded-full shadow-md object-cover"></a>
+        </div>
+      </div>
+    </div>
+    <div class="text-center text-xs mt-10 opacity-80">© 2025 Wawalu. Todos los derechos reservados.</div>
+  </footer>
+</body>
+</html>
