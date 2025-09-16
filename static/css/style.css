@@ -1,0 +1,111 @@
+/* Animación del título */
+@keyframes moverDerecha {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(20px); }
+    100% { transform: translateX(0); }
+}
+.animar-mover {
+    animation: moverDerecha 3s ease-in-out infinite;
+}
+
+/* Botón que rebota */
+@keyframes rebotarBoton {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.animar-rebotar {
+  animation: rebotarBoton 1.5s ease-in-out infinite;
+}
+
+/* Iconos que giran */
+@keyframes girarIcono {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(10deg); }
+}
+.animar-girar {
+  display: inline-block;
+  animation: girarIcono 2s ease-in-out infinite;
+}
+
+/* Cards que flotan al pasar el mouse */
+.animar-flotar {
+  transition: transform 0.3s ease-in-out;
+}
+.animar-flotar:hover {
+  transform: translateY(-10px) scale(1.03);
+}
+
+@keyframes brilloPulsante {
+  0%, 100% { box-shadow: 0 0 5px rgba(59,130,246,0.5); }
+  50% { box-shadow: 0 0 25px rgba(59,130,246,1); }
+}
+.animar-brillo {
+  animation: brilloPulsante 2s ease-in-out infinite;
+}
+
+@keyframes rebotarGirar {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  25% { transform: rotate(10deg) translateY(-5px); }
+  75% { transform: rotate(-10deg) translateY(-5px); }
+}
+.animar-rebotar-girar {
+  display: inline-block;
+  animation: rebotarGirar 2s ease-in-out infinite;
+}
+
+@keyframes aparecerDesdeAbajo {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animar-aparecer {
+  animation: aparecerDesdeAbajo 1s ease-out forwards;
+}
+
+/* Iconos que giran continuamente */
+@keyframes rotarInfinito {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.animar-rotar {
+  display: inline-block;
+  animation: rotarInfinito 5s linear infinite;
+}
+
+@keyframes flotar {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animar-flotar-suave {
+  animation: flotar 3s ease-in-out infinite;
+}
+
+/* Animación de subrayado para enlaces del menú */
+.nav-animado {
+  position: relative;
+  display: inline-block;
+  transition: color 0.3s ease;
+}
+
+.nav-animado::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  left: 0;
+  bottom: -2px;
+  background-color: #2563eb; /* azul */
+  transition: width 0.3s ease;
+}
+
+.nav-animado:hover::after {
+  width: 100%;
+}
+
+.nav-rebotar {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.nav-rebotar:hover {
+  transform: translateY(-5px) scale(1.1);
+}
