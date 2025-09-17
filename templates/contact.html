@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <!-- Hero Section -->
+    <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
+        <div class="container mx-auto px-4 max-w-6xl">
+            <h1 class="text-5xl font-bold mb-4 text-center">Contáctanos</h1>
+            <p class="text-xl text-center text-blue-100 max-w-2xl mx-auto">
+                Estamos aquí para responder tus preguntas y ayudarte en todo lo que necesites.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12 max-w-6xl">
+        <!-- Information Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition duration-300">
+                <div class="flex items-center mb-4">
+                    <span class="material-icons text-4xl text-blue-600">location_on</span>
+                    <h3 class="text-xl font-bold text-gray-800 ml-4">Ubicación</h3>
+                </div>
+                <p class="text-gray-600">Cañete, Lima, Perú</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition duration-300">
+                <div class="flex items-center mb-4">
+                    <span class="material-icons text-4xl text-blue-600">schedule</span>
+                    <h3 class="text-xl font-bold text-gray-800 ml-4">Horario</h3>
+                </div>
+                <p class="text-gray-600">Lunes a Viernes</p>
+                <p class="text-gray-600">8:00 AM - 5:00 PM</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition duration-300">
+                <div class="flex items-center mb-4">
+                    <span class="material-icons text-4xl text-blue-600">phone</span>
+                    <h3 class="text-xl font-bold text-gray-800 ml-4">Teléfono</h3>
+                </div>
+                <p class="text-gray-600">+51 xxx xxx xxx</p>
+                <p class="text-gray-600">contacto@wawalu.com</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+            <!-- Contact Form -->
+            <div class="bg-white rounded-xl p-8 shadow-lg">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Envíanos un mensaje</h2>
+                
+                <!-- Error Display -->
+                <div id="errorDisplay" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+                </div>
+
+                <!-- Success Display -->
+                <div id="successDisplay" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
+                </div>
+
+                <form id="contactForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Nombre Completo</label>
+                            <input type="text" id="name" name="name" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Correo Electrónico</label>
+                            <input type="email" id="email" name="email" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">Asunto</label>
+                        <input type="text" id="subject" name="subject" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900">
+                    </div>
+
+                    <div>
+                        <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Mensaje</label>
+                        <textarea id="message" name="message" rows="6" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 resize-none"></textarea>
+                    </div>
+
+                    <button type="submit" id="submitButton"
+                        class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150">
+                        <span class="material-icons mr-2">send</span>
+                        Enviar Mensaje
+                    </button>
+                </form>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="bg-white rounded-xl p-8 shadow-lg">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Preguntas Frecuentes</h2>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">¿Cuál es el horario de atención?</h3>
+                        <p class="text-gray-600">Atendemos de lunes a viernes de 8:00 AM a 5:00 PM. Los fines de semana permanecemos cerrados.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">¿Qué edades atienden?</h3>
+                        <p class="text-gray-600">Trabajamos con niños desde los 6 meses hasta los 5 años de edad.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">¿Cómo puedo agendar una visita?</h3>
+                        <p class="text-gray-600">Puedes contactarnos por teléfono o llenar el formulario de contacto y nos comunicaremos contigo para agendar una visita.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">¿Qué métodos de pago aceptan?</h3>
+                        <p class="text-gray-600">Aceptamos pagos en efectivo, transferencias bancarias y YAPE.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <div class="bg-white rounded-xl p-8 shadow-lg mb-16">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Nuestra Ubicación</h2>
+            <div class="rounded-lg overflow-hidden h-[400px]">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31039.914568265266!2d-76.39007462525357!3d-13.075033837403338!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c3c5afd33a85%3A0xe7dcd31b0cf54f51!2zQ2HDsWV0ZQ!5e0!3m2!1ses!2spe!4v1632861234567!5m2!1ses!2spe"
+                    width="100%"
+                    height="100%"
+                    style="border:0;"
+                    allowfullscreen=""
+                    loading="lazy">
+                </iframe>
+            </div>
+        </div>
+
+        <!-- Social Media Section -->
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8">Síguenos en Redes Sociales</h2>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="transform hover:scale-110 transition duration-300">
+                    <img src="{{ url_for('static', filename='icons/facebook.png') }}" alt="Facebook" class="w-12 h-12">
+                </a>
+                <a href="#" class="transform hover:scale-110 transition duration-300">
+                    <img src="{{ url_for('static', filename='icons/instagram.png') }}" alt="Instagram" class="w-12 h-12">
+                </a>
+                <a href="#" class="transform hover:scale-110 transition duration-300">
+                    <img src="{{ url_for('static', filename='icons/whatsapp.png') }}" alt="WhatsApp" class="w-12 h-12">
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-16 pb-8">
+        <div class="container mx-auto px-4 max-w-6xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <!-- Logo y descripción -->
+                <div class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Wawalu Logo" class="h-12 w-auto">
+                        <span class="text-2xl font-bold text-blue-400">Wawalu</span>
+                    </div>
+                    <p class="text-gray-400 leading-relaxed">
+                        Creamos experiencias educativas únicas basadas en la metodología Reggio Emilia, promoviendo el desarrollo integral de cada niño.
+                    </p>
+                </div>
+
+                <!-- Enlaces rápidos -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-6 text-blue-400">Enlaces Rápidos</h3>
+                    <ul class="space-y-4 text-gray-400">
+                        <li>
+                            <a href="#" class="hover:text-white transition duration-150 flex items-center">
+                                <span class="material-icons text-sm mr-2">arrow_forward</span>
+                                Nosotros
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="hover:text-white transition duration-150 flex items-center">
+                                <span class="material-icons text-sm mr-2">arrow_forward</span>
+                                Programas
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('gallery') }}" class="hover:text-white transition duration-150 flex items-center">
+                                <span class="material-icons text-sm mr-2">arrow_forward</span>
+                                Galería
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('contact') }}" class="hover:text-white transition duration-150 flex items-center">
+                                <span class="material-icons text-sm mr-2">arrow_forward</span>
+                                Contacto
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Información de contacto -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-6 text-blue-400">Contáctanos</h3>
+                    <ul class="space-y-4 text-gray-400">
+                        <li class="flex items-center">
+                            <span class="material-icons mr-3">location_on</span>
+                            <span>Cañete, Lima, Perú</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="material-icons mr-3">phone</span>
+                            <span>+51 xxx xxx xxx</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="material-icons mr-3">mail</span>
+                            <span>contacto@wawalu.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="material-icons mr-3">schedule</span>
+                            <span>Lun - Vie: 8:00 AM - 5:00 PM</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Redes Sociales y YPE -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-6 text-blue-400">Síguenos</h3>
+                    <div class="flex space-x-4 mb-8">
+                        <a href="#" class="bg-gray-800 p-2 rounded-full hover:bg-blue-600 transition duration-300 w-10 h-10 flex items-center justify-center">
+                            <img src="{{ url_for('static', filename='icons/facebook.png') }}" alt="Facebook" class="w-5 h-5 filter invert">
+                        </a>
+                        <a href="#" class="bg-gray-800 p-2 rounded-full hover:bg-pink-600 transition duration-300 w-10 h-10 flex items-center justify-center">
+                            <img src="{{ url_for('static', filename='icons/instagram.png') }}" alt="Instagram" class="w-5 h-5 filter invert">
+                        </a>
+                        <a href="#" class="bg-gray-800 p-2 rounded-full hover:bg-green-600 transition duration-300 w-10 h-10 flex items-center justify-center">
+                            <img src="{{ url_for('static', filename='icons/whatsapp.png') }}" alt="WhatsApp" class="w-5 h-5 filter invert">
+                        </a>
+                    </div>
+                    <div class="border-t border-gray-800 pt-6">
+                        <h4 class="text-sm font-semibold mb-4 text-blue-400">Trabajamos con YPE</h4>
+                        <img src="{{ url_for('static', filename='icons/yape.png') }}" alt="YPE" class="h-12 w-auto filter brightness-0 invert opacity-70 hover:opacity-100 transition duration-300">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="border-t border-gray-800 pt-8 mt-8 text-center text-gray-400">
+                <p>&copy; 2025 Wawalu. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/contact.js') }}" defer></script>
+{% endblock %}

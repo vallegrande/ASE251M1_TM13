@@ -1,0 +1,110 @@
+{% extends "auth_base.html" %}
+
+{% block title %}Iniciar Sesión - Wawalu{% endblock %}
+
+{% block content %}
+    <div class="min-h-screen flex">
+        <!-- Logo Section - Left Side -->
+        <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-r from-blue-500 to-blue-600">
+            <div class="flex flex-col items-center justify-center w-full">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Wawalu Logo" class="w-48 h-48 object-contain mb-8">
+                <h1 class="text-4xl font-bold text-white mb-4">Wawalu</h1>
+                <p class="text-blue-100 text-xl text-center max-w-md px-8">
+                    "Lo que se dé a los niños, los niños darán a la sociedad"
+                </p>
+            </div>
+        </div>
+
+        <!-- Login Form - Right Side -->
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-8">
+            <div class="w-full max-w-md">
+                <!-- Mobile Logo -->
+                <div class="lg:hidden flex flex-col items-center mb-12">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Wawalu Logo" class="w-24 h-24 object-contain mb-4">
+                    <h1 class="text-3xl font-bold text-blue-600">Wawalu</h1>
+                </div>
+
+                <!-- Form Header -->
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">¡Bienvenido de nuevo!</h2>
+                    <p class="text-gray-600">Ingresa a tu cuenta de Wawalu</p>
+                </div>
+
+                <!-- Error Display -->
+                <div id="errorDisplay" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="space-y-6">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Correo Electrónico</label>
+                        <div class="relative">
+                            <span class="material-icons absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                mail
+                            </span>
+                            <input type="email" id="email" name="email" required
+                                class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400"
+                                placeholder="ejemplo@correo.com">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
+                        <div class="relative">
+                            <span class="material-icons absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                lock
+                            </span>
+                            <input type="password" id="password" name="password" required
+                                class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                                placeholder="••••••••">
+                            <button type="button" id="togglePassword" class="material-icons absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer">
+                                visibility
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="remember" name="remember"
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <label for="remember" class="ml-2 block text-sm text-gray-700">
+                                Recordarme
+                            </label>
+                        </div>
+                        <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-500">
+                            ¿Olvidaste tu contraseña?
+                        </a>
+                    </div>
+
+                    <button type="submit" id="submitButton"
+                        class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 disabled:opacity-50">
+                        <span class="material-icons mr-2">login</span>
+                        Iniciar Sesión
+                    </button>
+                </form>
+
+                <!-- Registration Link -->
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-600">
+                        ¿No tienes una cuenta? 
+                        <a href="{{ url_for('register') }}" class="font-medium text-blue-600 hover:text-blue-500">
+                            Regístrate
+                        </a>
+                    </p>
+                </div>
+
+                <!-- Additional Links -->
+                <div class="mt-8 text-center">
+                    <a href="{{ url_for('home') }}" class="text-sm font-medium text-blue-600 hover:text-blue-500 flex items-center justify-center">
+                        <span class="material-icons mr-1" style="font-size: 1.1em;">arrow_back</span>
+                        Volver al inicio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+{% endblock %}

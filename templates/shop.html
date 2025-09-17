@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Tienda - Wawalu{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
+        <div class="container mx-auto px-4 max-w-6xl">
+            <h1 class="text-5xl font-bold mb-4 text-center">Tienda Wawalu</h1>
+            <p class="text-xl text-center text-blue-100 max-w-2xl mx-auto">
+                Todo lo que necesitas para el desarrollo educativo de tu pequeño
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12 max-w-6xl">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Panel de Filtros -->
+            <div class="w-full lg:w-1/4">
+                <div class="bg-white rounded-xl shadow-lg p-6 sticky top-24">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Filtros</h3>
+                    
+                    <!-- Categorías -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Categorías</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="category" value="todos" checked 
+                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-gray-700">Todos</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="category" value="uniformes"
+                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-gray-700">Uniformes</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="category" value="utiles"
+                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-gray-700">Útiles</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="category" value="accesorios"
+                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-gray-700">Accesorios</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Rango de Precio -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Rango de Precio</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-xs text-gray-600">Precio Mínimo</label>
+                                <input type="range" min="0" max="100" value="0" 
+                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                    id="minPrice">
+                                <span class="text-sm text-gray-600" id="minPriceValue">S/. 0</span>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-600">Precio Máximo</label>
+                                <input type="range" min="0" max="100" value="100" 
+                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                    id="maxPrice">
+                                <span class="text-sm text-gray-600" id="maxPriceValue">S/. 100</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ordenar Por -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Ordenar Por</h4>
+                        <select id="sortBy" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="default">Relevancia</option>
+                            <option value="price-asc">Precio: Menor a Mayor</option>
+                            <option value="price-desc">Precio: Mayor a Menor</option>
+                            <option value="name-asc">Nombre: A-Z</option>
+                            <option value="name-desc">Nombre: Z-A</option>
+                        </select>
+                    </div>
+
+                    <!-- Búsqueda -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Buscar</h4>
+                        <div class="relative">
+                            <input type="text" id="searchInput" 
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                placeholder="Buscar productos...">
+                            <span class="material-icons absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                search
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Botón de Aplicar Filtros -->
+                    <button onclick="applyFilters()" 
+                        class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300 flex items-center justify-center">
+                        <span class="material-icons mr-2">filter_list</span>
+                        Aplicar Filtros
+                    </button>
+                </div>
+
+                <!-- Etiquetas de filtros activos -->
+                <div id="activeFilters" class="mt-4 flex flex-wrap gap-2">
+                    <!-- Las etiquetas se agregarán dinámicamente con JavaScript -->
+                </div>
+            </div>
+
+            <!-- Grid de Productos -->
+            <div class="w-full lg:w-3/4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for category, items in products.items() %}
+                        {% for product in items %}
+                        <div class="product-card {{ category }} bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300" 
+                             data-id="{{ product.id }}"
+                             data-price="{{ product.price }}" 
+                             data-name="{{ product.name }}" 
+                             data-category="{{ category }}"
+                             data-description="{{ product.description }}"
+                             data-image="{{ product.image }}"
+                             data-stock="{{ product.stock if product.stock is defined else 'Disponible' }}"
+                             data-features="{{ product.features|tojson if product.features is defined else '[]' }}">
+                            <div class="relative pb-[100%] cursor-pointer" onclick="showProductDetails({{ product.id }})">
+                                <img src="{{ url_for('static', filename='img/products/' + product.image) }}" 
+                                     alt="{{ product.name }}" 
+                                     class="absolute top-0 left-0 w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-black opacity-0 hover:opacity-10 transition-opacity duration-300"></div>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2 cursor-pointer hover:text-blue-600" 
+                                    onclick="showProductDetails({{ product.id }})">{{ product.name }}</h3>
+                                <p class="text-gray-600 text-sm mb-4">{{ product.description }}</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-blue-600 font-bold">S/. {{ "%.2f"|format(product.price) }}</span>
+                                    <div class="flex items-center space-x-2">
+                                        <button onclick="showProductDetails({{ product.id }})" 
+                                                class="flex items-center space-x-1 bg-gray-100 text-gray-700 px-3 py-1 rounded hover:bg-gray-200 transition duration-300">
+                                            <span class="material-icons text-sm">visibility</span>
+                                            <span>Ver</span>
+                                        </button>
+                                        <button onclick="addToCart({{ product.id }})" 
+                                                class="flex items-center space-x-1 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition duration-300">
+                                            <span class="material-icons text-sm">add_shopping_cart</span>
+                                            <span>Agregar</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Detalles del Producto -->
+    <div id="productModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="min-h-screen px-4 text-center">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+
+            <!-- Modal content -->
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                <div class="relative">
+                    <!-- Botón de cerrar -->
+                    <button onclick="closeProductModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                        <span class="material-icons">close</span>
+                    </button>
+
+                    <div class="flex flex-col md:flex-row">
+                        <!-- Imagen del producto -->
+                        <div class="w-full md:w-1/2">
+                            <div class="relative pb-[100%]">
+                                <img id="modalProductImage" src="" alt="" class="absolute inset-0 w-full h-full object-cover">
+                            </div>
+                        </div>
+
+                        <!-- Detalles del producto -->
+                        <div class="w-full md:w-1/2 p-6">
+                            <h2 id="modalProductName" class="text-2xl font-bold text-gray-800 mb-4"></h2>
+                            <p id="modalProductDescription" class="text-gray-600 mb-6"></p>
+                            
+                            <!-- Características -->
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold mb-2">Características</h3>
+                                <ul id="modalProductFeatures" class="list-disc list-inside text-gray-600">
+                                </ul>
+                            </div>
+
+                            <!-- Disponibilidad y Stock -->
+                            <div class="mb-6">
+                                <div class="flex items-center space-x-2">
+                                    <span class="material-icons text-green-500">check_circle</span>
+                                    <span id="modalProductStock" class="text-green-500"></span>
+                                </div>
+                            </div>
+
+                            <!-- Precio y Botón de Compra -->
+                            <div class="mt-auto">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="text-3xl font-bold text-blue-600" id="modalProductPrice"></div>
+                                    <div class="flex items-center space-x-2">
+                                        <button onclick="decrementQuantity()" class="p-2 rounded-full hover:bg-gray-100">
+                                            <span class="material-icons">remove</span>
+                                        </button>
+                                        <input type="number" id="modalQuantity" value="1" min="1" 
+                                               class="w-16 text-center border-gray-300 rounded-md">
+                                        <button onclick="incrementQuantity()" class="p-2 rounded-full hover:bg-gray-100">
+                                            <span class="material-icons">add</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button onclick="addToCartFromModal()" 
+                                        class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center">
+                                    <span class="material-icons mr-2">shopping_cart</span>
+                                    Agregar al Carrito
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/shop.js') }}" defer></script>
+{% endblock %}

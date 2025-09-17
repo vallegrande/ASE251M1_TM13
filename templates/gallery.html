@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}Galería - Wawalu{% endblock %}
+
+{% block head %}
+<!-- Lightbox CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+    <!-- Hero Section -->
+    <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
+        <div class="container mx-auto px-4 max-w-6xl">
+            <h1 class="text-5xl font-bold mb-4 text-center">Nuestra Galería</h1>
+            <p class="text-xl text-center text-blue-100 max-w-2xl mx-auto">
+                Explora nuestros espacios y momentos especiales
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12 max-w-6xl">
+        <!-- Filtros de Categoría -->
+        <div class="flex flex-wrap justify-center gap-4 mb-12">
+            <button onclick="filterGallery('todos')" class="category-filter active px-6 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition duration-300">
+                Todos
+            </button>
+            <button onclick="filterGallery('espacios')" class="category-filter px-6 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-blue-600 hover:text-white transition duration-300">
+                Espacios
+            </button>
+            <button onclick="filterGallery('actividades')" class="category-filter px-6 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-blue-600 hover:text-white transition duration-300">
+                Actividades
+            </button>
+            <button onclick="filterGallery('eventos')" class="category-filter px-6 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-blue-600 hover:text-white transition duration-300">
+                Eventos
+            </button>
+            <button onclick="filterGallery('proyectos')" class="category-filter px-6 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-blue-600 hover:text-white transition duration-300">
+                Proyectos
+            </button>
+        </div>
+
+        <!-- Grid de Imágenes -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Espacios -->
+            <div class="gallery-item espacios overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105">
+                <a href="{{ url_for('static', filename='img/imagen1.jpg') }}" data-lightbox="gallery" data-title="Sala de Juegos">
+                    <div class="relative pb-[100%]">
+                        <img src="{{ url_for('static', filename='img/imagen1.jpg') }}" 
+                             alt="Sala de Juegos" 
+                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
+                            <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                <h3 class="text-lg font-semibold">Sala de Juegos</h3>
+                                <p class="text-sm">Espacio diseñado para el aprendizaje lúdico</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Actividades -->
+            <div class="gallery-item actividades overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105">
+                <a href="{{ url_for('static', filename='img/imagen2.jpg') }}" data-lightbox="gallery" data-title="Taller de Arte">
+                    <div class="relative pb-[100%]">
+                        <img src="{{ url_for('static', filename='img/imagen2.jpg') }}" 
+                             alt="Taller de Arte" 
+                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
+                            <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                <h3 class="text-lg font-semibold">Taller de Arte</h3>
+                                <p class="text-sm">Expresión artística y creatividad</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Eventos -->
+            <div class="gallery-item eventos overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105">
+                <a href="{{ url_for('static', filename='img/imagen3.jpg') }}" data-lightbox="gallery" data-title="Celebración Especial">
+                    <div class="relative pb-[100%]">
+                        <img src="{{ url_for('static', filename='img/imagen3.jpg') }}" 
+                             alt="Celebración Especial" 
+                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
+                            <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                <h3 class="text-lg font-semibold">Celebración Especial</h3>
+                                <p class="text-sm">Momentos únicos en nuestra comunidad</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Proyectos -->
+            <div class="gallery-item proyectos overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105">
+                <a href="{{ url_for('static', filename='img/imagen4.jpg') }}" data-lightbox="gallery" data-title="Proyecto Educativo">
+                    <div class="relative pb-[100%]">
+                        <img src="{{ url_for('static', filename='img/imagen4.jpg') }}" 
+                             alt="Proyecto Educativo" 
+                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
+                            <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                <h3 class="text-lg font-semibold">Proyecto Educativo</h3>
+                                <p class="text-sm">Aprendizaje basado en proyectos</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Espacios Adicionales -->
+            <div class="gallery-item espacios overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105">
+                <a href="{{ url_for('static', filename='img/imagen5.jpg') }}" data-lightbox="gallery" data-title="Área de Lectura">
+                    <div class="relative pb-[100%]">
+                        <img src="{{ url_for('static', filename='img/imagen5.jpg') }}" 
+                             alt="Área de Lectura" 
+                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
+                            <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                <h3 class="text-lg font-semibold">Área de Lectura</h3>
+                                <p class="text-sm">Espacio dedicado al amor por la lectura</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Más Actividades -->
+            <div class="gallery-item actividades overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105">
+                <a href="{{ url_for('static', filename='img/imagen6.jpg') }}" data-lightbox="gallery" data-title="Taller de Música">
+                    <div class="relative pb-[100%]">
+                        <img src="{{ url_for('static', filename='img/imagen6.jpg') }}" 
+                             alt="Taller de Música" 
+                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
+                            <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                <h3 class="text-lg font-semibold">Taller de Música</h3>
+                                <p class="text-sm">Desarrollo de habilidades musicales</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Eventos Especiales -->
+            <div class="gallery-item eventos overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105">
+                <a href="{{ url_for('static', filename='img/imagen7.jpg') }}" data-lightbox="gallery" data-title="Día de la Familia">
+                    <div class="relative pb-[100%]">
+                        <img src="{{ url_for('static', filename='img/imagen7.jpg') }}" 
+                             alt="Día de la Familia" 
+                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
+                            <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                <h3 class="text-lg font-semibold">Día de la Familia</h3>
+                                <p class="text-sm">Celebrando juntos momentos especiales</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Más Proyectos -->
+            <div class="gallery-item proyectos overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105">
+                <a href="{{ url_for('static', filename='img/imagen8.jpg') }}" data-lightbox="gallery" data-title="Proyecto Ambiental">
+                    <div class="relative pb-[100%]">
+                        <img src="{{ url_for('static', filename='img/imagen8.jpg') }}" 
+                             alt="Proyecto Ambiental" 
+                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
+                            <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                <h3 class="text-lg font-semibold">Proyecto Ambiental</h3>
+                                <p class="text-sm">Aprendiendo sobre el cuidado del medio ambiente</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Actividades al Aire Libre -->
+            <div class="gallery-item actividades overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105">
+                <a href="{{ url_for('static', filename='img/imagen9.jpg') }}" data-lightbox="gallery" data-title="Juegos al Aire Libre">
+                    <div class="relative pb-[100%]">
+                        <img src="{{ url_for('static', filename='img/imagen9.jpg') }}" 
+                             alt="Juegos al Aire Libre" 
+                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
+                            <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                <h3 class="text-lg font-semibold">Juegos al Aire Libre</h3>
+                                <p class="text-sm">Diversión y aprendizaje en el exterior</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Espacios de Aprendizaje -->
+            <div class="gallery-item espacios overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105">
+                <a href="{{ url_for('static', filename='img/imagen10.jpg') }}" data-lightbox="gallery" data-title="Sala Sensorial">
+                    <div class="relative pb-[100%]">
+                        <img src="{{ url_for('static', filename='img/imagen10.jpg') }}" 
+                             alt="Sala Sensorial" 
+                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
+                            <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                <h3 class="text-lg font-semibold">Sala Sensorial</h3>
+                                <p class="text-sm">Estimulación y desarrollo sensorial</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Eventos Culturales -->
+            <div class="gallery-item eventos overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105">
+                <a href="{{ url_for('static', filename='img/imagen11.jpg') }}" data-lightbox="gallery" data-title="Festival Cultural">
+                    <div class="relative pb-[100%]">
+                        <img src="{{ url_for('static', filename='img/imagen11.jpg') }}" 
+                             alt="Festival Cultural" 
+                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
+                            <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                <h3 class="text-lg font-semibold">Festival Cultural</h3>
+                                <p class="text-sm">Celebrando nuestra diversidad cultural</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Proyectos Innovadores -->
+            <div class="gallery-item proyectos overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105">
+                <a href="{{ url_for('static', filename='img/imagen12.jpg') }}" data-lightbox="gallery" data-title="Proyecto de Innovación">
+                    <div class="relative pb-[100%]">
+                        <img src="{{ url_for('static', filename='img/imagen12.jpg') }}" 
+                             alt="Proyecto de Innovación" 
+                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
+                            <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                <h3 class="text-lg font-semibold">Proyecto de Innovación</h3>
+                                <p class="text-sm">Explorando nuevas formas de aprendizaje</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/gallery.js') }}" defer></script>
+<!-- Lightbox JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js" defer></script>
+{% endblock %}

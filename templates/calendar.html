@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/calendar.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-gradient-to-r from-blue-600 to-blue-800 py-20">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="text-center text-white">
+            <h1 class="text-5xl font-bold mb-6">Calendario de Actividades</h1>
+            <p class="text-xl opacity-90 max-w-3xl mx-auto">
+                Mantente al día con nuestros eventos, talleres y actividades especiales
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="container mx-auto px-4 py-16 max-w-6xl">
+    <!-- Eventos Destacados -->
+    <div class="mb-20">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Eventos Destacados</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Evento 1 -->
+            <div class="featured-event bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
+                <div class="relative">
+                    <img src="{{ url_for('static', filename='img/events/event1.jpg') }}" alt="Taller de Arte Familiar" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold">
+                        25 Sep
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Taller de Arte Familiar</h3>
+                    <div class="flex items-center text-gray-600 mb-4">
+                        <span class="material-icons text-blue-600 mr-2">schedule</span>
+                        10:00 AM - 12:00 PM
+                    </div>
+                    <p class="text-gray-600 mb-4">
+                        Una mañana creativa donde padres e hijos explorarán diferentes técnicas artísticas juntos.
+                    </p>
+                    <a href="{{ url_for('contact') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+                        Inscribirse
+                        <span class="material-icons text-sm ml-1">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Evento 2 -->
+            <div class="featured-event bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
+                <div class="relative">
+                    <img src="{{ url_for('static', filename='img/events/event2.jpg') }}" alt="Día del Deporte" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold">
+                        30 Sep
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Día del Deporte</h3>
+                    <div class="flex items-center text-gray-600 mb-4">
+                        <span class="material-icons text-blue-600 mr-2">schedule</span>
+                        9:00 AM - 1:00 PM
+                    </div>
+                    <p class="text-gray-600 mb-4">
+                        Una jornada llena de actividades físicas, juegos y competencias amistosas para toda la familia.
+                    </p>
+                    <a href="{{ url_for('contact') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+                        Inscribirse
+                        <span class="material-icons text-sm ml-1">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Evento 3 -->
+            <div class="featured-event bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
+                <div class="relative">
+                    <img src="{{ url_for('static', filename='img/events/event3.jpg') }}" alt="Taller de Música" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold">
+                        5 Oct
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Taller de Música</h3>
+                    <div class="flex items-center text-gray-600 mb-4">
+                        <span class="material-icons text-blue-600 mr-2">schedule</span>
+                        11:00 AM - 12:30 PM
+                    </div>
+                    <p class="text-gray-600 mb-4">
+                        Introducción a la música para niños pequeños a través del juego y la exploración sonora.
+                    </p>
+                    <a href="{{ url_for('contact') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+                        Inscribirse
+                        <span class="material-icons text-sm ml-1">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendario Mensual -->
+    <div class="mb-20">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 calendar-header">Septiembre 2025</h2>
+                <div class="flex space-x-4">
+                    <button class="calendar-nav-prev p-2 rounded-full hover:bg-gray-100 transition duration-150">
+                        <span class="material-icons text-gray-600">chevron_left</span>
+                    </button>
+                    <button class="calendar-nav-next p-2 rounded-full hover:bg-gray-100 transition duration-150">
+                        <span class="material-icons text-gray-600">chevron_right</span>
+                    </button>
+                </div>
+            </div>
+            <div class="calendar-container overflow-hidden">
+                <!-- Días de la semana -->
+                <div class="grid grid-cols-7 gap-4 mb-4">
+                    <div class="text-center font-semibold text-gray-600">Dom</div>
+                    <div class="text-center font-semibold text-gray-600">Lun</div>
+                    <div class="text-center font-semibold text-gray-600">Mar</div>
+                    <div class="text-center font-semibold text-gray-600">Mié</div>
+                    <div class="text-center font-semibold text-gray-600">Jue</div>
+                    <div class="text-center font-semibold text-gray-600">Vie</div>
+                    <div class="text-center font-semibold text-gray-600">Sáb</div>
+                </div>
+
+                <!-- Días del mes -->
+                <div class="calendar-days grid grid-cols-7 gap-4">
+                    <!-- Los días se generarán dinámicamente con JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Próximas Actividades -->
+    <div class="mb-20">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Actividades Regulares</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Lunes -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
+                <div class="flex items-center mb-4">
+                    <span class="material-icons text-3xl text-blue-600 mr-3">music_note</span>
+                    <h3 class="text-xl font-bold text-gray-800">Lunes</h3>
+                </div>
+                <ul class="space-y-3 text-gray-600">
+                    <li class="flex items-center">
+                        <span class="text-sm font-semibold w-20">10:00 AM</span>
+                        <span>Clase de Música</span>
+                    </li>
+                    <li class="flex items-center">
+                        <span class="text-sm font-semibold w-20">11:30 AM</span>
+                        <span>Juegos Sensoriales</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Miércoles -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
+                <div class="flex items-center mb-4">
+                    <span class="material-icons text-3xl text-blue-600 mr-3">palette</span>
+                    <h3 class="text-xl font-bold text-gray-800">Miércoles</h3>
+                </div>
+                <ul class="space-y-3 text-gray-600">
+                    <li class="flex items-center">
+                        <span class="text-sm font-semibold w-20">9:30 AM</span>
+                        <span>Taller de Arte</span>
+                    </li>
+                    <li class="flex items-center">
+                        <span class="text-sm font-semibold w-20">11:00 AM</span>
+                        <span>Huerto Escolar</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Viernes -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
+                <div class="flex items-center mb-4">
+                    <span class="material-icons text-3xl text-blue-600 mr-3">sports_soccer</span>
+                    <h3 class="text-xl font-bold text-gray-800">Viernes</h3>
+                </div>
+                <ul class="space-y-3 text-gray-600">
+                    <li class="flex items-center">
+                        <span class="text-sm font-semibold w-20">10:30 AM</span>
+                        <span>Deportes</span>
+                    </li>
+                    <li class="flex items-center">
+                        <span class="text-sm font-semibold w-20">11:45 AM</span>
+                        <span>Juegos Grupales</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-10 text-white text-center">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold mb-6">¿Quieres participar en nuestras actividades?</h2>
+            <p class="text-lg mb-8 opacity-90">Inscríbete en nuestros eventos y sé parte de la experiencia Wawalu</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="{{ url_for('contact') }}" class="inline-flex items-center justify-center px-6 py-3 border-2 border-white rounded-lg text-lg font-medium hover:bg-white hover:text-blue-600 transition duration-300">
+                    <span class="material-icons mr-2">calendar_today</span>
+                    Inscribirse
+                </a>
+                <a href="{{ url_for('contact') }}" class="inline-flex items-center justify-center px-6 py-3 bg-white text-blue-600 rounded-lg text-lg font-medium hover:bg-blue-50 transition duration-300">
+                    <span class="material-icons mr-2">phone</span>
+                    Más Información
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/calendar.js') }}" defer></script>
+{% endblock %}

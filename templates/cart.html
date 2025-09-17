@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Header de la página -->
+<header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-12">
+    <div class="container mx-auto px-4">
+        <h1 class="text-4xl font-bold text-center mb-2">Mi Carrito de Compras</h1>
+        <p class="text-center text-blue-100">Revisa y gestiona tus productos seleccionados</p>
+    </div>
+</header>
+
+<div class="container mx-auto px-4 py-8 min-h-screen">
+    <div id="cartContainer" class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <!-- Lista de productos -->
+        <div class="lg:col-span-2">
+            <div id="cartItems" class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <!-- Header de la tabla -->
+                <div class="hidden md:grid md:grid-cols-12 gap-4 p-4 bg-gray-50 text-sm font-medium text-gray-600">
+                    <div class="md:col-span-6">Producto</div>
+                    <div class="md:col-span-2 text-center">Precio</div>
+                    <div class="md:col-span-2 text-center">Cantidad</div>
+                    <div class="md:col-span-2 text-center">Total</div>
+                </div>
+                <!-- Los items del carrito se insertarán aquí dinámicamente -->
+            </div>
+
+            <!-- Recomendaciones -->
+            <div id="recommendations" class="mt-8">
+                <h3 class="text-xl font-semibold mb-4">Productos Recomendados</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Las recomendaciones se insertarán dinámicamente -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen del carrito -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-lg p-6 sticky top-24">
+                <h2 class="text-xl font-semibold mb-6">Resumen de la Orden</h2>
+                
+                <!-- Detalles del resumen -->
+                <div class="space-y-4">
+                    <div class="flex justify-between text-gray-600">
+                        <span>Subtotal</span>
+                        <span id="subtotal" class="font-medium">S/. 0.00</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600">
+                        <span>IGV (18%)</span>
+                        <span id="tax" class="font-medium">S/. 0.00</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600">
+                        <span>Envío</span>
+                        <span id="shipping" class="font-medium">Calculado en checkout</span>
+                    </div>
+                    <div class="border-t border-gray-200 pt-4 mt-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-semibold">Total</span>
+                            <span id="total" class="text-2xl font-bold text-blue-600">S/. 0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cupón de descuento -->
+                <div class="mt-6">
+                    <label for="coupon" class="block text-sm font-medium text-gray-700 mb-2">¿Tienes un cupón?</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="coupon" 
+                               class="flex-1 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
+                               placeholder="Ingresa el código">
+                        <button onclick="applyCoupon()" 
+                                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                            Aplicar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="mt-6 space-y-3">
+                    <button onclick="proceedToCheckout()" 
+                            id="checkoutButton" 
+                            class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span class="material-icons">shopping_cart_checkout</span>
+                        <span>Proceder al Pago</span>
+                    </button>
+                    <a href="/shop" 
+                       class="w-full block text-center py-3 text-blue-600 hover:text-blue-700 transition-colors flex items-center justify-center space-x-2">
+                        <span class="material-icons">arrow_back</span>
+                        <span>Continuar Comprando</span>
+                    </a>
+                </div>
+
+                <!-- Información adicional -->
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">Información Importante</h3>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li class="flex items-center space-x-2">
+                            <span class="material-icons text-green-500 text-base">local_shipping</span>
+                            <span>Envío gratis en compras mayores a S/. 200</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="material-icons text-blue-500 text-base">security</span>
+                            <span>Pago seguro garantizado</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="material-icons text-yellow-500 text-base">schedule</span>
+                            <span>Entrega en 24-48 horas</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template para carrito vacío -->
+    <div id="emptyCart" class="hidden">
+        <div class="text-center py-16 bg-white rounded-xl shadow-lg">
+            <div class="max-w-md mx-auto">
+                <span class="material-icons text-gray-400 text-7xl mb-6">shopping_cart</span>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Tu carrito está vacío</h2>
+                <p class="text-gray-600 mb-8">¿No sabes qué comprar? ¡Miles de productos te esperan en nuestra tienda!</p>
+                <a href="/shop" 
+                   class="inline-flex items-center space-x-2 bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    <span class="material-icons">store</span>
+                    <span>Explorar la Tienda</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificación de producto eliminado -->
+    <div id="deleteNotification" class="hidden fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        <div class="flex items-center space-x-3">
+            <span class="material-icons">delete</span>
+            <span>Producto eliminado</span>
+            <button onclick="undoDelete()" class="ml-4 text-blue-400 hover:text-blue-300 font-medium">
+                Deshacer
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+<div id="deleteConfirmModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div class="min-h-screen px-4 text-center">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <div class="inline-block align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                        <span class="material-icons text-red-600">warning</span>
+                    </div>
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                            Eliminar producto
+                        </h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500">
+                                ¿Estás seguro que deseas eliminar este producto del carrito?
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" id="confirmDelete" 
+                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Eliminar
+                </button>
+                <button type="button" onclick="closeDeleteModal()" 
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+{% endblock %}

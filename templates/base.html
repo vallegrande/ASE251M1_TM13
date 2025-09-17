@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Wawalu{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/slider.css') }}" rel="stylesheet">
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-20">
+                <!-- Logo y enlaces de navegación -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="{{ url_for('home') }}" class="flex items-center">
+                            <img class="h-12 w-auto" src="{{ url_for('static', filename='img/logo.png') }}" alt="Wawalu">
+                            <span class="text-2xl font-bold text-blue-600 ml-2">Wawalu</span>
+                        </a>
+                    </div>
+                    <!-- Enlaces de navegación (escritorio) -->
+                    <div class="hidden lg:flex lg:items-center lg:ml-10">
+                        <nav class="flex space-x-6">
+                            <a href="{{ url_for('home') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 font-medium transition duration-150 {{ 'text-blue-600' if request.endpoint == 'home' }}">Inicio</a>
+                            <a href="{{ url_for('about') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 font-medium transition duration-150 {{ 'text-blue-600' if request.endpoint == 'about' }}">Nosotros</a>
+                            <a href="{{ url_for('programs') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 font-medium transition duration-150 {{ 'text-blue-600' if request.endpoint == 'programs' }}">Programas</a>
+                            <a href="{{ url_for('calendar') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 font-medium transition duration-150 {{ 'text-blue-600' if request.endpoint == 'calendar' }}">Calendario</a>
+                            <a href="{{ url_for('news') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 font-medium transition duration-150 {{ 'text-blue-600' if request.endpoint == 'news' }}">Noticias</a>
+                            <a href="{{ url_for('gallery') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 font-medium transition duration-150 {{ 'text-blue-600' if request.endpoint == 'gallery' }}">Galería</a>
+                            <a href="{{ url_for('shop') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 font-medium transition duration-150 {{ 'text-blue-600' if request.endpoint == 'shop' }}">Tienda</a>
+                            <a href="{{ url_for('contact') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 font-medium transition duration-150 {{ 'text-blue-600' if request.endpoint == 'contact' }}">Contacto</a>
+                        </nav>
+                    </div>
+                </div>
+                
+                <!-- Carrito y Login (escritorio) -->
+                <div class="hidden lg:flex lg:items-center lg:ml-8">
+                    <div class="flex items-center space-x-6">
+                        <a href="{{ url_for('cart') }}" class="relative p-2 text-gray-600 hover:text-blue-600 transition duration-150">
+                            <span class="material-icons">shopping_cart</span>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center cart-count">0</span>
+                        </a>
+                        <a href="{{ url_for('login') }}" class="inline-flex items-center justify-center px-5 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150">
+                            <span class="material-icons text-xl mr-2">login</span>
+                            Iniciar Sesión
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Botón de menú móvil -->
+                <div class="flex items-center lg:hidden">
+                    <a href="{{ url_for('cart') }}" class="relative p-2 text-gray-600 hover:text-blue-600 transition duration-150 mr-2">
+                        <span class="material-icons">shopping_cart</span>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center cart-count">0</span>
+                    </a>
+                    <button id="menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Abrir menú principal</span>
+                        <span class="material-icons text-2xl">menu</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menú móvil -->
+        <div id="mobile-menu" class="hidden lg:hidden fixed inset-0 z-50">
+            <!-- Overlay de fondo oscuro -->
+            <div class="fixed inset-0 bg-black bg-opacity-50"></div>
+            
+            <!-- Contenido del menú -->
+            <div class="relative bg-white h-full w-64 max-w-sm shadow-xl">
+                <div class="flex justify-between items-center p-4 border-b">
+                    <h2 class="text-lg font-semibold text-gray-900">Menú</h2>
+                    <button id="close-menu" class="p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                
+                <nav class="px-2 pt-2 pb-3 space-y-1 bg-white">
+                    <a href="{{ url_for('home') }}" class="flex items-center px-3 py-2 rounded-md text-base font-medium {{ 'text-blue-600 bg-gray-50' if request.endpoint == 'home' else 'text-gray-700 hover:text-blue-600 hover:bg-gray-50' }}">
+                        <span class="material-icons mr-3">home</span>
+                        Inicio
+                    </a>
+                    <a href="{{ url_for('about') }}" class="flex items-center px-3 py-2 rounded-md text-base font-medium {{ 'text-blue-600 bg-gray-50' if request.endpoint == 'about' else 'text-gray-700 hover:text-blue-600 hover:bg-gray-50' }}">
+                        <span class="material-icons mr-3">info</span>
+                        Nosotros
+                    </a>
+                    <a href="{{ url_for('programs') }}" class="flex items-center px-3 py-2 rounded-md text-base font-medium {{ 'text-blue-600 bg-gray-50' if request.endpoint == 'programs' else 'text-gray-700 hover:text-blue-600 hover:bg-gray-50' }}">
+                        <span class="material-icons mr-3">school</span>
+                        Programas
+                    </a>
+                    <a href="{{ url_for('calendar') }}" class="flex items-center px-3 py-2 rounded-md text-base font-medium {{ 'text-blue-600 bg-gray-50' if request.endpoint == 'calendar' else 'text-gray-700 hover:text-blue-600 hover:bg-gray-50' }}">
+                        <span class="material-icons mr-3">calendar_today</span>
+                        Calendario
+                    </a>
+                    <a href="{{ url_for('news') }}" class="flex items-center px-3 py-2 rounded-md text-base font-medium {{ 'text-blue-600 bg-gray-50' if request.endpoint == 'news' else 'text-gray-700 hover:text-blue-600 hover:bg-gray-50' }}">
+                        <span class="material-icons mr-3">article</span>
+                        Noticias
+                    </a>
+                    <a href="{{ url_for('gallery') }}" class="flex items-center px-3 py-2 rounded-md text-base font-medium {{ 'text-blue-600 bg-gray-50' if request.endpoint == 'gallery' else 'text-gray-700 hover:text-blue-600 hover:bg-gray-50' }}">
+                        <span class="material-icons mr-3">photo_library</span>
+                        Galería
+                    </a>
+                    <a href="{{ url_for('shop') }}" class="flex items-center px-3 py-2 rounded-md text-base font-medium {{ 'text-blue-600 bg-gray-50' if request.endpoint == 'shop' else 'text-gray-700 hover:text-blue-600 hover:bg-gray-50' }}">
+                        <span class="material-icons mr-3">shopping_bag</span>
+                        Tienda
+                    </a>
+                    <a href="{{ url_for('contact') }}" class="flex items-center px-3 py-2 rounded-md text-base font-medium {{ 'text-blue-600 bg-gray-50' if request.endpoint == 'contact' else 'text-gray-700 hover:text-blue-600 hover:bg-gray-50' }}">
+                        <span class="material-icons mr-3">contact_support</span>
+                        Contacto
+                    </a>
+                </nav>
+                
+                <div class="absolute bottom-0 left-0 right-0 p-4 border-t bg-white">
+                    <a href="{{ url_for('login') }}" class="flex items-center justify-center px-4 py-2 text-base font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition duration-150">
+                        <span class="material-icons mr-2">login</span>
+                        Iniciar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Espaciador para compensar el menú fijo -->
+    <div class="h-20"></div>
+
+    <!-- Contenido principal -->
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-b from-gray-900 to-gray-800 text-white pt-20 pb-8 mt-20 relative">
+        <!-- Decorative Top Border -->
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500"></div>
+
+        <div class="container mx-auto px-4 max-w-7xl">
+            <!-- Newsletter Section -->
+            <div class="max-w-4xl mx-auto mb-16 bg-gray-800/50 rounded-2xl p-8 backdrop-blur-sm shadow-xl border border-gray-700">
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold text-white mb-2">Únete a nuestra comunidad</h3>
+                    <p class="text-gray-300">Recibe nuestras últimas noticias y actualizaciones</p>
+                </div>
+                <form class="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
+                    <input type="email" placeholder="Tu correo electrónico" 
+                           class="flex-1 px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <button type="submit" 
+                            class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition duration-150 flex items-center justify-center">
+                        <span class="material-icons mr-2">send</span>
+                        Suscribirse
+                    </button>
+                </form>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <!-- Logo y descripción -->
+                <div class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-3 bg-white/10 rounded-xl">
+                            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Wawalu Logo" class="h-12 w-auto">
+                        </div>
+                        <span class="text-2xl font-bold text-blue-400">Wawalu</span>
+                    </div>
+                    <p class="text-gray-300 leading-relaxed">
+                        Creamos experiencias educativas únicas basadas en la metodología Reggio Emilia, promoviendo el desarrollo integral de cada niño.
+                    </p>
+                    <div class="pt-4">
+                        <div class="flex space-x-4">
+                            <a href="#" class="bg-gray-700 hover:bg-blue-600 p-2 rounded-lg transition duration-300 group">
+                                <img src="{{ url_for('static', filename='icons/facebook.png') }}" alt="Facebook" 
+                                     class="w-6 h-6 filter invert opacity-70 group-hover:opacity-100">
+                            </a>
+                            <a href="#" class="bg-gray-700 hover:bg-pink-600 p-2 rounded-lg transition duration-300 group">
+                                <img src="{{ url_for('static', filename='icons/instagram.png') }}" alt="Instagram" 
+                                     class="w-6 h-6 filter invert opacity-70 group-hover:opacity-100">
+                            </a>
+                            <a href="#" class="bg-gray-700 hover:bg-green-600 p-2 rounded-lg transition duration-300 group">
+                                <img src="{{ url_for('static', filename='icons/whatsapp.png') }}" alt="WhatsApp" 
+                                     class="w-6 h-6 filter invert opacity-70 group-hover:opacity-100">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enlaces rápidos -->
+                <div>
+                    <h3 class="text-xl font-bold mb-6 text-white">Enlaces Rápidos</h3>
+                    <ul class="grid grid-cols-2 gap-4 text-gray-300">
+                        <li>
+                            <a href="{{ url_for('home') }}" class="hover:text-blue-400 transition duration-150 flex items-center space-x-2">
+                                <span class="material-icons text-blue-500 text-sm">chevron_right</span>
+                                <span>Inicio</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('about') }}" class="hover:text-blue-400 transition duration-150 flex items-center space-x-2">
+                                <span class="material-icons text-blue-500 text-sm">chevron_right</span>
+                                <span>Nosotros</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('programs') }}" class="hover:text-blue-400 transition duration-150 flex items-center space-x-2">
+                                <span class="material-icons text-blue-500 text-sm">chevron_right</span>
+                                <span>Programas</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('calendar') }}" class="hover:text-blue-400 transition duration-150 flex items-center space-x-2">
+                                <span class="material-icons text-blue-500 text-sm">chevron_right</span>
+                                <span>Calendario</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('news') }}" class="hover:text-blue-400 transition duration-150 flex items-center space-x-2">
+                                <span class="material-icons text-blue-500 text-sm">chevron_right</span>
+                                <span>Noticias</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('gallery') }}" class="hover:text-blue-400 transition duration-150 flex items-center space-x-2">
+                                <span class="material-icons text-blue-500 text-sm">chevron_right</span>
+                                <span>Galería</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('shop') }}" class="hover:text-blue-400 transition duration-150 flex items-center space-x-2">
+                                <span class="material-icons text-blue-500 text-sm">chevron_right</span>
+                                <span>Tienda</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('contact') }}" class="hover:text-blue-400 transition duration-150 flex items-center space-x-2">
+                                <span class="material-icons text-blue-500 text-sm">chevron_right</span>
+                                <span>Contacto</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Información de contacto -->
+                <div>
+                    <h3 class="text-xl font-bold mb-6 text-white">Contáctanos</h3>
+                    <ul class="space-y-4 text-gray-300">
+                        <li class="flex items-start space-x-3 group">
+                            <span class="material-icons text-blue-500 mt-0.5 group-hover:text-blue-400 transition-colors">location_on</span>
+                            <span class="flex-1">Av. Mariscal Benavides 1365, <br>Cañete, Lima, Perú</span>
+                        </li>
+                        <li class="flex items-center space-x-3 group">
+                            <span class="material-icons text-blue-500 group-hover:text-blue-400 transition-colors">phone</span>
+                            <a href="tel:+51999999999" class="hover:text-blue-400 transition-colors">+51 999 999 999</a>
+                        </li>
+                        <li class="flex items-center space-x-3 group">
+                            <span class="material-icons text-blue-500 group-hover:text-blue-400 transition-colors">mail</span>
+                            <a href="mailto:contacto@wawalu.com" class="hover:text-blue-400 transition-colors">contacto@wawalu.com</a>
+                        </li>
+                        <li class="flex items-center space-x-3 group">
+                            <span class="material-icons text-blue-500 group-hover:text-blue-400 transition-colors">schedule</span>
+                            <span>Lun - Vie: 8:00 AM - 5:00 PM</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Métodos de pago -->
+                <div>
+                    <h3 class="text-xl font-bold mb-6 text-white">Métodos de Pago</h3>
+                    <div class="space-y-6">
+                        <div class="bg-gray-700/50 p-4 rounded-xl border border-gray-600">
+                            <h4 class="text-sm font-semibold mb-4 text-blue-400">Pagos Digitales</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-gray-800 p-3 rounded-lg flex items-center justify-center group hover:bg-gray-700 transition duration-300">
+                                    <img src="{{ url_for('static', filename='icons/yape.png') }}" alt="Yape" 
+                                         class="h-8 w-auto filter brightness-0 invert opacity-70 group-hover:opacity-100 transition duration-300">
+                                </div>
+                                <div class="bg-gray-800 p-3 rounded-lg flex items-center justify-center group hover:bg-gray-700 transition duration-300">
+                                    <span class="material-icons text-gray-400 text-2xl group-hover:text-white">credit_card</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-700/50 p-4 rounded-xl border border-gray-600">
+                            <h4 class="text-sm font-semibold mb-2 text-blue-400">¿Necesitas ayuda?</h4>
+                            <a href="{{ url_for('contact') }}" class="inline-flex items-center text-gray-300 hover:text-blue-400 transition duration-150">
+                                <span class="material-icons mr-2 text-sm">help_outline</span>
+                                Centro de ayuda
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Copyright y Links Legales -->
+            <div class="border-t border-gray-700/50 pt-8 mt-8">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <p class="text-gray-400 text-sm text-center md:text-left">
+                        &copy; 2025 Wawalu. Todos los derechos reservados.
+                    </p>
+                    <div class="flex items-center space-x-6 text-sm text-gray-400">
+                        <a href="#" class="hover:text-blue-400 transition duration-150">Términos y Condiciones</a>
+                        <a href="#" class="hover:text-blue-400 transition duration-150">Política de Privacidad</a>
+                        <a href="#" class="hover:text-blue-400 transition duration-150">Cookies</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts comunes -->
+    <script src="{{ url_for('static', filename='js/menu.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/slider.js') }}" defer></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

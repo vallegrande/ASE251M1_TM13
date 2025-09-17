@@ -1,0 +1,112 @@
+/* Animaciones para el calendario */
+
+/* Animaciones de slide para cambio de mes */
+.slide-left-exit {
+    animation: slideLeftExit 0.3s ease-out forwards;
+}
+
+.slide-left-enter {
+    animation: slideLeftEnter 0.3s ease-out forwards;
+}
+
+.slide-right-exit {
+    animation: slideRightExit 0.3s ease-out forwards;
+}
+
+.slide-right-enter {
+    animation: slideRightEnter 0.3s ease-out forwards;
+}
+
+@keyframes slideLeftExit {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+@keyframes slideLeftEnter {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideRightExit {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes slideRightEnter {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Animaciones para eventos destacados */
+.fade-up {
+    animation: fadeUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animaciones para actividades regulares */
+.fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Animación para días del calendario */
+.calendar-day {
+    transition: all 0.3s ease;
+}
+
+.calendar-day:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Animación para eventos en el calendario */
+.calendar-event {
+    transition: all 0.3s ease;
+}
+
+.calendar-event:hover {
+    background-color: rgba(59, 130, 246, 0.2);
+    transform: translateY(-2px);
+}

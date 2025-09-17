@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Noticias - Wawalu{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Hero Section -->
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">Noticias y Eventos</h1>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            Mantente informado sobre las últimas novedades y eventos de nuestra comunidad educativa
+        </p>
+    </header>
+
+    <!-- Noticias Destacadas -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+        {% for featured_news in featured_news %}
+        <article class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+            <div class="relative pb-[60%]">
+                <img src="{{ url_for('static', filename='img/news/' + featured_news.image) }}" 
+                     alt="{{ featured_news.title }}" 
+                     class="absolute inset-0 w-full h-full object-cover">
+                {% if featured_news.is_featured %}
+                <span class="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
+                    Destacado
+                </span>
+                {% endif %}
+            </div>
+            <div class="p-6">
+                <div class="flex items-center text-sm text-gray-500 mb-3">
+                    <span class="material-icons text-blue-600 text-base mr-1">calendar_today</span>
+                    {{ featured_news.date }}
+                    <span class="mx-2">•</span>
+                    <span class="material-icons text-blue-600 text-base mr-1">folder</span>
+                    {{ featured_news.category }}
+                </div>
+                <h2 class="text-xl font-bold text-gray-800 mb-3 line-clamp-2">{{ featured_news.title }}</h2>
+                <p class="text-gray-600 mb-4 line-clamp-3">{{ featured_news.excerpt }}</p>
+                <a href="{{ url_for('news_detail', id=featured_news.id) }}" 
+                   class="inline-flex items-center text-blue-600 hover:text-blue-700">
+                    Leer más
+                    <span class="material-icons text-sm ml-1">arrow_forward</span>
+                </a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <!-- Filtros y Búsqueda -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+        <div class="flex space-x-4 mb-4 md:mb-0">
+            <button onclick="filterNews('all')" class="category-filter active px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-blue-600 hover:text-white transition-colors">
+                Todas
+            </button>
+            <button onclick="filterNews('events')" class="category-filter px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-blue-600 hover:text-white transition-colors">
+                Eventos
+            </button>
+            <button onclick="filterNews('announcements')" class="category-filter px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-blue-600 hover:text-white transition-colors">
+                Anuncios
+            </button>
+            <button onclick="filterNews('activities')" class="category-filter px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-blue-600 hover:text-white transition-colors">
+                Actividades
+            </button>
+        </div>
+        <div class="relative w-full md:w-64">
+            <input type="text" 
+                   placeholder="Buscar noticias..." 
+                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+            <span class="material-icons absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                search
+            </span>
+        </div>
+    </div>
+
+    <!-- Lista de Noticias -->
+    <div class="grid grid-cols-1 gap-8" id="newsList">
+        {% for news in news_list %}
+        <article class="bg-white rounded-lg shadow p-6 flex flex-col md:flex-row gap-6 news-item" 
+                 data-category="{{ news.category }}">
+            <div class="w-full md:w-1/4">
+                <div class="relative pb-[75%]">
+                    <img src="{{ url_for('static', filename='img/news/' + news.image) }}" 
+                         alt="{{ news.title }}" 
+                         class="absolute inset-0 w-full h-full object-cover rounded-lg">
+                </div>
+            </div>
+            <div class="flex-1">
+                <div class="flex items-center text-sm text-gray-500 mb-3">
+                    <span class="material-icons text-blue-600 text-base mr-1">calendar_today</span>
+                    {{ news.date }}
+                    <span class="mx-2">•</span>
+                    <span class="material-icons text-blue-600 text-base mr-1">folder</span>
+                    {{ news.category }}
+                </div>
+                <h2 class="text-xl font-bold text-gray-800 mb-3">{{ news.title }}</h2>
+                <p class="text-gray-600 mb-4">{{ news.excerpt }}</p>
+                <a href="{{ url_for('news_detail', id=news.id) }}" 
+                   class="inline-flex items-center text-blue-600 hover:text-blue-700">
+                    Leer más
+                    <span class="material-icons text-sm ml-1">arrow_forward</span>
+                </a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <!-- Paginación -->
+    <div class="flex justify-center mt-12">
+        <nav class="flex items-center space-x-2">
+            <a href="#" class="px-3 py-2 rounded-lg border text-gray-500 hover:text-blue-600 hover:border-blue-600">
+                <span class="material-icons">chevron_left</span>
+            </a>
+            <a href="#" class="px-4 py-2 rounded-lg border bg-blue-600 text-white">1</a>
+            <a href="#" class="px-4 py-2 rounded-lg border text-gray-500 hover:text-blue-600 hover:border-blue-600">2</a>
+            <a href="#" class="px-4 py-2 rounded-lg border text-gray-500 hover:text-blue-600 hover:border-blue-600">3</a>
+            <span class="px-4 py-2 text-gray-500">...</span>
+            <a href="#" class="px-4 py-2 rounded-lg border text-gray-500 hover:text-blue-600 hover:border-blue-600">8</a>
+            <a href="#" class="px-3 py-2 rounded-lg border text-gray-500 hover:text-blue-600 hover:border-blue-600">
+                <span class="material-icons">chevron_right</span>
+            </a>
+        </nav>
+    </div>
+</div>
+
+<!-- Newsletter Subscription -->
+<section class="bg-blue-600 text-white py-16 mt-16">
+    <div class="container mx-auto px-4">
+        <div class="max-w-2xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-4">Suscríbete a nuestro boletín</h2>
+            <p class="text-blue-100 mb-8">
+                Recibe las últimas noticias y actualizaciones directamente en tu correo
+            </p>
+            <form class="flex flex-col sm:flex-row gap-4 justify-center">
+                <input type="email" 
+                       placeholder="Tu correo electrónico" 
+                       class="flex-1 max-w-md px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500">
+                <button type="submit" 
+                        class="px-6 py-3 bg-white text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+                    Suscribirse
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/news.js') }}" defer></script>
+{% endblock %}

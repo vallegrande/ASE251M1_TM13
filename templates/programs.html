@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-gradient-to-r from-blue-600 to-blue-800 py-20">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="text-center text-white">
+            <h1 class="text-5xl font-bold mb-6">Nuestros Programas</h1>
+            <p class="text-xl opacity-90 max-w-3xl mx-auto">
+                Programas educativos diseñados para potenciar el desarrollo integral de cada niño
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="container mx-auto px-4 py-16 max-w-6xl">
+    <!-- Metodología -->
+    <div class="mb-20">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Metodología Reggio Emilia</h2>
+                <p class="text-gray-600 leading-relaxed mb-6">
+                    Nuestros programas están inspirados en la metodología Reggio Emilia, reconocida mundialmente por su enfoque innovador en la educación temprana. Esta metodología ve a cada niño como protagonista de su propio aprendizaje.
+                </p>
+                <ul class="space-y-4">
+                    <li class="flex items-start">
+                        <span class="material-icons text-blue-600 mr-3 mt-1">child_care</span>
+                        <div>
+                            <h3 class="font-semibold text-gray-800 mb-1">El Niño como Protagonista</h3>
+                            <p class="text-gray-600">Reconocemos y respetamos a cada niño como un ser único con potencial ilimitado.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="material-icons text-blue-600 mr-3 mt-1">psychology</span>
+                        <div>
+                            <h3 class="font-semibold text-gray-800 mb-1">Aprendizaje Activo</h3>
+                            <p class="text-gray-600">Fomentamos la exploración, experimentación y descubrimiento a través del juego.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="material-icons text-blue-600 mr-3 mt-1">groups</span>
+                        <div>
+                            <h3 class="font-semibold text-gray-800 mb-1">Comunidad de Aprendizaje</h3>
+                            <p class="text-gray-600">Creamos un ambiente colaborativo entre educadores, niños y familias.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <img src="{{ url_for('static', filename='img/programs/method1.jpg') }}" alt="Niños aprendiendo" class="w-full h-48 object-cover rounded-lg shadow-lg">
+                <img src="{{ url_for('static', filename='img/programs/method2.jpg') }}" alt="Actividades creativas" class="w-full h-48 object-cover rounded-lg shadow-lg">
+                <img src="{{ url_for('static', filename='img/programs/method3.jpg') }}" alt="Juego y aprendizaje" class="w-full h-48 object-cover rounded-lg shadow-lg transform translate-y-4">
+                <img src="{{ url_for('static', filename='img/programs/method4.jpg') }}" alt="Exploración sensorial" class="w-full h-48 object-cover rounded-lg shadow-lg transform -translate-y-4">
+            </div>
+        </div>
+    </div>
+
+    <!-- Programas por Edad -->
+    <div class="mb-20">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Programas por Edad</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Programa Bebés -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
+                <img src="{{ url_for('static', filename='img/programs/babies.jpg') }}" alt="Programa Bebés" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <span class="material-icons text-3xl text-blue-600 mr-3">baby_changing_station</span>
+                        <h3 class="text-xl font-bold text-gray-800">Bebés (6-18 meses)</h3>
+                    </div>
+                    <ul class="space-y-3 text-gray-600 mb-6">
+                        <li class="flex items-start">
+                            <span class="material-icons text-blue-600 mr-2 text-sm mt-1">check_circle</span>
+                            Estimulación temprana y sensorial
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-icons text-blue-600 mr-2 text-sm mt-1">check_circle</span>
+                            Desarrollo motor grueso y fino
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-icons text-blue-600 mr-2 text-sm mt-1">check_circle</span>
+                            Rutinas de cuidado personalizado
+                        </li>
+                    </ul>
+                    <a href="{{ url_for('contact') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+                        Más información
+                        <span class="material-icons text-sm ml-1">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Programa Caminadores -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
+                <img src="{{ url_for('static', filename='img/programs/toddlers.jpg') }}" alt="Programa Caminadores" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <span class="material-icons text-3xl text-blue-600 mr-3">child_care</span>
+                        <h3 class="text-xl font-bold text-gray-800">Caminadores (18-36 meses)</h3>
+                    </div>
+                    <ul class="space-y-3 text-gray-600 mb-6">
+                        <li class="flex items-start">
+                            <span class="material-icons text-blue-600 mr-2 text-sm mt-1">check_circle</span>
+                            Desarrollo del lenguaje y comunicación
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-icons text-blue-600 mr-2 text-sm mt-1">check_circle</span>
+                            Actividades de socialización
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-icons text-blue-600 mr-2 text-sm mt-1">check_circle</span>
+                            Exploración y juego guiado
+                        </li>
+                    </ul>
+                    <a href="{{ url_for('contact') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+                        Más información
+                        <span class="material-icons text-sm ml-1">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Programa Preescolar -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
+                <img src="{{ url_for('static', filename='img/programs/preschool.jpg') }}" alt="Programa Preescolar" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <span class="material-icons text-3xl text-blue-600 mr-3">school</span>
+                        <h3 class="text-xl font-bold text-gray-800">Preescolar (3-5 años)</h3>
+                    </div>
+                    <ul class="space-y-3 text-gray-600 mb-6">
+                        <li class="flex items-start">
+                            <span class="material-icons text-blue-600 mr-2 text-sm mt-1">check_circle</span>
+                            Preparación académica integral
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-icons text-blue-600 mr-2 text-sm mt-1">check_circle</span>
+                            Desarrollo socioemocional
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-icons text-blue-600 mr-2 text-sm mt-1">check_circle</span>
+                            Proyectos creativos y artísticos
+                        </li>
+                    </ul>
+                    <a href="{{ url_for('contact') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+                        Más información
+                        <span class="material-icons text-sm ml-1">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actividades Especiales -->
+    <div class="mb-20">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Actividades Especiales</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300">
+                <div class="flex items-center mb-4">
+                    <span class="material-icons text-3xl text-blue-600 mr-3">music_note</span>
+                    <h3 class="text-xl font-bold text-gray-800">Música</h3>
+                </div>
+                <p class="text-gray-600">Desarrollo de habilidades musicales y expresión artística a través del ritmo y el movimiento.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300">
+                <div class="flex items-center mb-4">
+                    <span class="material-icons text-3xl text-blue-600 mr-3">palette</span>
+                    <h3 class="text-xl font-bold text-gray-800">Arte</h3>
+                </div>
+                <p class="text-gray-600">Exploración de diferentes técnicas artísticas y materiales para fomentar la creatividad.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300">
+                <div class="flex items-center mb-4">
+                    <span class="material-icons text-3xl text-blue-600 mr-3">nature</span>
+                    <h3 class="text-xl font-bold text-gray-800">Huerto</h3>
+                </div>
+                <p class="text-gray-600">Contacto con la naturaleza y aprendizaje sobre el cuidado del medio ambiente.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300">
+                <div class="flex items-center mb-4">
+                    <span class="material-icons text-3xl text-blue-600 mr-3">sports_soccer</span>
+                    <h3 class="text-xl font-bold text-gray-800">Deportes</h3>
+                </div>
+                <p class="text-gray-600">Actividades físicas y juegos que desarrollan la coordinación y el trabajo en equipo.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Horarios y Modalidades -->
+    <div class="mb-20">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Horarios y Modalidades</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition duration-300">
+                <div class="flex items-center mb-6">
+                    <span class="material-icons text-4xl text-blue-600 mr-4">schedule</span>
+                    <h3 class="text-2xl font-bold text-gray-800">Horario Regular</h3>
+                </div>
+                <ul class="space-y-4 text-gray-600">
+                    <li class="flex items-center">
+                        <span class="material-icons text-blue-600 mr-3">access_time</span>
+                        <span>Lunes a Viernes: 8:00 AM - 1:00 PM</span>
+                    </li>
+                    <li class="flex items-center">
+                        <span class="material-icons text-blue-600 mr-3">restaurant</span>
+                        <span>Incluye refrigerio saludable</span>
+                    </li>
+                    <li class="flex items-center">
+                        <span class="material-icons text-blue-600 mr-3">event</span>
+                        <span>Actividades especiales incluidas</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition duration-300">
+                <div class="flex items-center mb-6">
+                    <span class="material-icons text-4xl text-blue-600 mr-4">more_time</span>
+                    <h3 class="text-2xl font-bold text-gray-800">Horario Extendido</h3>
+                </div>
+                <ul class="space-y-4 text-gray-600">
+                    <li class="flex items-center">
+                        <span class="material-icons text-blue-600 mr-3">access_time</span>
+                        <span>Lunes a Viernes: 8:00 AM - 5:00 PM</span>
+                    </li>
+                    <li class="flex items-center">
+                        <span class="material-icons text-blue-600 mr-3">restaurant</span>
+                        <span>Incluye almuerzo y dos refrigerios</span>
+                    </li>
+                    <li class="flex items-center">
+                        <span class="material-icons text-blue-600 mr-3">auto_stories</span>
+                        <span>Asesoría en tareas incluida</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-10 text-white text-center">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold mb-6">¿Listo para comenzar?</h2>
+            <p class="text-lg mb-8 opacity-90">Agenda una visita y conoce nuestras instalaciones. ¡Tu pequeño merece la mejor educación desde el principio!</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="{{ url_for('contact') }}" class="inline-flex items-center justify-center px-6 py-3 border-2 border-white rounded-lg text-lg font-medium hover:bg-white hover:text-blue-600 transition duration-300">
+                    <span class="material-icons mr-2">calendar_today</span>
+                    Agendar Visita
+                </a>
+                <a href="{{ url_for('contact') }}" class="inline-flex items-center justify-center px-6 py-3 bg-white text-blue-600 rounded-lg text-lg font-medium hover:bg-blue-50 transition duration-300">
+                    <span class="material-icons mr-2">phone</span>
+                    Contactar Ahora
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
