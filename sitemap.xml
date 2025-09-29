@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+    <!-- Página principal -->
+    <url>
+        <loc>https://wawalu.com/</loc>
+        <lastmod>2025-09-29</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    <!-- Páginas principales -->
+    <url>
+        <loc>https://wawalu.com/nosotros</loc>
+        <lastmod>2025-09-29</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <url>
+        <loc>https://wawalu.com/programas</loc>
+        <lastmod>2025-09-29</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <url>
+        <loc>https://wawalu.com/calendario</loc>
+        <lastmod>2025-09-29</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <url>
+        <loc>https://wawalu.com/noticias</loc>
+        <lastmod>2025-09-29</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <url>
+        <loc>https://wawalu.com/galeria</loc>
+        <lastmod>2025-09-29</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <url>
+        <loc>https://wawalu.com/tienda</loc>
+        <lastmod>2025-09-29</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <url>
+        <loc>https://wawalu.com/contacto</loc>
+        <lastmod>2025-09-29</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- Páginas de usuario -->
+    <url>
+        <loc>https://wawalu.com/login</loc>
+        <lastmod>2025-09-29</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+
+    <url>
+        <loc>https://wawalu.com/registro</loc>
+        <lastmod>2025-09-29</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+
+    <url>
+        <loc>https://wawalu.com/carrito</loc>
+        <lastmod>2025-09-29</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <url>
+        <loc>https://wawalu.com/inscripcion</loc>
+        <lastmod>2025-09-29</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Páginas de proceso de compra -->
+    <url>
+        <loc>https://wawalu.com/checkout</loc>
+        <lastmod>2025-09-29</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
+
+    <!-- Páginas específicas de noticias (ejemplos) -->
+    <url>
+        <loc>https://wawalu.com/noticias/1</loc>
+        <lastmod>2025-09-29</lastmod>
+        <changefreq>never</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <url>
+        <loc>https://wawalu.com/noticias/2</loc>
+        <lastmod>2025-09-29</lastmod>
+        <changefreq>never</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <url>
+        <loc>https://wawalu.com/noticias/3</loc>
+        <lastmod>2025-09-29</lastmod>
+        <changefreq>never</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+</urlset>

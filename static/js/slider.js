@@ -10,7 +10,7 @@ class Slider {
         this.slideCount = this.slides.length;
         this.interval = null;
         this.isAutoPlaying = true;
-        this.autoPlayDuration = 5000;
+        this.autoPlayDuration = 7000;
         this.touchStartX = 0;
         this.touchEndX = 0;
 

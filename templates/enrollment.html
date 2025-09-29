@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Matrícula - Wawalu{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Encabezado -->
+        <div class="text-center mb-12">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Formulario de Matrícula</h1>
+            <p class="text-lg text-gray-600">Complete los datos para matricular a su hijo/a en nuestros programas</p>
+        </div>
+
+        {% if not session.logged_in %}
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-yellow-700">
+                        Debe iniciar sesión para realizar la matrícula. 
+                        <a href="{{ url_for('login') }}" class="font-medium underline text-yellow-700 hover:text-yellow-600">
+                            Iniciar sesión
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Formulario -->
+        <form id="enrollmentForm" class="bg-white shadow-md rounded-lg p-8 {% if not session.logged_in %}opacity-50 pointer-events-none{% endif %}">
+            <!-- Error Display -->
+            <div id="errorDisplay" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+            </div>
+
+            <!-- Datos del Padre/Madre/Apoderado -->
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Datos del Padre/Madre/Apoderado</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="parentName" class="block text-sm font-medium text-gray-700 mb-2">Nombres y Apellidos</label>
+                        <input type="text" id="parentName" name="parentName" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="parentDNI" class="block text-sm font-medium text-gray-700 mb-2">DNI</label>
+                        <input type="text" id="parentDNI" name="parentDNI" required maxlength="8" pattern="\d{8}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="12345678">
+                    </div>
+                    <div>
+                        <label for="parentEmail" class="block text-sm font-medium text-gray-700 mb-2">Correo Electrónico</label>
+                        <input type="email" id="parentEmail" name="parentEmail" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="parentPhone" class="block text-sm font-medium text-gray-700 mb-2">Teléfono</label>
+                        <input type="tel" id="parentPhone" name="parentPhone" required pattern="[0-9]{9}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="999999999">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="parentAddress" class="block text-sm font-medium text-gray-700 mb-2">Dirección</label>
+                        <input type="text" id="parentAddress" name="parentAddress" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="parentOccupation" class="block text-sm font-medium text-gray-700 mb-2">Ocupación</label>
+                        <input type="text" id="parentOccupation" name="parentOccupation" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="relationship" class="block text-sm font-medium text-gray-700 mb-2">Parentesco</label>
+                        <select id="relationship" name="relationship" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Seleccione...</option>
+                            <option value="padre">Padre</option>
+                            <option value="madre">Madre</option>
+                            <option value="tutor">Tutor Legal</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Datos del Estudiante -->
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Datos del Estudiante</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">Nombres</label>
+                        <input type="text" id="firstName" name="firstName" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">Apellidos</label>
+                        <input type="text" id="lastName" name="lastName" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="birthDate" class="block text-sm font-medium text-gray-700 mb-2">Fecha de Nacimiento</label>
+                        <input type="date" id="birthDate" name="birthDate" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="bloodType" class="block text-sm font-medium text-gray-700 mb-2">Grupo Sanguíneo</label>
+                        <select id="bloodType" name="bloodType" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Seleccione...</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información Médica -->
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Información Médica</h2>
+                <div class="grid grid-cols-1 gap-6">
+                    <div>
+                        <label for="allergies" class="block text-sm font-medium text-gray-700 mb-2">Alergias</label>
+                        <textarea id="allergies" name="allergies" rows="2"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Indique si el estudiante tiene alguna alergia..."></textarea>
+                    </div>
+                    <div>
+                        <label for="medicalNotes" class="block text-sm font-medium text-gray-700 mb-2">Notas Médicas</label>
+                        <textarea id="medicalNotes" name="medicalNotes" rows="2"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Indique si hay alguna condición médica que debamos conocer..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contacto de Emergencia -->
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Contacto de Emergencia</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="emergencyContact" class="block text-sm font-medium text-gray-700 mb-2">Nombre del Contacto</label>
+                        <input type="text" id="emergencyContact" name="emergencyContact" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="emergencyPhone" class="block text-sm font-medium text-gray-700 mb-2">Teléfono de Emergencia</label>
+                        <input type="tel" id="emergencyPhone" name="emergencyPhone" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            pattern="[0-9]{9}" placeholder="999999999">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selección de Programa -->
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Selección de Programa</h2>
+                <div>
+                    <label for="program" class="block text-sm font-medium text-gray-700 mb-2">Programa</label>
+                    <select id="program" name="program" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Seleccione un programa...</option>
+                        {% for program in programs %}
+                        <option value="{{ program.id }}" data-price="{{ program.price }}">
+                            {{ program.name }} - {{ program.age_range }} - S/. {{ "%.2f"|format(program.price) }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Términos y Condiciones -->
+            <div class="mb-8">
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input id="terms" name="terms" type="checkbox" required
+                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="terms" class="font-medium text-gray-700">Acepto los términos y condiciones</label>
+                        <p class="text-gray-500">Al marcar esta casilla, acepto las políticas de la institución y confirmo que la información proporcionada es verídica.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón de Envío -->
+            <div class="flex justify-end">
+                <button type="submit" id="submitButton"
+                    class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150">
+                    <span class="material-icons mr-2">how_to_reg</span>
+                    Enviar Matrícula
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/enrollment.js') }}"></script>
+{% endblock %}

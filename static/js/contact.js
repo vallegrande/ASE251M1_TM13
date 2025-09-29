@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         errorDisplay.classList.remove('hidden');
         successDisplay.classList.add('hidden');
         submitButton.disabled = false;
+        submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
         submitButton.innerHTML = '<span class="material-icons mr-2">send</span>Enviar Mensaje';
     }
 
@@ -20,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
         errorDisplay.classList.add('hidden');
         form.reset();
         submitButton.disabled = false;
+        submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
         submitButton.innerHTML = '<span class="material-icons mr-2">send</span>Enviar Mensaje';
     }
 
@@ -42,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Deshabilitar el botón y mostrar estado de carga
         submitButton.disabled = true;
+        submitButton.classList.add('opacity-50', 'cursor-not-allowed');
         submitButton.innerHTML = '<span class="animate-spin material-icons mr-2">refresh</span>Enviando...';
 
         try {

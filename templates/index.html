@@ -3,323 +3,409 @@
 {% block title %}Wawalu{% endblock %}
 
 {% block content %}
-    <div class="container mx-auto px-4 py-12 max-w-6xl">
-        <!-- Hero Section -->
-        <header class="text-center mb-20">
-            <h1 class="text-5xl font-extrabold text-blue-600 mb-6 tracking-tight">Bienvenido a Wawalu</h1>
-            <p class="text-gray-600 text-xl max-w-3xl mx-auto leading-relaxed">
-                "Lo que se dé a los niños, los niños darán a la sociedad" - Karl Menninger
-            </p>
-        </header>
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <!-- Hero Section -->
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-blue-600 mb-4">Bienvenido a Wawalu</h1>
+        <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+            "Lo que se dé a los niños, los niños darán a la sociedad" - Karl Menninger
+        </p>
+    </header>
 
-        <main>
-            <!-- Slider Principal -->
-            <div class="slider-container">
-                <div class="slider">
-                    <div class="slide">
-                        <img src="{{ url_for('static', filename='img/imagen1.jpg') }}" alt="Niños jugando">
-                        <div class="slide-content">
-                            <h2 class="text-4xl font-bold mb-4">Aprendizaje a través del juego</h2>
-                            <p class="text-lg">Descubre cómo nuestro método educativo fomenta el desarrollo integral</p>
-                        </div>
-                    </div>
-                    <div class="slide">
-                        <img src="{{ url_for('static', filename='img/imagen2.jpg') }}" alt="Actividades artísticas">
-                        <div class="slide-content">
-                            <h2 class="text-4xl font-bold mb-4">Expresión Artística</h2>
-                            <p class="text-lg">Desarrollamos la creatividad y la imaginación</p>
-                        </div>
-                    </div>
-                    <div class="slide">
-                        <img src="{{ url_for('static', filename='img/imagen3.jpg') }}" alt="Espacios educativos">
-                        <div class="slide-content">
-                            <h2 class="text-4xl font-bold mb-4">Espacios Seguros</h2>
-                            <p class="text-lg">Ambientes diseñados para el aprendizaje y la exploración</p>
-                        </div>
-                    </div>
-                    <div class="slide">
-                        <img src="{{ url_for('static', filename='img/imagen4.jpg') }}" alt="Actividades al aire libre">
-                        <div class="slide-content">
-                            <h2 class="text-4xl font-bold mb-4">Conexión con la Naturaleza</h2>
-                            <p class="text-lg">Experiencias educativas en entornos naturales</p>
-                        </div>
-                    </div>
-                    <div class="slide">
-                        <img src="{{ url_for('static', filename='img/imagen5.jpg') }}" alt="Desarrollo psicomotriz">
-                        <div class="slide-content">
-                            <h2 class="text-4xl font-bold mb-4">Desarrollo Psicomotriz</h2>
-                            <p class="text-lg">Espacios diseñados para el desarrollo físico y mental</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="slider-dots"></div>
-                <button class="slider-control slider-prev" aria-label="Anterior">
-                    <span class="material-icons">chevron_left</span>
-                </button>
-                <button class="slider-control slider-next" aria-label="Siguiente">
-                    <span class="material-icons">chevron_right</span>
-                </button>
-            </div>
-            <!-- Menú Dinámico -->
-            <div class="mb-20">
-                <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">Nuestros Servicios</h2>
-                {% for section in menu_images %}
-                <div class="mb-16">
-                    <h3 class="text-3xl font-semibold text-blue-600 mb-8">{{ section.title }}</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {% for image in section.images %}
-                        <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
-                            <img src="{{ url_for('static', filename=image.path) }}" alt="{{ image.alt }}" class="w-full h-64 object-cover">
-                            <div class="p-4">
-                                <h4 class="text-xl font-bold text-gray-800">{{ image.alt }}</h4>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-
-            <!-- Sección de Introducción -->
-            <div class="bg-white rounded-xl shadow-lg p-10 mb-16 hover:shadow-xl transition-shadow duration-300">
-                <div class="max-w-6xl mx-auto">
-                    <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Nuestra Propuesta Educativa</h2>
-                    
-                    <!-- Galería de imágenes destacadas -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                        <img src="{{ url_for('static', filename='img/imagen1.jpg') }}" alt="Actividad educativa 1" class="rounded-lg shadow-md h-64 w-full object-cover">
-                        <img src="{{ url_for('static', filename='img/imagen2.jpg') }}" alt="Actividad educativa 2" class="rounded-lg shadow-md h-64 w-full object-cover">
-                        <img src="{{ url_for('static', filename='img/imagen3.jpg') }}" alt="Actividad educativa 3" class="rounded-lg shadow-md h-64 w-full object-cover">
-                    </div>
-                    
-                    <div class="space-y-6 text-lg text-gray-600 leading-relaxed">
-                        <p class="italic">Wawalu está inspirada en la propuesta educativa Reggio Emilia, por lo que promovemos que los niños y niñas sean protagonistas de su propio aprendizaje.</p>
-                        <p>Wawalu es una cálida comunidad que asume con responsabilidad el sentido de vivir en armonía. Todos los niños pueden aprender, pero no a la misma vez, ni de la misma manera.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Grid de Características -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-                <!-- Espacio Natural -->
-                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-8 hover:shadow-lg transition duration-300">
-                    <div class="flex items-center mb-4">
-                        <span class="material-icons text-3xl text-green-600 mr-3">nature</span>
-                        <h3 class="text-2xl font-bold text-green-800">Conexión con la Naturaleza</h3>
-                    </div>
-                    <p class="text-gray-600 leading-relaxed">Creamos experiencias que conecten a los niños con la naturaleza. El único lugar donde existe la armonía y la perfección es la naturaleza.</p>
-                        <div class="mt-4">
-                        <img src="{{ url_for('static', filename='img/imagen4.jpg') }}" alt="Naturaleza y aprendizaje" class="w-full h-48 object-cover rounded-lg shadow-md">
-                    </div>
-                </div>
-
-                <!-- Psicomotriz -->
-                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 hover:shadow-lg transition duration-300">
-                    <div class="flex items-center mb-4">
-                        <span class="material-icons text-3xl text-blue-600 mr-3">sports_gymnastics</span>
-                        <h3 class="text-2xl font-bold text-blue-800">Sala de Psicomotriz</h3>
-                    </div>
-                    <p class="text-gray-600 leading-relaxed">Nuestra aula psicomotriz es un espacio acondicionado con módulos y espejos que nos ayuda a conocer y controlar todo nuestro cuerpo.</p>
-                    <div class="mt-4">
-                        <img src="{{ url_for('static', filename='img/imagen5.jpg') }}" alt="Sala de psicomotricidad" class="w-full h-48 object-cover rounded-lg shadow-md">
-                    </div>
-                </div>
-
-                <!-- Espacios Seguros -->
-                <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-8 hover:shadow-lg transition duration-300">
-                    <div class="flex items-center mb-4">
-                        <span class="material-icons text-3xl text-purple-600 mr-3">child_care</span>
-                        <h3 class="text-2xl font-bold text-purple-800">Espacio Seguro y Acogedor</h3>
-                    </div>
-                    <p class="text-gray-600 leading-relaxed">En Wawalu promovemos la exploración y juego en un contexto y espacio seguro y acogedor para los bebés.</p>
-                    <div class="mt-4">
-                        <img src="{{ url_for('static', filename='img/imagen6.jpg') }}" alt="Espacio seguro" class="w-full h-48 object-cover rounded-lg shadow-md">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Por Qué Elegirnos -->
-            <div class="mb-16">
-                <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">¿Por qué elegir Wawalu?</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition duration-300">
-                        <div class="flex items-center mb-4">
-                            <span class="material-icons text-4xl text-blue-600 mr-3">security</span>
-                            <h3 class="text-xl font-bold text-gray-800">Seguridad Garantizada</h3>
-                        </div>
-                        <p class="text-gray-600">Personal altamente capacitado y sistemas de monitoreo constante para la tranquilidad de los padres.</p>
-                    </div>
-                    <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition duration-300">
-                        <div class="flex items-center mb-4">
-                            <span class="material-icons text-4xl text-blue-600 mr-3">psychology</span>
-                            <h3 class="text-xl font-bold text-gray-800">Desarrollo Integral</h3>
-                        </div>
-                        <p class="text-gray-600">Programas educativos que estimulan el desarrollo cognitivo, emocional y social de tu hijo.</p>
-                    </div>
-                    <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition duration-300">
-                        <div class="flex items-center mb-4">
-                            <span class="material-icons text-4xl text-blue-600 mr-3">groups</span>
-                            <h3 class="text-xl font-bold text-gray-800">Grupos Reducidos</h3>
-                        </div>
-                        <p class="text-gray-600">Atención personalizada con grupos pequeños para garantizar el mejor cuidado y aprendizaje.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Testimonios de Padres -->
-            <div class="mb-16">
-                <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">Lo que dicen nuestras familias</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition duration-300 relative">
-                        <span class="material-icons text-6xl text-blue-100 absolute top-4 right-4">format_quote</span>
-                        <p class="text-gray-600 mb-6 relative z-10">"La mejor decisión que tomamos para nuestra hija. El ambiente es increíble y el progreso que vemos día a día nos sorprende. Los profesionales son excepcionales."</p>
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                <span class="material-icons text-blue-600">person</span>
-                            </div>
-                            <div class="ml-4">
-                                <p class="font-semibold text-gray-800">María García</p>
-                                <p class="text-gray-500 text-sm">Mamá de Lucía, 3 años</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition duration-300 relative">
-                        <span class="material-icons text-6xl text-blue-100 absolute top-4 right-4">format_quote</span>
-                        <p class="text-gray-600 mb-6 relative z-10">"La metodología Reggio Emilia ha sido perfecta para mi hijo. Ha desarrollado su creatividad y autonomía de una manera que no imaginábamos posible."</p>
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                <span class="material-icons text-blue-600">person</span>
-                            </div>
-                            <div class="ml-4">
-                                <p class="font-semibold text-gray-800">Carlos Rodríguez</p>
-                                <p class="text-gray-500 text-sm">Papá de Mateo, 2 años</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Programa Diario -->
-            <div class="mb-16">
-                <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">Un día en Wawalu</h2>
-                <div class="bg-white rounded-xl p-8 shadow-lg">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div class="flex items-start space-x-4">
-                            <span class="material-icons text-2xl text-blue-600 mt-1">wb_sunny</span>
-                            <div>
-                                <h4 class="font-bold text-gray-800 mb-2">Mañana Activa</h4>
-                                <p class="text-gray-600">Actividades de motricidad, juego libre y exploración sensorial.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-4">
-                            <span class="material-icons text-2xl text-blue-600 mt-1">restaurant</span>
-                            <div>
-                                <h4 class="font-bold text-gray-800 mb-2">Alimentación Saludable</h4>
-                                <p class="text-gray-600">Menús balanceados y supervisados por nutricionistas.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-4">
-                            <span class="material-icons text-2xl text-blue-600 mt-1">auto_stories</span>
-                            <div>
-                                <h4 class="font-bold text-gray-800 mb-2">Aprendizaje Creativo</h4>
-                                <p class="text-gray-600">Actividades educativas y estimulación temprana.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Noticias Recientes -->
-            <div class="mb-16">
-                <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">Últimas Noticias</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Noticia 1 -->
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
-                        <img src="{{ url_for('static', filename='img/imagen7.jpg') }}" alt="Noticia 1" class="w-full h-48 object-cover">
-                        <div class="p-6">
-                            <div class="flex items-center text-sm text-gray-500 mb-3">
-                                <span class="material-icons text-blue-600 text-base mr-2">calendar_today</span>
-                                15 Enero, 2024
-                            </div>
-                            <h3 class="text-xl font-bold text-gray-800 mb-3">Nueva sala de psicomotricidad</h3>
-                            <p class="text-gray-600 mb-4 line-clamp-3">Inauguramos nuestra nueva sala de psicomotricidad equipada con los mejores materiales para el desarrollo integral de nuestros niños.</p>
-                            <a href="{{ url_for('news_detail', id=1) }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 transition duration-150">
-                                Leer más
-                                <span class="material-icons text-sm ml-1">arrow_forward</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Noticia 2 -->
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
-                        <img src="{{ url_for('static', filename='img/imagen8.jpg') }}" alt="Noticia 2" class="w-full h-48 object-cover">
-                        <div class="p-6">
-                            <div class="flex items-center text-sm text-gray-500 mb-3">
-                                <span class="material-icons text-blue-600 text-base mr-2">calendar_today</span>
-                                10 Enero, 2024
-                            </div>
-                            <h3 class="text-xl font-bold text-gray-800 mb-3">Taller de arte para padres</h3>
-                            <p class="text-gray-600 mb-4 line-clamp-3">Este mes realizaremos un taller especial donde los padres podrán experimentar de primera mano nuestra metodología artística.</p>
-                            <a href="{{ url_for('news_detail', id=2) }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 transition duration-150">
-                                Leer más
-                                <span class="material-icons text-sm ml-1">arrow_forward</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Noticia 3 -->
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
-                        <img src="{{ url_for('static', filename='img/imagen9.jpg') }}" alt="Noticia 3" class="w-full h-48 object-cover">
-                        <div class="p-6">
-                            <div class="flex items-center text-sm text-gray-500 mb-3">
-                                <span class="material-icons text-blue-600 text-base mr-2">calendar_today</span>
-                                5 Enero, 2024
-                            </div>
-                            <h3 class="text-xl font-bold text-gray-800 mb-3">Calendario de actividades 2024</h3>
-                            <p class="text-gray-600 mb-4 line-clamp-3">Ya está disponible nuestro calendario de actividades para el nuevo año. ¡Muchas sorpresas y experiencias emocionantes!</p>
-                            <a href="{{ url_for('news_detail', id=3) }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 transition duration-150">
-                                Leer más
-                                <span class="material-icons text-sm ml-1">arrow_forward</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="text-center mt-8">
-                    <a href="{{ url_for('news') }}" class="inline-flex items-center justify-center px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg text-lg font-medium hover:bg-blue-600 hover:text-white transition duration-300">
-                        <span class="material-icons mr-2">article</span>
-                        Ver todas las noticias
+    <!-- Slider Principal -->
+    <div class="slider-container mb-16">
+        <div class="slider">
+            <div class="slide">
+                <img src="{{ url_for('static', filename='img/imagen1.jpg') }}" alt="Niños jugando" class="w-full h-[400px] object-cover">
+                <div class="slide-content">
+                    <h2 class="text-3xl font-bold mb-3">Aprendizaje a través del juego</h2>
+                    <p class="text-lg mb-6">Descubre cómo nuestro método educativo fomenta el desarrollo integral</p>
+                    <a href="{{ url_for('enrollment') }}" class="matricula-btn inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-lg font-medium transition-all duration-300">
+                        <span class="material-icons">school</span>
+                        Matrícula 2025
                     </a>
                 </div>
             </div>
-
-            <!-- Galería de imágenes -->
-            <div class="mb-16">
-                <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">Momentos Especiales</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <img src="{{ url_for('static', filename='img/imagen10.jpg') }}" alt="Momento especial 1" class="w-full h-64 object-cover rounded-xl shadow-lg hover:shadow-xl transition duration-300">
-                    <img src="{{ url_for('static', filename='img/imagen11.jpg') }}" alt="Momento especial 2" class="w-full h-64 object-cover rounded-xl shadow-lg hover:shadow-xl transition duration-300">
-                    <img src="{{ url_for('static', filename='img/imagen12.jpg') }}" alt="Momento especial 3" class="w-full h-64 object-cover rounded-xl shadow-lg hover:shadow-xl transition duration-300">
-                    <img src="{{ url_for('static', filename='img/imagen13.jpg') }}" alt="Momento especial 4" class="w-full h-64 object-cover rounded-xl shadow-lg hover:shadow-xl transition duration-300">
+            <div class="slide">
+                <img src="{{ url_for('static', filename='img/imagen2.jpg') }}" alt="Actividades creativas" class="w-full h-[400px] object-cover">
+                <div class="slide-content">
+                    <h2 class="text-3xl font-bold mb-3">Expresión Artística</h2>
+                    <p class="text-lg mb-6">Desarrollamos la creatividad y la imaginación</p>
+                    <a href="{{ url_for('enrollment') }}" class="matricula-btn inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-lg font-medium transition-all duration-300">
+                        <span class="material-icons">school</span>
+                        Matrícula 2025
+                    </a>
                 </div>
             </div>
+            <div class="slide">
+                <img src="{{ url_for('static', filename='img/imagen3.jpg') }}" alt="Espacios educativos" class="w-full h-[400px] object-cover">
+                <div class="slide-content">
+                    <h2 class="text-3xl font-bold mb-3">Espacios Seguros</h2>
+                    <p class="text-lg mb-6">Ambientes diseñados para el aprendizaje y la exploración</p>
+                    <a href="{{ url_for('enrollment') }}" class="matricula-btn inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-lg font-medium transition-all duration-300">
+                        <span class="material-icons">school</span>
+                        Matrícula 2025
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="slider-dots"></div>
+        <button class="slider-control slider-prev" aria-label="Anterior">
+            <span class="material-icons">chevron_left</span>
+        </button>
+        <button class="slider-control slider-next" aria-label="Siguiente">
+            <span class="material-icons">chevron_right</span>
+        </button>
+    </div>
 
-            <!-- CTA -->
-            <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-10 text-white text-center">
-                <div class="max-w-3xl mx-auto">
-                    <h2 class="text-3xl font-bold mb-6">¡Únete a nuestra familia Wawalu!</h2>
-                    <p class="text-lg mb-8 opacity-90">Agenda una visita y conoce nuestras instalaciones. ¡Tu pequeño merece la mejor educación desde el principio!</p>
-                    <div class="flex flex-col sm:flex-row justify-center gap-4">
-                        <a href="{{ url_for('contact') }}" class="inline-flex items-center justify-center px-6 py-3 border-2 border-white rounded-lg text-lg font-medium hover:bg-white hover:text-blue-600 transition duration-300">
-                            <span class="material-icons mr-2">calendar_today</span>
-                            Agendar Visita
-                        </a>
-                        <a href="{{ url_for('contact') }}" class="inline-flex items-center justify-center px-6 py-3 bg-white text-blue-600 rounded-lg text-lg font-medium hover:bg-blue-50 transition duration-300">
-                            <span class="material-icons mr-2">phone</span>
-                            Contactar Ahora
-                        </a>
+    <!-- Menú Dinámico -->
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Nuestros Servicios</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Servicio 1 -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
+                        <img src="{{ url_for('static', filename='img/imagen1.jpg') }}" alt="Educación Temprana" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Educación Temprana</h3>
+                            <p class="text-gray-600">Programa especializado para bebés y niños pequeños, enfocado en el desarrollo sensorial y motor.</p>
+                            <ul class="mt-4 space-y-2 text-gray-600">
+                                <li class="flex items-center">
+                                    <span class="material-icons text-green-500 mr-2">check_circle</span>
+                                    Estimulación temprana
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="material-icons text-green-500 mr-2">check_circle</span>
+                                    Desarrollo motor
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="material-icons text-green-500 mr-2">check_circle</span>
+                                    Juego sensorial
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Servicio 2 -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
+                        <img src="{{ url_for('static', filename='img/imagen2.jpg') }}" alt="Programa Preescolar" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Programa Preescolar</h3>
+                            <p class="text-gray-600">Educación integral basada en la metodología Reggio Emilia para niños de 3 a 5 años.</p>
+                            <ul class="mt-4 space-y-2 text-gray-600">
+                                <li class="flex items-center">
+                                    <span class="material-icons text-green-500 mr-2">check_circle</span>
+                                    Arte y creatividad
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="material-icons text-green-500 mr-2">check_circle</span>
+                                    Desarrollo socioemocional
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="material-icons text-green-500 mr-2">check_circle</span>
+                                    Aprendizaje lúdico
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Servicio 3 -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
+                        <img src="{{ url_for('static', filename='img/imagen3.jpg') }}" alt="Talleres Especializados" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Talleres Especializados</h3>
+                            <p class="text-gray-600">Actividades complementarias para enriquecer el desarrollo integral de los niños.</p>
+                            <ul class="mt-4 space-y-2 text-gray-600">
+                                <li class="flex items-center">
+                                    <span class="material-icons text-green-500 mr-2">check_circle</span>
+                                    Música y movimiento
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="material-icons text-green-500 mr-2">check_circle</span>
+                                    Arte y expresión
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="material-icons text-green-500 mr-2">check_circle</span>
+                                    Exploración sensorial
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
+
+            <!-- Propuesta de Valor -->
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">¿Por qué Wawalu?</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Característica 1 -->
+                    <div class="flex items-start space-x-4">
+                        <span class="material-icons text-3xl text-blue-600">psychology</span>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Desarrollo Integral</h3>
+                            <p class="text-gray-600">Enfoque holístico que considera aspectos cognitivos, emocionales, sociales y físicos.</p>
+                        </div>
+                    </div>
+
+                    <!-- Característica 2 -->
+                    <div class="flex items-start space-x-4">
+                        <span class="material-icons text-3xl text-blue-600">groups</span>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Grupos Reducidos</h3>
+                            <p class="text-gray-600">Atención personalizada con un máximo de 8 niños por educadora.</p>
+                        </div>
+                    </div>
+
+                    <!-- Característica 3 -->
+                    <div class="flex items-start space-x-4">
+                        <span class="material-icons text-3xl text-blue-600">security</span>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Ambiente Seguro</h3>
+                            <p class="text-gray-600">Instalaciones diseñadas pensando en la seguridad y el confort de los niños.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonios -->
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Lo que dicen nuestras familias</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Testimonio 1 -->
+                    <div class="bg-white rounded-xl p-6 shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span class="material-icons text-blue-600">person</span>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold text-gray-800">Ana Martínez</h4>
+                                <p class="text-gray-500">Mamá de Lucía</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600">"La dedicación y el cariño con el que tratan a los niños es excepcional. Mi hija ha crecido tanto desde que está en Wawalu."</p>
+                    </div>
+
+                    <!-- Testimonio 2 -->
+                    <div class="bg-white rounded-xl p-6 shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span class="material-icons text-blue-600">person</span>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold text-gray-800">Carlos Ruiz</h4>
+                                <p class="text-gray-500">Papá de Mateo</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600">"La metodología de enseñanza es increíble. Mi hijo ha desarrollado habilidades que no imaginábamos a su edad."</p>
+                    </div>
+                </div>
+            </div>
+
+    <!-- Nuestros Programas -->
+    <section class="mb-16">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">Nuestros Programas</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Programa 1 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300">
+                <div class="relative overflow-hidden">
+                    <img src="{{ url_for('static', filename='img/imagen4.jpg') }}" alt="Programa Bebés" class="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Programa Bebés</h3>
+                    <p class="text-gray-600 mb-4">De 6 meses a 2 años</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-gray-600">
+                            <span class="material-icons text-green-500 mr-2">check_circle</span>
+                            Estimulación temprana
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <span class="material-icons text-green-500 mr-2">check_circle</span>
+                            Desarrollo sensorial
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <span class="material-icons text-green-500 mr-2">check_circle</span>
+                            Atención personalizada
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Programa 2 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300">
+                <div class="relative overflow-hidden">
+                    <img src="{{ url_for('static', filename='img/imagen5.jpg') }}" alt="Programa Inicial" class="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Programa Inicial</h3>
+                    <p class="text-gray-600 mb-4">De 2 a 3 años</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-gray-600">
+                            <span class="material-icons text-green-500 mr-2">check_circle</span>
+                            Desarrollo motor
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <span class="material-icons text-green-500 mr-2">check_circle</span>
+                            Socialización
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <span class="material-icons text-green-500 mr-2">check_circle</span>
+                            Juego estructurado
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Programa 3 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300">
+                <div class="relative overflow-hidden">
+                    <img src="{{ url_for('static', filename='img/imagen6.jpg') }}" alt="Programa Preescolar" class="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Programa Preescolar</h3>
+                    <p class="text-gray-600 mb-4">De 3 a 5 años</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-gray-600">
+                            <span class="material-icons text-green-500 mr-2">check_circle</span>
+                            Desarrollo cognitivo
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <span class="material-icons text-green-500 mr-2">check_circle</span>
+                            Expresión artística
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <span class="material-icons text-green-500 mr-2">check_circle</span>
+                            Preparación escolar
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Nuestra Metodología -->
+    <section class="mb-16 bg-white rounded-xl shadow-lg p-8">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">Nuestra Metodología</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div class="space-y-6">
+                <p class="text-gray-600 text-lg leading-relaxed">
+                    En Wawalu, nos inspiramos en la metodología Reggio Emilia, reconociendo a cada niño como protagonista de su propio aprendizaje. Creemos en el potencial innato de cada pequeño y en su capacidad para construir su conocimiento a través de la experiencia directa.
+                </p>
+                <div class="space-y-4">
+                    <div class="flex items-start space-x-4">
+                        <span class="material-icons text-blue-600 mt-1">psychology</span>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Aprendizaje Activo</h4>
+                            <p class="text-gray-600">Los niños aprenden haciendo, experimentando y descubriendo por sí mismos.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <span class="material-icons text-blue-600 mt-1">nature</span>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Conexión con la Naturaleza</h4>
+                            <p class="text-gray-600">Fomentamos el vínculo con el entorno natural como parte fundamental del aprendizaje.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <span class="material-icons text-blue-600 mt-1">palette</span>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Expresión Creativa</h4>
+                            <p class="text-gray-600">El arte y la creatividad son herramientas esenciales en nuestro método educativo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <img src="{{ url_for('static', filename='img/imagen7.jpg') }}" alt="Metodología 1" class="w-full h-48 object-cover rounded-lg shadow-md">
+                <img src="{{ url_for('static', filename='img/imagen8.jpg') }}" alt="Metodología 2" class="w-full h-48 object-cover rounded-lg shadow-md">
+                <img src="{{ url_for('static', filename='img/imagen9.jpg') }}" alt="Metodología 3" class="w-full h-48 object-cover rounded-lg shadow-md">
+                <img src="{{ url_for('static', filename='img/imagen10.jpg') }}" alt="Metodología 4" class="w-full h-48 object-cover rounded-lg shadow-md">
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonios -->
+    <section class="mb-16">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">Lo que dicen las familias Wawalu</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Testimonio 1 -->
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="material-icons text-blue-600">person</span>
+                    </div>
+                    <div class="ml-4">
+                        <h4 class="font-bold text-gray-800">María Rodríguez</h4>
+                        <p class="text-gray-500">Mamá de Lucía</p>
+                    </div>
+                </div>
+                <p class="text-gray-600">"La dedicación y el cariño con el que tratan a los niños es excepcional. Mi hija ha crecido tanto desde que está en Wawalu."</p>
+            </div>
+
+            <!-- Testimonio 2 -->
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="material-icons text-blue-600">person</span>
+                    </div>
+                    <div class="ml-4">
+                        <h4 class="font-bold text-gray-800">Carlos Pérez</h4>
+                        <p class="text-gray-500">Papá de Mateo</p>
+                    </div>
+                </div>
+                <p class="text-gray-600">"La metodología de enseñanza es increíble. Mi hijo ha desarrollado habilidades que no imaginábamos a su edad."</p>
+            </div>
+
+            <!-- Testimonio 3 -->
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="material-icons text-blue-600">person</span>
+                    </div>
+                    <div class="ml-4">
+                        <h4 class="font-bold text-gray-800">Ana García</h4>
+                        <p class="text-gray-500">Mamá de Diego</p>
+                    </div>
+                </div>
+                <p class="text-gray-600">"El ambiente es increíble y el progreso que vemos día a día nos sorprende. Los profesionales son excepcionales."</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Galería -->
+    <section class="mb-16">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">Momentos Wawalu</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <img src="{{ url_for('static', filename='img/imagen11.jpg') }}" alt="Momento Wawalu 1" class="w-full h-48 object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+            <img src="{{ url_for('static', filename='img/imagen12.jpg') }}" alt="Momento Wawalu 2" class="w-full h-48 object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+            <img src="{{ url_for('static', filename='img/imagen13.jpg') }}" alt="Momento Wawalu 3" class="w-full h-48 object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+            <img src="{{ url_for('static', filename='img/imagen1.jpg') }}" alt="Momento Wawalu 4" class="w-full h-48 object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+        </div>
+        <div class="text-center mt-8">
+            <a href="{{ url_for('gallery') }}" class="inline-flex items-center justify-center px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg text-lg font-medium hover:bg-blue-600 hover:text-white transition duration-300">
+                <span class="material-icons mr-2">photo_library</span>
+                Ver galería completa
+            </a>
+        </div>
+    </section>
+
+    <!-- CTA Final -->
+    <section class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-10 text-white text-center">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold mb-6">¡Únete a nuestra familia Wawalu!</h2>
+            <p class="text-lg mb-8">Agenda una visita y conoce nuestras instalaciones. ¡Tu pequeño merece la mejor educación desde el principio!</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="{{ url_for('contact') }}" class="inline-flex items-center justify-center px-6 py-3 border-2 border-white rounded-lg text-lg font-medium hover:bg-white hover:text-blue-600 transition duration-300">
+                    <span class="material-icons mr-2">calendar_today</span>
+                    Agendar Visita
+                </a>
+                <a href="{{ url_for('contact') }}" class="inline-flex items-center justify-center px-6 py-3 bg-white text-blue-600 rounded-lg text-lg font-medium hover:bg-blue-50 transition duration-300">
+                    <span class="material-icons mr-2">phone</span>
+                    Contactar Ahora
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}

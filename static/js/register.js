@@ -85,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     fullName: form.fullName.value,
                     email: form.email.value,
                     phone: form.phone.value,
+                    role: form.role.value,
                     password: form.password.value,
                 }),
             });

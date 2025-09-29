@@ -16,6 +16,39 @@ document.addEventListener('DOMContentLoaded', function() {
     const deleteModal = document.getElementById('deleteConfirmModal');
     const deleteNotification = document.getElementById('deleteNotification');
 
+    // Productos de ejemplo (en una implementación real, estos vendrían de la API)
+    const productsData = {
+        1: { name: 'Uniforme Diario', price: 89.90, image: 'uniform1.jpg' },
+        2: { name: 'Uniforme Deportivo', price: 79.90, image: 'uniform2.jpg' },
+        3: { name: 'Polo Institucional', price: 29.90, image: 'polo.jpg' },
+        4: { name: 'Short Deportivo', price: 35.90, image: 'short.jpg' },
+        5: { name: 'Medias Escolares', price: 12.90, image: 'socks.jpg' },
+        6: { name: 'Casaca Institucional', price: 89.90, image: 'jacket.jpg' },
+        7: { name: 'Kit de Arte', price: 45.90, image: 'artkit.jpg' },
+        8: { name: 'Cuaderno A4', price: 8.90, image: 'notebook.jpg' },
+        9: { name: 'Set de Lápices', price: 15.90, image: 'pencils.jpg' },
+        10: { name: 'Plastilina', price: 12.90, image: 'clay.jpg' },
+        11: { name: 'Tijeras Escolares', price: 5.90, image: 'scissors.jpg' },
+        12: { name: 'Folder Institucional', price: 7.90, image: 'folder.jpg' },
+        13: { name: 'Témperas', price: 18.90, image: 'paint.jpg' },
+        14: { name: 'Mochila Escolar', price: 79.90, image: 'backpack.jpg' },
+        15: { name: 'Lonchera Térmica', price: 45.90, image: 'lunchbox.jpg' },
+        16: { name: 'Gorro Institucional', price: 25.90, image: 'hat.jpg' },
+        17: { name: 'Botella de Agua', price: 19.90, image: 'bottle.jpg' },
+        18: { name: 'Set de Toallas', price: 29.90, image: 'towels.jpg' },
+        19: { name: 'Mandil de Arte', price: 35.90, image: 'apron.jpg' },
+        20: { name: 'Porta Útiles', price: 22.90, image: 'case.jpg' }
+    };
+
+    // Función para obtener información del producto
+    function getProductInfo(productId) {
+        return productsData[productId] || { 
+            name: 'Producto no disponible', 
+            price: 0, 
+            image: 'default.jpg' 
+        };
+    }
+
     // Función para animar un cambio de cantidad
     function animateQuantityChange(element, isIncrease) {
         element.style.transform = `scale(1.2) translateY(${isIncrease ? '-2px' : '2px'})`;
@@ -33,52 +66,57 @@ document.addEventListener('DOMContentLoaded', function() {
         updateCartCount();
     }
 
-    // Obtener el carrito del localStorage
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
     // Función para actualizar la vista del carrito
     function updateCartView() {
         if (cart.length === 0) {
             document.getElementById('cartContainer').classList.add('hidden');
             emptyCartTemplate.classList.remove('hidden');
+            updateCheckoutButton(0);
             return;
         }
 
         document.getElementById('cartContainer').classList.remove('hidden');
         emptyCartTemplate.classList.add('hidden');
-        cartItemsContainer.innerHTML = '';
+        
+        // Limpiar contenedor y agregar header
+        cartItemsContainer.innerHTML = `
+            <div class="hidden md:grid md:grid-cols-12 gap-4 p-4 bg-gray-50 text-sm font-medium text-gray-600">
+                <div class="md:col-span-6">Producto</div>
+                <div class="md:col-span-2 text-center">Precio</div>
+                <div class="md:col-span-2 text-center">Cantidad</div>
+                <div class="md:col-span-2 text-center">Total</div>
+            </div>
+        `;
+        
         let subtotal = 0;
 
-        // Header de la tabla (ya está en el HTML)
-
         cart.forEach(item => {
-            const productCard = document.querySelector(`[data-id="${item.id}"]`);
-            const productName = productCard ? productCard.dataset.name : 'Producto no disponible';
-            const productPrice = productCard ? parseFloat(productCard.dataset.price) : 0;
-            const productImage = productCard ? productCard.dataset.image : 'default.jpg';
-            const itemTotal = productPrice * item.quantity;
+            const product = getProductInfo(item.id);
+            const itemTotal = product.price * item.quantity;
             subtotal += itemTotal;
 
             const itemElement = document.createElement('div');
             itemElement.className = 'border-t border-gray-100 transition-all duration-300 hover:bg-gray-50';
+            itemElement.setAttribute('data-item', item.id);
             itemElement.innerHTML = `
                 <div class="grid md:grid-cols-12 gap-4 p-4 items-center">
                     <!-- Producto -->
                     <div class="md:col-span-6 flex items-center space-x-4">
                         <div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
-                            <img src="/static/img/products/${productImage}" 
-                                 alt="${productName}" 
-                                 class="w-full h-full object-cover">
+                            <img src="/static/img/products/${product.image}" 
+                                 alt="${product.name}" 
+                                 class="w-full h-full object-cover"
+                                 onerror="this.src='/static/img/default-product.png'">
                         </div>
                         <div>
-                            <h3 class="font-medium text-gray-800">${productName}</h3>
+                            <h3 class="font-medium text-gray-800">${product.name}</h3>
                             <p class="text-sm text-gray-500">Código: #${item.id}</p>
                         </div>
                     </div>
 
                     <!-- Precio -->
                     <div class="md:col-span-2 text-center">
-                        <span class="text-gray-600">S/. ${productPrice.toFixed(2)}</span>
+                        <span class="text-gray-600">S/. ${product.price.toFixed(2)}</span>
                     </div>
 
                     <!-- Cantidad -->
@@ -90,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </button>
                             <input type="number" value="${item.quantity}" 
                                    min="1" max="99" 
+                                   data-quantity="${item.id}"
                                    class="w-12 text-center border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                                    onchange="updateQuantityDirect('${item.id}', this.value)">
                             <button onclick="updateQuantity('${item.id}', 1)" 
@@ -101,16 +140,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     <!-- Total -->
                     <div class="md:col-span-2 text-center font-medium text-gray-800">
-                        S/. ${itemTotal.toFixed(2)}
+                        <span data-total="${item.id}">S/. ${itemTotal.toFixed(2)}</span>
                     </div>
-                </div>
 
-                <!-- Acciones -->
-                <div class="flex items-center justify-end px-4 pb-4 md:absolute md:right-4 md:top-4">
-                    <button onclick="showDeleteConfirmation('${item.id}')" 
-                            class="text-gray-400 hover:text-red-500 transition-colors">
-                        <span class="material-icons">delete</span>
-                    </button>
+                    <!-- Botón eliminar -->
+                    <div class="flex items-center justify-end">
+                        <button onclick="showDeleteConfirmation('${item.id}')" 
+                                class="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-50"
+                                title="Eliminar producto">
+                            <span class="material-icons">delete</span>
+                        </button>
+                    </div>
                 </div>
             `;
             cartItemsContainer.appendChild(itemElement);
@@ -118,8 +158,130 @@ document.addEventListener('DOMContentLoaded', function() {
 
         updateTotals(subtotal);
         updateRecommendations();
-        updateCheckoutButton();
     }
+
+    // Función para actualizar los totales
+    function updateTotals(subtotal) {
+        const tax = subtotal * 0.18; // IGV 18%
+        let shipping = 0;
+
+        // Calcular envío (gratis si la compra es mayor a S/. 200)
+        if (subtotal > 0 && subtotal < 200) {
+            shipping = 15;
+            shippingElement.textContent = `S/. ${shipping.toFixed(2)}`;
+        } else if (subtotal >= 200) {
+            shippingElement.textContent = 'Gratis';
+        } else {
+            shippingElement.textContent = 'Calculado en checkout';
+        }
+
+        // Aplicar cupón si existe
+        let discount = 0;
+        if (appliedCoupon) {
+            if (appliedCoupon.type === 'percentage') {
+                discount = subtotal * (appliedCoupon.value / 100);
+            } else if (appliedCoupon.type === 'fixed') {
+                discount = appliedCoupon.value;
+            }
+        }
+
+        const total = subtotal + tax + shipping - discount;
+
+        subtotalElement.textContent = `S/. ${subtotal.toFixed(2)}`;
+        taxElement.textContent = `S/. ${tax.toFixed(2)}`;
+        totalElement.textContent = `S/. ${total.toFixed(2)}`;
+
+        updateCheckoutButton(total);
+    }
+
+    // Función para actualizar el estado del botón de checkout
+    function updateCheckoutButton(total = 0) {
+        const isEmpty = cart.length === 0;
+        checkoutButton.disabled = isEmpty;
+        checkoutButton.classList.toggle('opacity-50', isEmpty);
+        checkoutButton.classList.toggle('cursor-not-allowed', isEmpty);
+        
+        if (isEmpty) {
+            checkoutButton.innerHTML = `
+                <span class="material-icons">shopping_cart</span>
+                <span>Carrito Vacío</span>
+            `;
+        } else {
+            checkoutButton.innerHTML = `
+                <span class="material-icons">shopping_cart_checkout</span>
+                <span>Proceder al Pago (S/. ${total.toFixed(2)})</span>
+            `;
+        }
+    }
+
+    // Función para actualizar recomendaciones
+    function updateRecommendations() {
+        const recommendationsContainer = document.getElementById('recommendations');
+        if (!recommendationsContainer) return;
+
+        // Obtener productos relacionados basados en los items del carrito
+        getRecommendedProducts().then(products => {
+            const grid = recommendationsContainer.querySelector('.grid');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow';
+                card.innerHTML = `
+                    <div class="relative pb-[100%]">
+                        <img src="/static/img/products/${product.image}" 
+                             alt="${product.name}" 
+                             class="absolute inset-0 w-full h-full object-cover"
+                             onerror="this.src='/static/img/default-product.png'">
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-medium text-gray-800 truncate">${product.name}</h4>
+                        <p class="text-blue-600 font-bold mt-1">S/. ${product.price.toFixed(2)}</p>
+                        <button onclick="addToCartFromRecommendations(${product.id})" 
+                                class="w-full mt-2 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors text-sm">
+                            Agregar al Carrito
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        });
+    }
+
+    // Función para obtener productos recomendados
+    async function getRecommendedProducts() {
+        // En una implementación real, esto haría una llamada a la API
+        const allProducts = [
+            { id: 1, name: "Uniforme Diario", price: 89.90, image: "uniform1.jpg" },
+            { id: 7, name: "Kit de Arte", price: 45.90, image: "artkit.jpg" },
+            { id: 14, name: "Mochila Escolar", price: 79.90, image: "backpack.jpg" },
+            { id: 17, name: "Botella de Agua", price: 19.90, image: "bottle.jpg" }
+        ];
+        
+        // Filtrar productos que no están en el carrito
+        const cartIds = cart.map(item => item.id);
+        return allProducts.filter(product => !cartIds.includes(product.id)).slice(0, 4);
+    }
+
+    // Función para agregar al carrito desde recomendaciones
+    window.addToCartFromRecommendations = function(productId) {
+        const existingItem = cart.find(item => item.id == productId);
+        
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            cart.push({
+                id: productId,
+                quantity: 1
+            });
+        }
+
+        saveCart();
+        updateCartView();
+        showNotification('Producto agregado al carrito', 'success');
+    };
 
     // Función para actualizar los totales
     function updateTotals(subtotal) {
@@ -220,14 +382,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Función para actualizar la cantidad
     window.updateQuantity = function(productId, change) {
-        const item = cart.find(item => item.id === productId);
+        const item = cart.find(item => item.id == productId);
         if (!item) return;
 
-        const quantityElement = document.querySelector(`[data-quantity="${productId}"]`);
-        const totalElement = document.querySelector(`[data-total="${productId}"]`);
-        const price = parseFloat(document.querySelector(`[data-price="${productId}"]`).dataset.value);
-
         const newQuantity = item.quantity + change;
+
         if (newQuantity < 1) {
             showDeleteConfirmation(productId);
             return;
@@ -237,22 +396,22 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Aplicar el cambio con animación
+        // Actualizar la cantidad
+        item.quantity = newQuantity;
+        
+        // Animar el cambio en el input
+        const quantityElement = document.querySelector(`[data-quantity="${productId}"]`);
+        const totalElement = document.querySelector(`[data-total="${productId}"]`);
+        
         if (quantityElement) {
-            // Animar el cambio de cantidad
             animateQuantityChange(quantityElement, change > 0);
-            
-            // Actualizar el valor con una animación suave
-            quantityElement.style.transition = 'all 0.2s ease-out';
-            setTimeout(() => {
-                quantityElement.value = newQuantity;
-                quantityElement.style.transition = '';
-            }, 100);
+            quantityElement.value = newQuantity;
         }
 
-        // Actualizar el total del ítem con animación
+        // Actualizar el total del item
         if (totalElement) {
-            const newTotal = (price * newQuantity).toFixed(2);
+            const product = getProductInfo(productId);
+            const newTotal = (product.price * newQuantity).toFixed(2);
             totalElement.style.transition = 'all 0.3s ease-out';
             totalElement.style.transform = 'scale(1.1)';
             totalElement.style.color = change > 0 ? 'green' : 'red';
@@ -264,32 +423,32 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 200);
         }
 
-        // Actualizar el estado del carrito
-        item.quantity = newQuantity;
+        // Guardar y actualizar vista
         saveCart();
-        updateCartView();
-
-        // Mostrar notificación
+        setTimeout(() => updateCartView(), 300);
         showNotification(`Cantidad actualizada: ${newQuantity}`, 'success');
     };
 
     // Función para actualizar cantidad directamente desde el input
-    window.updateQuantityDirect = function(productId, input) {
-        const newQuantity = parseInt(input.value);
-        const item = cart.find(item => item.id === productId);
+    window.updateQuantityDirect = function(productId, newQuantity) {
+        newQuantity = parseInt(newQuantity);
+        const item = cart.find(item => item.id == productId);
         
         if (!item) return;
 
         // Validar límites
         if (newQuantity < 1) {
             showDeleteConfirmation(productId);
-            input.value = item.quantity; // Restaurar valor anterior
+            // Restaurar valor anterior
+            const quantityElement = document.querySelector(`[data-quantity="${productId}"]`);
+            if (quantityElement) quantityElement.value = item.quantity;
             return;
         }
         if (newQuantity > 99) {
-            input.value = 99;
+            const quantityElement = document.querySelector(`[data-quantity="${productId}"]`);
+            if (quantityElement) quantityElement.value = 99;
+            newQuantity = 99;
             showNotification('Cantidad máxima permitida: 99', 'error');
-            return;
         }
 
         // Solo actualizar si el valor ha cambiado
@@ -306,15 +465,20 @@ document.addEventListener('DOMContentLoaded', function() {
         itemBeingDeleted = productId;
         
         // Obtener información del producto
-        const item = cart.find(item => item.id === productId);
-        const productName = document.querySelector(`[data-name="${productId}"]`)?.textContent || 'este producto';
+        const product = getProductInfo(productId);
         
         // Actualizar el contenido del modal
         const modalTitle = deleteModal.querySelector('h3');
         const modalDescription = deleteModal.querySelector('p');
         
         modalTitle.textContent = 'Eliminar producto';
-        modalDescription.textContent = `¿Estás seguro que deseas eliminar ${productName} del carrito?`;
+        modalDescription.textContent = `¿Estás seguro que deseas eliminar "${product.name}" del carrito?`;
+        
+        // Configurar el botón de confirmar
+        const confirmButton = document.getElementById('confirmDelete');
+        confirmButton.onclick = function() {
+            confirmDelete();
+        };
         
         // Animar la entrada del modal
         deleteModal.classList.remove('hidden');
@@ -347,12 +511,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Función para eliminar un producto del carrito
     window.removeFromCart = function(productId) {
-        const itemToDelete = cart.find(item => item.id === productId);
-        if (!itemToDelete) return;
-
-        // Guardar el item eliminado para poder deshacerlo
-        lastDeletedItem = { ...itemToDelete };
+        const itemIndex = cart.findIndex(item => item.id == productId);
         
+        if (itemIndex === -1) {
+            showNotification('Producto no encontrado en el carrito', 'error');
+            return;
+        }
+
+        // Guardar el item para poder deshacerlo
+        lastDeletedItem = { ...cart[itemIndex] };
+
         // Animar la salida del elemento
         const itemElement = document.querySelector(`[data-item="${productId}"]`);
         if (itemElement) {
@@ -361,16 +529,20 @@ document.addEventListener('DOMContentLoaded', function() {
             itemElement.style.opacity = '0';
             
             setTimeout(() => {
-                cart = cart.filter(item => item.id !== productId);
+                // Eliminar del array
+                cart.splice(itemIndex, 1);
                 saveCart();
                 updateCartView();
                 showDeleteNotification();
+                showNotification('Producto eliminado del carrito', 'success');
             }, 300);
         } else {
-            cart = cart.filter(item => item.id !== productId);
+            // Eliminar inmediatamente si no se encuentra el elemento
+            cart.splice(itemIndex, 1);
             saveCart();
             updateCartView();
             showDeleteNotification();
+            showNotification('Producto eliminado del carrito', 'success');
         }
     };
 
@@ -451,35 +623,101 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Función para mostrar notificaciones
-    function showNotification(message) {
+    function showNotification(message, type = 'success') {
         const notification = document.createElement('div');
-        notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-300 ease-in-out';
+        const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+        notification.className = `fixed bottom-4 left-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out z-50`;
         notification.textContent = message;
 
         document.body.appendChild(notification);
 
         // Animar entrada
-        setTimeout(() => {
+        requestAnimationFrame(() => {
             notification.style.transform = 'translateY(-20px)';
-        }, 100);
+        });
 
         // Remover después de 3 segundos
         setTimeout(() => {
-            notification.style.transform = 'translateY(0)';
+            notification.style.transform = 'translateY(0) translateX(-100%)';
             setTimeout(() => {
-                notification.remove();
+                if (notification.parentNode) {
+                    notification.remove();
+                }
             }, 300);
         }, 3000);
     }
 
-    // Evento para el botón de pago
-    checkoutButton.addEventListener('click', function() {
-        if (cart.length === 0) {
-            showNotification('El carrito está vacío');
+    // Función para aplicar cupón
+    window.applyCoupon = function() {
+        const couponInput = document.getElementById('coupon');
+        const couponCode = couponInput.value.trim().toUpperCase();
+        
+        if (!couponCode) {
+            showNotification('Por favor ingresa un código de cupón', 'error');
             return;
         }
-        // Aquí puedes agregar la lógica para proceder al pago
-        alert('Implementar proceso de pago');
+
+        // Cupones de ejemplo
+        const coupons = {
+            'DESCUENTO10': { type: 'percentage', value: 10, description: '10% de descuento' },
+            'PRIMERACOMPRA': { type: 'fixed', value: 20, description: 'S/. 20 de descuento' },
+            'ESTUDIANTE5': { type: 'percentage', value: 5, description: '5% de descuento estudiantil' }
+        };
+
+        if (coupons[couponCode]) {
+            appliedCoupon = { code: couponCode, ...coupons[couponCode] };
+            couponInput.disabled = true;
+            couponInput.parentElement.nextElementSibling.innerHTML = `
+                <div class="text-sm text-green-600 flex items-center justify-between">
+                    <span>✓ Cupón aplicado: ${appliedCoupon.description}</span>
+                    <button onclick="removeCoupon()" class="text-red-500 hover:text-red-700">Quitar</button>
+                </div>
+            `;
+            updateCartView();
+            showNotification(`Cupón aplicado: ${appliedCoupon.description}`, 'success');
+        } else {
+            showNotification('Código de cupón inválido', 'error');
+        }
+    };
+
+    // Función para quitar cupón
+    window.removeCoupon = function() {
+        appliedCoupon = null;
+        const couponInput = document.getElementById('coupon');
+        couponInput.disabled = false;
+        couponInput.value = '';
+        couponInput.parentElement.nextElementSibling.innerHTML = '';
+        updateCartView();
+        showNotification('Cupón removido', 'success');
+    };
+
+    // Función para proceder al checkout
+    window.proceedToCheckout = function() {
+        if (cart.length === 0) {
+            showNotification('El carrito está vacío', 'error');
+            return;
+        }
+        
+        // Guardar datos del carrito para el checkout
+        sessionStorage.setItem('checkout_cart', JSON.stringify(cart));
+        if (appliedCoupon) {
+            sessionStorage.setItem('applied_coupon', JSON.stringify(appliedCoupon));
+        }
+        
+        // Redirigir al checkout
+        window.location.href = '/checkout';
+    };
+
+    // Evento para el botón de pago
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', proceedToCheckout);
+    }
+
+    // Cerrar modal al hacer clic fuera de él
+    deleteModal?.addEventListener('click', function(e) {
+        if (e.target === deleteModal) {
+            closeDeleteModal();
+        }
     });
 
     // Inicializar la vista del carrito

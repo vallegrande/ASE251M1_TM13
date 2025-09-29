@@ -83,7 +83,7 @@
                     </div>
 
                     <button type="submit" id="submitButton"
-                        class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150">
+                        class="w-full flex justify-center items-center py-3 px-6 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 active:scale-95">
                         <span class="material-icons mr-2">send</span>
                         Enviar Mensaje
                     </button>
@@ -145,104 +145,6 @@
             </div>
         </div>
     </main>
-
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white pt-16 pb-8">
-        <div class="container mx-auto px-4 max-w-6xl">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-                <!-- Logo y descripción -->
-                <div class="space-y-6">
-                    <div class="flex items-center space-x-3">
-                        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Wawalu Logo" class="h-12 w-auto">
-                        <span class="text-2xl font-bold text-blue-400">Wawalu</span>
-                    </div>
-                    <p class="text-gray-400 leading-relaxed">
-                        Creamos experiencias educativas únicas basadas en la metodología Reggio Emilia, promoviendo el desarrollo integral de cada niño.
-                    </p>
-                </div>
-
-                <!-- Enlaces rápidos -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-6 text-blue-400">Enlaces Rápidos</h3>
-                    <ul class="space-y-4 text-gray-400">
-                        <li>
-                            <a href="#" class="hover:text-white transition duration-150 flex items-center">
-                                <span class="material-icons text-sm mr-2">arrow_forward</span>
-                                Nosotros
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-white transition duration-150 flex items-center">
-                                <span class="material-icons text-sm mr-2">arrow_forward</span>
-                                Programas
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('gallery') }}" class="hover:text-white transition duration-150 flex items-center">
-                                <span class="material-icons text-sm mr-2">arrow_forward</span>
-                                Galería
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('contact') }}" class="hover:text-white transition duration-150 flex items-center">
-                                <span class="material-icons text-sm mr-2">arrow_forward</span>
-                                Contacto
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Información de contacto -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-6 text-blue-400">Contáctanos</h3>
-                    <ul class="space-y-4 text-gray-400">
-                        <li class="flex items-center">
-                            <span class="material-icons mr-3">location_on</span>
-                            <span>Cañete, Lima, Perú</span>
-                        </li>
-                        <li class="flex items-center">
-                            <span class="material-icons mr-3">phone</span>
-                            <span>+51 xxx xxx xxx</span>
-                        </li>
-                        <li class="flex items-center">
-                            <span class="material-icons mr-3">mail</span>
-                            <span>contacto@wawalu.com</span>
-                        </li>
-                        <li class="flex items-center">
-                            <span class="material-icons mr-3">schedule</span>
-                            <span>Lun - Vie: 8:00 AM - 5:00 PM</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Redes Sociales y YPE -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-6 text-blue-400">Síguenos</h3>
-                    <div class="flex space-x-4 mb-8">
-                        <a href="#" class="bg-gray-800 p-2 rounded-full hover:bg-blue-600 transition duration-300 w-10 h-10 flex items-center justify-center">
-                            <img src="{{ url_for('static', filename='icons/facebook.png') }}" alt="Facebook" class="w-5 h-5 filter invert">
-                        </a>
-                        <a href="#" class="bg-gray-800 p-2 rounded-full hover:bg-pink-600 transition duration-300 w-10 h-10 flex items-center justify-center">
-                            <img src="{{ url_for('static', filename='icons/instagram.png') }}" alt="Instagram" class="w-5 h-5 filter invert">
-                        </a>
-                        <a href="#" class="bg-gray-800 p-2 rounded-full hover:bg-green-600 transition duration-300 w-10 h-10 flex items-center justify-center">
-                            <img src="{{ url_for('static', filename='icons/whatsapp.png') }}" alt="WhatsApp" class="w-5 h-5 filter invert">
-                        </a>
-                    </div>
-                    <div class="border-t border-gray-800 pt-6">
-                        <h4 class="text-sm font-semibold mb-4 text-blue-400">Trabajamos con YPE</h4>
-                        <img src="{{ url_for('static', filename='icons/yape.png') }}" alt="YPE" class="h-12 w-auto filter brightness-0 invert opacity-70 hover:opacity-100 transition duration-300">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Copyright -->
-            <div class="border-t border-gray-800 pt-8 mt-8 text-center text-gray-400">
-                <p>&copy; 2025 Wawalu. Todos los derechos reservados.</p>
-            </div>
-        </div>
-    </footer>
-
 {% endblock %}
 
 {% block scripts %}

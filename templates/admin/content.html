@@ -1,0 +1,222 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Contenido Web{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">Gestión de Contenido Web</h1>
+    <button onclick="saveAllChanges()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+        💾 Guardar Cambios
+    </button>
+</div>
+
+<!-- Alert Messages -->
+<div id="alertMessage" class="hidden mb-4 p-4 rounded-lg"></div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Información General -->
+    <div class="bg-white shadow-sm rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">📋 Información General</h2>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Sitio</label>
+                <input type="text" id="site_name" value="{{ site_config.get('site_name', 'Wawalu') }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Eslogan Principal</label>
+                <input type="text" id="site_tagline" value="{{ site_config.get('site_tagline', 'Lo que se dé a los niños, los niños darán a la sociedad') }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Descripción del Sitio</label>
+                <textarea id="site_description" rows="3"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">{{ site_config.get('site_description', 'Centro educativo basado en la metodología Reggio Emilia') }}</textarea>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email de Contacto</label>
+                <input type="email" id="contact_email" value="{{ site_config.get('contact_email', 'contacto@wawalu.com') }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono de Contacto</label>
+                <input type="tel" id="contact_phone" value="{{ site_config.get('contact_phone', '+51 999 999 999') }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                <textarea id="contact_address" rows="2"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">{{ site_config.get('contact_address', 'Av. Mariscal Benavides 1365, Cañete, Lima, Perú') }}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuración de la Tienda -->
+    <div class="bg-white shadow-sm rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">🛒 Configuración de Tienda</h2>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Envío Gratis desde (S/.)</label>
+                <input type="number" id="free_shipping_amount" value="{{ site_config.get('free_shipping_amount', '200') }}" step="0.01"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Costo de Envío (S/.)</label>
+                <input type="number" id="shipping_cost" value="{{ site_config.get('shipping_cost', '15') }}" step="0.01"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">IGV (%)</label>
+                <input type="number" id="tax_rate" value="{{ site_config.get('tax_rate', '18') }}" step="0.1"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div class="flex items-center">
+                <input type="checkbox" id="store_enabled" {{ 'checked' if site_config.get('store_enabled', 'true') == 'true' }}
+                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                <label for="store_enabled" class="ml-2 block text-sm text-gray-900">
+                    Tienda habilitada
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Redes Sociales -->
+    <div class="bg-white shadow-sm rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">📱 Redes Sociales</h2>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Facebook</label>
+                <input type="url" id="facebook_url" value="{{ site_config.get('facebook_url', '') }}"
+                       placeholder="https://facebook.com/wawalu"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Instagram</label>
+                <input type="url" id="instagram_url" value="{{ site_config.get('instagram_url', '') }}"
+                       placeholder="https://instagram.com/wawalu"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">WhatsApp (Número)</label>
+                <input type="tel" id="whatsapp_number" value="{{ site_config.get('whatsapp_number', '') }}"
+                       placeholder="+51999999999"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+        </div>
+    </div>
+
+    <!-- Horarios -->
+    <div class="bg-white shadow-sm rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">🕐 Horarios de Atención</h2>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Días de Semana</label>
+                <input type="text" id="weekdays_hours" value="{{ site_config.get('weekdays_hours', 'Lun - Vie: 8:00 AM - 5:00 PM') }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Fines de Semana</label>
+                <input type="text" id="weekend_hours" value="{{ site_config.get('weekend_hours', 'Sab - Dom: Cerrado') }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Secciones de Texto Largo -->
+<div class="mt-6 bg-white shadow-sm rounded-lg p-6">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">📄 Textos de Páginas</h2>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Texto de Bienvenida (Página Principal)</label>
+            <textarea id="welcome_text" rows="4"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">{{ site_config.get('welcome_text', 'Bienvenidos a Wawalu, donde cada niño encuentra su lugar para crecer y aprender.') }}</textarea>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Texto "Acerca de Nosotros"</label>
+            <textarea id="about_text" rows="4"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">{{ site_config.get('about_text', 'Somos un centro educativo comprometido con el desarrollo integral de cada niño...') }}</textarea>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showAlert(message, type = 'success') {
+    const alertDiv = document.getElementById('alertMessage');
+    alertDiv.className = `mb-4 p-4 rounded-lg ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+    alertDiv.textContent = message;
+    alertDiv.classList.remove('hidden');
+    
+    setTimeout(() => {
+        alertDiv.classList.add('hidden');
+    }, 5000);
+}
+
+async function saveAllChanges() {
+    // Recopilar todos los datos del formulario
+    const formData = {
+        site_name: document.getElementById('site_name').value,
+        site_tagline: document.getElementById('site_tagline').value,
+        site_description: document.getElementById('site_description').value,
+        contact_email: document.getElementById('contact_email').value,
+        contact_phone: document.getElementById('contact_phone').value,
+        contact_address: document.getElementById('contact_address').value,
+        free_shipping_amount: document.getElementById('free_shipping_amount').value,
+        shipping_cost: document.getElementById('shipping_cost').value,
+        tax_rate: document.getElementById('tax_rate').value,
+        store_enabled: document.getElementById('store_enabled').checked ? 'true' : 'false',
+        facebook_url: document.getElementById('facebook_url').value,
+        instagram_url: document.getElementById('instagram_url').value,
+        whatsapp_number: document.getElementById('whatsapp_number').value,
+        weekdays_hours: document.getElementById('weekdays_hours').value,
+        weekend_hours: document.getElementById('weekend_hours').value,
+        welcome_text: document.getElementById('welcome_text').value,
+        about_text: document.getElementById('about_text').value
+    };
+    
+    try {
+        const response = await fetch('/admin/content/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showAlert(result.message, 'success');
+        } else {
+            showAlert(result.message, 'error');
+        }
+    } catch (error) {
+        showAlert('Error de conexión', 'error');
+    }
+}
+
+// Auto-guardar cada 5 minutos
+setInterval(() => {
+    saveAllChanges();
+}, 300000);
+</script>
+{% endblock %}

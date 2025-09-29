@@ -1,0 +1,223 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Gestión de Usuarios{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-sm">
+    <div class="p-6 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl font-semibold">Usuarios</h2>
+            <button onclick="openAddUserModal()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Agregar Usuario
+            </button>
+        </div>
+    </div>
+    
+    <div class="p-6">
+        <!-- Search and Filter -->
+        <div class="mb-6 flex gap-4">
+            <input type="text" id="searchUser" placeholder="Buscar usuario..." 
+                   class="px-4 py-2 border rounded-lg w-full max-w-xs">
+            <select id="filterRole" class="px-4 py-2 border rounded-lg">
+                <option value="">Todos los roles</option>
+                <option value="padre">Padre</option>
+                <option value="madre">Madre</option>
+                <option value="tutor">Tutor</option>
+                <option value="staff">Staff</option>
+            </select>
+        </div>
+
+        <!-- Users Table -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rol</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Admin</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for user in users %}
+                    <tr>
+                        <td class="px-6 py-4">{{ user.name }}</td>
+                        <td class="px-6 py-4">{{ user.email }}</td>
+                        <td class="px-6 py-4">{{ user.role }}</td>
+                        <td class="px-6 py-4">
+                            {% if user.is_admin %}
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Admin</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if user.is_active %}
+                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Activo</span>
+                            {% else %}
+                            <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            <button onclick="editUser({{ user.id }})" class="text-blue-600 hover:text-blue-800 mr-3">
+                                Editar
+                            </button>
+                            <button onclick="confirmDeleteUser({{ user.id }})" class="text-red-600 hover:text-red-800">
+                                Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit User Modal -->
+<div id="userModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium" id="modalTitle">Agregar Usuario</h3>
+            <form id="userForm" class="mt-4">
+                <input type="hidden" id="userId">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="userName">
+                        Nombre Completo
+                    </label>
+                    <input type="text" id="userName" name="name" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="userEmail">
+                        Email
+                    </label>
+                    <input type="email" id="userEmail" name="email" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="userRole">
+                        Rol
+                    </label>
+                    <select id="userRole" name="role" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="padre">Padre</option>
+                        <option value="madre">Madre</option>
+                        <option value="tutor">Tutor</option>
+                        <option value="staff">Staff</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="userPassword">
+                        Contraseña
+                    </label>
+                    <input type="password" id="userPassword" name="password"
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <p class="text-gray-600 text-xs italic">Dejar en blanco para mantener la contraseña actual (al editar)</p>
+                </div>
+                <div class="mb-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="userAdmin" name="is_admin" class="mr-2">
+                        <span class="text-gray-700 text-sm font-bold">Es Administrador</span>
+                    </label>
+                </div>
+                <div class="flex justify-end gap-4">
+                    <button type="button" onclick="closeUserModal()"
+                            class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function openAddUserModal() {
+    document.getElementById('modalTitle').textContent = 'Agregar Usuario';
+    document.getElementById('userForm').reset();
+    document.getElementById('userId').value = '';
+    document.getElementById('userPassword').required = true;
+    document.getElementById('userModal').classList.remove('hidden');
+}
+
+function editUser(userId) {
+    fetch(`/admin/users/${userId}`)
+        .then(response => response.json())
+        .then(user => {
+            document.getElementById('modalTitle').textContent = 'Editar Usuario';
+            document.getElementById('userId').value = user.id;
+            document.getElementById('userName').value = user.name;
+            document.getElementById('userEmail').value = user.email;
+            document.getElementById('userRole').value = user.role;
+            document.getElementById('userAdmin').checked = user.is_admin;
+            document.getElementById('userPassword').required = false;
+            document.getElementById('userModal').classList.remove('hidden');
+        });
+}
+
+function closeUserModal() {
+    document.getElementById('userModal').classList.add('hidden');
+}
+
+function confirmDeleteUser(userId) {
+    if (confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
+        fetch(`/admin/users/${userId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message);
+            }
+        });
+    }
+}
+
+document.getElementById('userForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const userId = document.getElementById('userId').value;
+    const method = userId ? 'PUT' : 'POST';
+    const url = userId ? `/admin/users/${userId}` : '/admin/users';
+
+    const formData = {
+        name: document.getElementById('userName').value,
+        email: document.getElementById('userEmail').value,
+        role: document.getElementById('userRole').value,
+        is_admin: document.getElementById('userAdmin').checked
+    };
+
+    const password = document.getElementById('userPassword').value;
+    if (password) {
+        formData.password = password;
+    }
+
+    fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert(data.message);
+        }
+    });
+});
+</script>
+{% endblock %}

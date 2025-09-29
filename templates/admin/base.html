@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Panel Administrativo{% endblock %} - Wawalu</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-100">
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="bg-blue-800 text-white w-64 min-h-screen p-4">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold">Panel Admin</h1>
+                <p class="text-sm opacity-75">Wawalu</p>
+            </div>
+            <nav>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{{ url_for('admin_dashboard') }}" class="block py-2 px-4 rounded hover:bg-blue-700">
+                            📊 Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin_users') }}" class="block py-2 px-4 rounded hover:bg-blue-700">
+                            👥 Usuarios
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin_products') }}" class="block py-2 px-4 rounded hover:bg-blue-700">
+                            🛍️ Productos
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin_content') }}" class="block py-2 px-4 rounded hover:bg-blue-700">
+                            📝 Contenido Web
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin_news') }}" class="block py-2 px-4 rounded hover:bg-blue-700">
+                            📰 Noticias
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin_programs') }}" class="block py-2 px-4 rounded hover:bg-blue-700">
+                            🎓 Programas
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin_enrollments') }}" class="block py-2 px-4 rounded hover:bg-blue-700">
+                            📋 Matrículas
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin_orders') }}" class="block py-2 px-4 rounded hover:bg-blue-700">
+                            📦 Órdenes
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('logout') }}" class="block py-2 px-4 rounded hover:bg-red-700 mt-8">
+                            🚪 Cerrar Sesión
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="mb-4 p-4 rounded {% if category == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
