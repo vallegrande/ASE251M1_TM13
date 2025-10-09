@@ -15,9 +15,19 @@ document.addEventListener('DOMContentLoaded', function() {
     function showError(message) {
         errorDisplay.textContent = message;
         errorDisplay.classList.remove('hidden');
+        errorDisplay.classList.remove('bg-green-100', 'border-green-400', 'text-green-700');
+        errorDisplay.classList.add('bg-red-100', 'border-red-400', 'text-red-700');
         setTimeout(() => {
             errorDisplay.classList.add('hidden');
         }, 3000);
+    }
+
+    // Función para mostrar mensajes de éxito
+    function showSuccessMessage(message) {
+        errorDisplay.textContent = message;
+        errorDisplay.classList.remove('hidden');
+        errorDisplay.classList.remove('bg-red-100', 'border-red-400', 'text-red-700');
+        errorDisplay.classList.add('bg-green-100', 'border-green-400', 'text-green-700');
     }
 
     // Función para habilitar/deshabilitar el botón de envío
@@ -78,7 +88,20 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
 
             if (response.ok) {
-                window.location.href = '/';  // Redirigir al inicio si el login es exitoso
+                // Verificar si hay una URL de retorno en la URL o en sessionStorage
+                const urlParams = new URLSearchParams(window.location.search);
+                const returnUrl = urlParams.get('return_url') || sessionStorage.getItem('return_url') || '/';
+                
+                // Limpiar la URL de retorno del sessionStorage
+                sessionStorage.removeItem('return_url');
+                
+                // Mostrar mensaje de éxito
+                showSuccessMessage('¡Bienvenido! Redirigiendo...');
+                
+                // Redirigir después de un breve delay
+                setTimeout(() => {
+                    window.location.href = returnUrl;
+                }, 1000);
             } else {
                 showError(data.message || 'Error al iniciar sesión');
                 submitButton.disabled = false;

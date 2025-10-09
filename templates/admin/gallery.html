@@ -1,0 +1,187 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Gestión de Galería{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/admin-gallery.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Gestión de Galería</h1>
+    <button onclick="openUploadModal()" class="upload-btn">
+        ➕ Subir Imagen
+    </button>
+</div>
+
+<!-- Filtros -->
+<div class="filters-container">
+    <div class="filters-row">
+        <div class="filter-group">
+            <label>Filtrar por categoría:</label>
+            <select id="categoryFilter" onchange="filterGallery()">
+                <option value="">Todas las categorías</option>
+                <option value="espacios">Espacios</option>
+                <option value="actividades">Actividades</option>
+                <option value="eventos">Eventos</option>
+                <option value="proyectos">Proyectos</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Buscar:</label>
+            <input type="text" id="searchInput" onkeyup="searchGallery()" placeholder="Buscar por título...">
+        </div>
+        <div class="image-counter">
+            <span>Total: <span id="imageCount">{{ images|length if images else 0 }}</span> imágenes</span>
+        </div>
+    </div>
+</div>
+
+<!-- Galería -->
+<div class="bg-white p-6 rounded-lg shadow-sm">
+    <div class="gallery-grid" id="galleryContainer">
+        {% if images %}
+            {% for image in images %}
+            <div class="gallery-item" data-category="{{ image.category }}" data-title="{{ image.title }}" data-description="{{ image.description or '' }}" data-image-id="{{ image.id }}">
+                <img src="{{ url_for('static', filename='img/' + image.image_url) }}" alt="{{ image.title }}">
+                <div class="gallery-overlay">
+                    <h3 class="font-semibold text-center mb-2">{{ image.title }}</h3>
+                    <p class="text-sm text-center mb-3">{{ image.category.title() }}</p>
+                    <div class="action-buttons">
+                        <button onclick="editImage({{ image.id }})" class="btn-edit">
+                            ✏️ Editar
+                        </button>
+                        <button onclick="deleteImage({{ image.id }})" class="btn-delete">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="col-span-full text-center py-12">
+            <div class="text-gray-400 text-6xl mb-4">🖼️</div>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">No hay imágenes en la galería</h3>
+            <p class="text-gray-500 mb-4">Sube tu primera imagen para comenzar</p>
+            <button onclick="openUploadModal()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Subir Primera Imagen
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal de Subida -->
+<div id="uploadModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 modal-backdrop" style="display: none;">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="bg-white p-6 rounded-lg max-w-md w-full modal-content">
+            <h2 class="text-xl font-bold mb-4">Subir Nueva Imagen</h2>
+        <form id="uploadForm" class="space-y-6" enctype="multipart/form-data" method="post">
+            <div>
+                <label for="image" class="block text-sm font-medium text-gray-700 mb-1">Imagen</label>
+                <input type="file" name="image" id="image" accept="image/*" required class="block w-full text-sm text-gray-700 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Título</label>
+                <input type="text" name="title" id="title" required class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                <textarea name="description" id="description" rows="2" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+            </div>
+            <div>
+                <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+                <select name="category" id="category" required class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecciona una categoría</option>
+                    <option value="espacios">Espacios</option>
+                    <option value="actividades">Actividades</option>
+                    <option value="eventos">Eventos</option>
+                    <option value="proyectos">Proyectos</option>
+                    <option value="promociones">Promociones</option>
+                </select>
+            </div>
+            <div id="year-select-wrapper" class="hidden">
+                <label for="promocion-year" class="block text-sm font-medium text-gray-700 mb-1">Año de Promoción</label>
+                <select id="promocion-year" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecciona un año</option>
+                    {% for year in range(2013, 2026) %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">Subir Imagen</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal de Edición -->
+<div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 modal-backdrop" style="display: none;">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="bg-white p-6 rounded-lg max-w-md w-full modal-content">
+            <h2 class="text-xl font-bold mb-4">Editar Imagen</h2>
+        <form id="editForm" class="modal-form">
+            <input type="hidden" id="editImageId" name="image_id">
+            <div class="form-group">
+                <label>Título:</label>
+                <input type="text" id="editTitle" name="title" required>
+            </div>
+            <div class="form-group">
+                <label>Descripción:</label>
+                <textarea id="editDescription" name="description"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Categoría:</label>
+                <select id="editCategory" name="category" required>
+                    <option value="espacios">Espacios</option>
+                    <option value="actividades">Actividades</option>
+                    <option value="eventos">Eventos</option>
+                    <option value="proyectos">Proyectos</option>
+                </select>
+            </div>
+            <div class="form-buttons">
+                <button type="submit" class="btn-primary">
+                    Guardar Cambios
+                </button>
+                <button type="button" onclick="closeEditModal()" class="btn-secondary">
+                    Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin-gallery.js') }}"></script>
+<script>
+// Mostrar el select de año solo si la categoría es promociones
+const categorySelect = document.getElementById('category');
+const yearSelectWrapper = document.getElementById('year-select-wrapper');
+const yearSelect = document.getElementById('promocion-year');
+const uploadForm = document.getElementById('uploadForm');
+
+categorySelect.addEventListener('change', function() {
+    if (this.value === 'promociones') {
+        yearSelectWrapper.classList.remove('hidden');
+        yearSelect.required = true;
+    } else {
+        yearSelectWrapper.classList.add('hidden');
+        yearSelect.required = false;
+        yearSelect.value = '';
+    }
+});
+
+uploadForm.addEventListener('submit', function(e) {
+    if (categorySelect.value === 'promociones') {
+        if (!yearSelect.value) {
+            e.preventDefault();
+            yearSelect.focus();
+            alert('Selecciona el año de la promoción.');
+            return false;
+        }
+        // Cambia el valor de la categoría antes de enviar
+        categorySelect.value = 'promociones-' + yearSelect.value;
+    }
+});
+</script>
+{% endblock %}

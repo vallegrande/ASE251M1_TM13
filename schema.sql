@@ -1,8 +1,26 @@
--- Crear la base de datos
-CREATE DATABASE IF NOT EXISTS wawalu_db;
+-- ========================================
+-- SCHEMA DE BASE DE DATOS WAWALU
+-- Versión: 2.2 - Octubre 2025 (Actualizado - Con Mis Pedidos)
+-- Descripción: Schema completo para el sistema de gestión educativa
+-- Incluye: Sistema de pedidos, carrito, autenticación mejorada
+-- Autor: Sistema de Gestión Wawalu
+-- ========================================
+
+-- Crear la base de datos con configuración optimizada
+CREATE DATABASE IF NOT EXISTS wawalu_db 
+CHARACTER SET utf8mb4 
+COLLATE utf8mb4_unicode_ci;
+
 USE wawalu_db;
 
--- Tabla de usuarios (debe crearse primero ya que otras tablas la referencian)
+-- Configurar el motor de base de datos
+SET SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+
+-- ========================================
+-- TABLA DE USUARIOS (BASE)
+-- ========================================
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -13,50 +31,62 @@ CREATE TABLE IF NOT EXISTS users (
     phone VARCHAR(20),
     address TEXT,
     profile_image VARCHAR(255),
-    is_active BOOLEAN DEFAULT true,
-    last_login TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE,
+    email_verified BOOLEAN DEFAULT FALSE,
+    verification_token VARCHAR(255),
+    last_login TIMESTAMP NULL,
     reset_token VARCHAR(255),
-    reset_token_expires TIMESTAMP,
+    reset_token_expires TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_email (email),
-    INDEX idx_role (role)
+    INDEX idx_role (role),
+    INDEX idx_active (is_active)
 );
 
--- Tabla de programas
+-- ========================================
+-- TABLA DE PROGRAMAS EDUCATIVOS
+-- ========================================
 CREATE TABLE IF NOT EXISTS programs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT,
     age_range VARCHAR(50),
-    capacity INT,
-    price DECIMAL(10,2),
-    active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    capacity INT DEFAULT 20,
+    price DECIMAL(10,2) DEFAULT 0.00,
+    duration_months INT DEFAULT 12,
+    schedule VARCHAR(100),
+    requirements TEXT,
+    active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_active (active),
+    INDEX idx_age_range (age_range)
 );
 
--- Insertar datos de ejemplo en programas
-INSERT INTO programs (name, description, age_range, capacity, price, active) VALUES
-('Programa Bebés', 'Programa especializado para bebés y niños pequeños', '6 meses - 2 años', 8, 500.00, true),
-('Programa Inicial', 'Programa de desarrollo temprano', '2 - 3 años', 12, 600.00, true),
-('Programa Preescolar', 'Programa completo de educación preescolar', '3 - 5 años', 15, 700.00, true);
-
--- Tabla de información adicional de padres
+-- ========================================
+-- TABLA DE INFORMACIÓN ADICIONAL DE PADRES
+-- ========================================
 CREATE TABLE IF NOT EXISTS parent_info (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     dni VARCHAR(8) NOT NULL,
     occupation VARCHAR(100),
-    relationship ENUM('padre', 'madre', 'tutor') NOT NULL,
+    workplace VARCHAR(200),
+    relationship ENUM('padre', 'madre', 'tutor', 'abuelo', 'abuela', 'otro') NOT NULL,
+    emergency_contact VARCHAR(100),
+    emergency_phone VARCHAR(20),
+    notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_user_dni (user_id, dni)
+    UNIQUE KEY unique_user_dni (user_id, dni),
+    INDEX idx_dni (dni)
 );
 
-
-
--- Tabla de estudiantes
+-- ========================================
+-- TABLA DE ESTUDIANTES
+-- ========================================
 CREATE TABLE IF NOT EXISTS students (
     id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
@@ -64,183 +94,342 @@ CREATE TABLE IF NOT EXISTS students (
     birth_date DATE NOT NULL,
     guardian_id INT,
     program_id INT,
+    student_code VARCHAR(20) UNIQUE,
     blood_type VARCHAR(5),
     allergies TEXT,
     medical_notes TEXT,
+    special_needs TEXT,
     emergency_contact VARCHAR(100),
     emergency_phone VARCHAR(20),
     photo VARCHAR(255),
-    status ENUM('active', 'inactive', 'graduated') DEFAULT 'active',
+    birth_certificate VARCHAR(255),
+    medical_certificate VARCHAR(255),
+    status ENUM('active', 'inactive', 'graduated', 'transferred') DEFAULT 'active',
+    enrollment_date DATE,
+    graduation_date DATE NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (guardian_id) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE SET NULL,
     INDEX idx_guardian (guardian_id),
     INDEX idx_program (program_id),
-    INDEX idx_status (status)
+    INDEX idx_status (status),
+    INDEX idx_code (student_code)
 );
 
--- Tabla de contactos/mensajes
+-- ========================================
+-- TABLA DE CONTACTOS/MENSAJES
+-- ========================================
 CREATE TABLE IF NOT EXISTS contacts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
     subject VARCHAR(200),
-    message TEXT,
-    status ENUM('pending', 'contacted', 'resolved') DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    message TEXT NOT NULL,
+    type ENUM('consulta', 'matricula', 'queja', 'sugerencia', 'otro') DEFAULT 'consulta',
+    priority ENUM('baja', 'media', 'alta', 'urgente') DEFAULT 'media',
+    status ENUM('pending', 'in_progress', 'contacted', 'resolved', 'closed') DEFAULT 'pending',
+    assigned_to INT NULL,
+    response TEXT,
+    responded_at TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (assigned_to) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_status (status),
+    INDEX idx_priority (priority),
+    INDEX idx_type (type)
 );
 
--- Tabla de matrículas
+-- ========================================
+-- TABLA DE MATRÍCULAS
+-- ========================================
 CREATE TABLE IF NOT EXISTS enrollments (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    student_id INT,
-    program_id INT,
-    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+    student_id INT NOT NULL,
+    program_id INT NOT NULL,
+    academic_year YEAR NOT NULL,
+    status ENUM('pending', 'approved', 'rejected', 'cancelled') DEFAULT 'pending',
     enrollment_date DATE,
+    approval_date DATE NULL,
+    rejection_reason TEXT NULL,
+    monthly_fee DECIMAL(10,2),
+    discount_percentage DECIMAL(5,2) DEFAULT 0.00,
+    notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (student_id) REFERENCES students(id)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE RESTRICT,
+    UNIQUE KEY unique_enrollment (student_id, program_id, academic_year),
+    INDEX idx_status (status),
+    INDEX idx_year (academic_year)
 );
 
--- Tabla de noticias
+-- ========================================
+-- TABLA DE NOTICIAS
+-- ========================================
 CREATE TABLE IF NOT EXISTS news (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(200) NOT NULL,
-    content TEXT,
+    content TEXT NOT NULL,
     excerpt TEXT,
     image_url VARCHAR(255),
     author_id INT,
-    category VARCHAR(50),
-    is_featured BOOLEAN DEFAULT false,
+    category ENUM('anuncios', 'eventos', 'actividades', 'academico', 'general') DEFAULT 'general',
+    is_featured BOOLEAN DEFAULT FALSE,
+    is_published BOOLEAN DEFAULT FALSE,
     slug VARCHAR(200) UNIQUE,
     meta_description VARCHAR(255),
     meta_keywords VARCHAR(255),
-    published_at TIMESTAMP,
+    view_count INT DEFAULT 0,
+    published_at TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL,
-    INDEX idx_published (published_at),
+    INDEX idx_published (is_published, published_at),
     INDEX idx_category (category),
-    FULLTEXT INDEX idx_content (title, content)
+    INDEX idx_featured (is_featured),
+    FULLTEXT INDEX idx_search (title, content, excerpt)
 );
 
--- Tabla de productos
+-- ========================================
+-- TABLA DE PRODUCTOS DE TIENDA
+-- ========================================
 CREATE TABLE IF NOT EXISTS products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT,
     price DECIMAL(10,2) NOT NULL,
+    cost_price DECIMAL(10,2) DEFAULT 0.00,
     stock INT NOT NULL DEFAULT 0,
-    category ENUM('uniformes', 'utiles', 'accesorios') NOT NULL,
+    min_stock INT DEFAULT 5,
+    category ENUM('uniformes', 'utiles', 'accesorios', 'libros', 'materiales') NOT NULL,
+    subcategory VARCHAR(50),
+    talla VARCHAR(10),
+    color VARCHAR(30),
+    brand VARCHAR(50),
+    sku VARCHAR(50) UNIQUE,
     image_url VARCHAR(255),
-    active BOOLEAN DEFAULT true,
+    gallery_images JSON,
+    weight DECIMAL(8,2),
+    dimensions VARCHAR(50),
+    active BOOLEAN DEFAULT TRUE,
+    featured BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_category (category),
-    INDEX idx_active (active)
+    INDEX idx_active (active),
+    INDEX idx_featured (featured),
+    INDEX idx_talla (talla),
+    INDEX idx_stock (stock),
+    INDEX idx_sku (sku),
+    FULLTEXT INDEX idx_search (name, description)
 );
 
--- Tabla de carrito de compras
+-- ========================================
+-- TABLA DE CARRITO DE COMPRAS
+-- ========================================
 CREATE TABLE IF NOT EXISTS shopping_cart (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     product_id INT NOT NULL,
     quantity INT NOT NULL DEFAULT 1,
+    selected_size VARCHAR(10),
+    selected_color VARCHAR(30),
+    price_at_add DECIMAL(10,2),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_cart_item (user_id, product_id)
+    UNIQUE KEY unique_cart_item (user_id, product_id, selected_size, selected_color),
+    INDEX idx_user (user_id)
 );
 
--- Tabla de órdenes
+-- ========================================
+-- TABLA DE ÓRDENES DE COMPRA
+-- ========================================
+-- TABLA DE ÓRDENES/PEDIDOS
+-- Sistema completo de gestión de pedidos para la tienda
+-- Incluye: Estados, pagos, envíos y tracking
+-- ========================================
 CREATE TABLE IF NOT EXISTS orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    order_number VARCHAR(20) UNIQUE NOT NULL,
     user_id INT NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL,
+    tax_amount DECIMAL(10,2) DEFAULT 0.00,
+    shipping_amount DECIMAL(10,2) DEFAULT 0.00,
+    discount_amount DECIMAL(10,2) DEFAULT 0.00,
     total_amount DECIMAL(10,2) NOT NULL,
-    status ENUM('pending', 'paid', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
-    payment_method VARCHAR(50),
+    status ENUM('pending', 'confirmed', 'paid', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded') DEFAULT 'pending',
+    payment_method ENUM('efectivo', 'tarjeta', 'transferencia', 'yape', 'plin') NULL,
+    payment_status ENUM('pending', 'paid', 'failed', 'refunded') DEFAULT 'pending',
     shipping_address TEXT,
+    billing_address TEXT,
     tracking_number VARCHAR(100),
+    delivery_date DATE NULL,
+    notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT,
     INDEX idx_user (user_id),
-    INDEX idx_status (status)
+    INDEX idx_status (status),
+    INDEX idx_payment_status (payment_status),
+    INDEX idx_order_number (order_number),
+    INDEX idx_created_at (created_at)
 );
 
--- Tabla de detalles de orden
+-- ========================================
+-- TABLA DE DETALLES DE ORDEN
+-- Items específicos de cada pedido con precios y cantidades
+-- Optimizada para consultas de "Mis Pedidos"
+-- ========================================
 CREATE TABLE IF NOT EXISTS order_details (
     id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT NOT NULL,
     product_id INT NOT NULL,
+    product_name VARCHAR(100) NOT NULL,
     quantity INT NOT NULL,
-    price_at_time DECIMAL(10,2) NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
+    selected_size VARCHAR(10),
+    selected_color VARCHAR(30),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT,
+    INDEX idx_order (order_id),
+    INDEX idx_product (product_id)
 );
 
--- Tabla de galería de imágenes
+-- ========================================
+-- TABLA DE GALERÍA DE IMÁGENES
+-- ========================================
 CREATE TABLE IF NOT EXISTS gallery (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     description TEXT,
     image_url VARCHAR(255) NOT NULL,
-    category VARCHAR(50),
-    is_featured BOOLEAN DEFAULT false,
+    thumbnail_url VARCHAR(255),
+    category ENUM('actividades', 'instalaciones', 'eventos', 'estudiantes', 'general') DEFAULT 'general',
+    tags JSON,
+    is_featured BOOLEAN DEFAULT FALSE,
+    is_public BOOLEAN DEFAULT TRUE,
+    alt_text VARCHAR(255),
+    sort_order INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_category (category)
+    INDEX idx_category (category),
+    INDEX idx_featured (is_featured),
+    INDEX idx_public (is_public),
+    INDEX idx_sort (sort_order)
 );
 
--- Tabla de eventos del calendario
+-- ========================================
+-- TABLA DE EVENTOS DEL CALENDARIO
+-- ========================================
 CREATE TABLE IF NOT EXISTS events (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     description TEXT,
     start_date DATETIME NOT NULL,
     end_date DATETIME NOT NULL,
+    all_day BOOLEAN DEFAULT FALSE,
     location VARCHAR(200),
-    type ENUM('academic', 'social', 'holiday', 'other') NOT NULL,
-    is_public BOOLEAN DEFAULT true,
+    type ENUM('academico', 'social', 'feriado', 'reunion', 'evento', 'otro') NOT NULL DEFAULT 'academico',
+    color VARCHAR(7) DEFAULT '#3B82F6',
+    is_public BOOLEAN DEFAULT TRUE,
+    is_recurring BOOLEAN DEFAULT FALSE,
+    recurrence_rule VARCHAR(255),
+    max_attendees INT,
+    registration_required BOOLEAN DEFAULT FALSE,
+    registration_deadline DATETIME NULL,
+    created_by INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
     INDEX idx_dates (start_date, end_date),
-    INDEX idx_type (type)
+    INDEX idx_type (type),
+    INDEX idx_public (is_public)
 );
 
--- Tabla de asistencia
+-- ========================================
+-- TABLA DE ASISTENCIA DE ESTUDIANTES
+-- ========================================
 CREATE TABLE IF NOT EXISTS attendance (
     id INT AUTO_INCREMENT PRIMARY KEY,
     student_id INT NOT NULL,
     date DATE NOT NULL,
-    status ENUM('present', 'absent', 'late', 'excused') NOT NULL,
+    status ENUM('present', 'absent', 'late', 'excused', 'sick') NOT NULL,
+    arrival_time TIME NULL,
+    departure_time TIME NULL,
     notes TEXT,
+    recorded_by INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (recorded_by) REFERENCES users(id) ON DELETE SET NULL,
     UNIQUE KEY unique_attendance (student_id, date),
-    INDEX idx_date (date)
-);
-
--- Tabla de pagos de matrícula
-CREATE TABLE IF NOT EXISTS payments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    enrollment_id INT NOT NULL,
-    amount DECIMAL(10,2) NOT NULL,
-    payment_date DATE NOT NULL,
-    payment_method VARCHAR(50),
-    transaction_id VARCHAR(100),
-    status ENUM('pending', 'completed', 'failed', 'refunded') DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (enrollment_id) REFERENCES enrollments(id) ON DELETE RESTRICT,
+    INDEX idx_date (date),
     INDEX idx_status (status)
 );
 
--- Tabla de actividades de administradores
+-- ========================================
+-- TABLA DE PAGOS DE MATRÍCULA
+-- ========================================
+CREATE TABLE IF NOT EXISTS payments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    enrollment_id INT NOT NULL,
+    payment_number VARCHAR(20) UNIQUE NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    payment_type ENUM('matricula', 'mensualidad', 'material', 'otro') NOT NULL,
+    payment_date DATE NOT NULL,
+    due_date DATE,
+    payment_method ENUM('efectivo', 'tarjeta', 'transferencia', 'yape', 'plin') NOT NULL,
+    transaction_id VARCHAR(100),
+    reference_number VARCHAR(100),
+    status ENUM('pending', 'completed', 'failed', 'refunded', 'cancelled') DEFAULT 'pending',
+    receipt_url VARCHAR(255),
+    notes TEXT,
+    processed_by INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (enrollment_id) REFERENCES enrollments(id) ON DELETE RESTRICT,
+    FOREIGN KEY (processed_by) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_status (status),
+    INDEX idx_payment_type (payment_type),
+    INDEX idx_due_date (due_date)
+);
+
+-- ========================================
+-- TABLA DE PAGOS DE ÓRDENES DE TIENDA
+-- ========================================
+CREATE TABLE IF NOT EXISTS order_payments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    payment_number VARCHAR(20) UNIQUE NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    payment_method ENUM('efectivo', 'tarjeta', 'transferencia', 'yape', 'plin') NOT NULL,
+    transaction_id VARCHAR(100),
+    reference_number VARCHAR(100),
+    status ENUM('pending', 'completed', 'failed', 'refunded', 'cancelled') DEFAULT 'pending',
+    receipt_image VARCHAR(255),
+    receipt_url VARCHAR(255),
+    notes TEXT,
+    verified_by INT,
+    verified_at TIMESTAMP NULL,
+    payment_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE RESTRICT,
+    FOREIGN KEY (verified_by) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_status (status),
+    INDEX idx_payment_method (payment_method),
+    INDEX idx_order (order_id)
+);
+
+-- ========================================
+-- TABLA DE ACTIVIDADES DE ADMINISTRADORES
+-- ========================================
 CREATE TABLE IF NOT EXISTS admin_activities (
     id INT PRIMARY KEY AUTO_INCREMENT,
     admin_id INT NOT NULL,
@@ -248,14 +437,21 @@ CREATE TABLE IF NOT EXISTS admin_activities (
     action_description TEXT NOT NULL,
     target_table VARCHAR(50),
     target_id INT,
+    old_values JSON,
+    new_values JSON,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (admin_id) REFERENCES users(id),
+    FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_admin (admin_id),
     INDEX idx_action (action_type),
-    INDEX idx_timestamp (timestamp)
+    INDEX idx_timestamp (timestamp),
+    INDEX idx_target (target_table, target_id)
 );
 
--- Tabla de sesiones activas
+-- ========================================
+-- TABLA DE SESIONES ACTIVAS
+-- ========================================
 CREATE TABLE IF NOT EXISTS active_sessions (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
@@ -264,88 +460,376 @@ CREATE TABLE IF NOT EXISTS active_sessions (
     last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     ip_address VARCHAR(45),
     user_agent TEXT,
-    FOREIGN KEY (user_id) REFERENCES users(id),
+    device_info VARCHAR(255),
+    location VARCHAR(100),
+    is_active BOOLEAN DEFAULT TRUE,
+    logout_time TIMESTAMP NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY unique_user_session (user_id, session_id),
-    INDEX idx_last_activity (last_activity)
+    INDEX idx_last_activity (last_activity),
+    INDEX idx_active (is_active)
 );
 
--- Tabla de configuraciones del sitio
+-- ========================================
+-- TABLA DE CONFIGURACIONES DEL SITIO
+-- ========================================
 CREATE TABLE IF NOT EXISTS site_settings (
     id INT PRIMARY KEY AUTO_INCREMENT,
     `key` VARCHAR(100) UNIQUE NOT NULL,
     `value` TEXT,
+    type ENUM('string', 'number', 'boolean', 'json', 'file') DEFAULT 'string',
+    category VARCHAR(50) DEFAULT 'general',
     description VARCHAR(255),
+    is_public BOOLEAN DEFAULT FALSE,
     updated_by INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
-    INDEX idx_key (`key`)
+    INDEX idx_key (`key`),
+    INDEX idx_category (category),
+    INDEX idx_public (is_public)
 );
 
+-- ========================================
+-- TABLA DE LIBRO DE RECLAMACIONES
+-- ========================================
+CREATE TABLE IF NOT EXISTS reclamaciones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    numero_reclamacion VARCHAR(20) UNIQUE NOT NULL,
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    tipo_documento ENUM('DNI', 'CE', 'PASAPORTE', 'RUC') NOT NULL,
+    numero_documento VARCHAR(20) NOT NULL,
+    telefono VARCHAR(20) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    direccion TEXT NOT NULL,
+    tipo_bien ENUM('PRODUCTO', 'SERVICIO') NOT NULL,
+    monto_reclamado DECIMAL(10,2) NOT NULL,
+    descripcion_bien TEXT NOT NULL,
+    tipo_reclamacion ENUM('RECLAMO', 'QUEJA') NOT NULL,
+    detalle_reclamacion TEXT NOT NULL,
+    pedido_consumidor TEXT NOT NULL,
+    estado ENUM('PENDIENTE', 'EN_PROCESO', 'RESUELTO', 'CERRADO') DEFAULT 'PENDIENTE',
+    fecha_reclamacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_respuesta TIMESTAMP NULL,
+    respuesta_empresa TEXT NULL,
+    acciones_adoptadas TEXT NULL,
+    observaciones TEXT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_numero (numero_reclamacion),
+    INDEX idx_estado (estado),
+    INDEX idx_fecha (fecha_reclamacion),
+    INDEX idx_tipo_reclamacion (tipo_reclamacion),
+    INDEX idx_tipo_documento (tipo_documento),
+    INDEX idx_email (email),
+    FULLTEXT INDEX idx_search_reclamaciones (nombres, apellidos, detalle_reclamacion, descripcion_bien)
+);
+
+-- ========================================
+-- DATOS INICIALES Y CONFIGURACIÓN
+-- ========================================
+
+-- Limpiar datos existentes si es necesario (comentar si no se quiere reiniciar)
+-- SET FOREIGN_KEY_CHECKS = 0;
+-- TRUNCATE TABLE admin_activities;
+-- TRUNCATE TABLE order_payments;
+-- TRUNCATE TABLE order_details;
+-- TRUNCATE TABLE orders;
+-- TRUNCATE TABLE shopping_cart;
+-- TRUNCATE TABLE products;
+-- TRUNCATE TABLE payments;
+-- TRUNCATE TABLE attendance;
+-- TRUNCATE TABLE enrollments;
+-- TRUNCATE TABLE students;
+-- TRUNCATE TABLE parent_info;
+-- TRUNCATE TABLE contacts;
+-- TRUNCATE TABLE active_sessions;
+-- TRUNCATE TABLE gallery;
+-- TRUNCATE TABLE events;
+-- TRUNCATE TABLE news;
+-- TRUNCATE TABLE site_settings;
+-- TRUNCATE TABLE programs;
+-- TRUNCATE TABLE users;
+-- SET FOREIGN_KEY_CHECKS = 1;
+
 -- Actualizar usuarios existentes para marcar staff como admins
-UPDATE users SET is_admin = TRUE WHERE role = 'staff';
+UPDATE users SET is_admin = TRUE WHERE role IN ('staff', 'admin');
 
--- Insertar productos de ejemplo para la tienda
-INSERT IGNORE INTO products (id, name, description, price, stock, category, image_url, active) VALUES
--- Productos de uniformes
-(1, 'Uniforme Diario', 'Uniforme escolar diario completo con camisa y pantalón/falda', 89.90, 20, 'uniformes', 'uniform1.jpg', TRUE),
-(2, 'Uniforme Deportivo', 'Conjunto deportivo completo con polo y short', 79.90, 15, 'uniformes', 'uniform2.jpg', TRUE),
-(3, 'Polo Institucional', 'Polo con logo institucional bordado', 29.90, 50, 'uniformes', 'polo.jpg', TRUE),
-(4, 'Short Deportivo', 'Short deportivo con logo institucional', 35.90, 30, 'uniformes', 'short.jpg', TRUE),
-(5, 'Medias Escolares', 'Par de medias escolares color blanco', 12.90, 100, 'uniformes', 'socks.jpg', TRUE),
-(6, 'Casaca Institucional', 'Casaca con logo bordado y cierre frontal', 89.90, 25, 'uniformes', 'jacket.jpg', TRUE),
+-- ========================================
+-- INSERCIÓN DE DATOS DE EJEMPLO
+-- ========================================
 
--- Productos de útiles escolares
-(7, 'Kit de Arte', 'Kit completo de arte con pinceles, témperas y papel', 45.90, 40, 'utiles', 'artkit.jpg', TRUE),
-(8, 'Cuaderno A4', 'Cuaderno institucional tamaño A4 con logo', 8.90, 200, 'utiles', 'notebook.jpg', TRUE),
-(9, 'Set de Lápices', 'Set de lápices de colores de 24 unidades', 15.90, 80, 'utiles', 'pencils.jpg', TRUE),
-(10, 'Plastilina', 'Set de plastilina no tóxica de 6 colores', 12.90, 60, 'utiles', 'clay.jpg', TRUE),
-(11, 'Tijeras Escolares', 'Tijeras punta roma de seguridad para niños', 5.90, 150, 'utiles', 'scissors.jpg', TRUE),
-(12, 'Folder Institucional', 'Folder con logo institucional tamaño A4', 7.90, 120, 'utiles', 'folder.jpg', TRUE),
-(13, 'Témperas', 'Set de témperas de 12 colores no tóxicas', 18.90, 75, 'utiles', 'paint.jpg', TRUE),
+-- Programas educativos
+INSERT IGNORE INTO programs (id, name, description, age_range, capacity, price, duration_months, schedule, active) VALUES
+(1, 'Programa Bebés', 'Programa especializado para bebés y niños pequeños con estimulación temprana y desarrollo sensorial', '6 meses - 2 años', 8, 500.00, 12, 'Lunes a Viernes 8:00-12:00', TRUE),
+(2, 'Programa Inicial', 'Programa de desarrollo temprano con actividades lúdicas y educativas', '2 - 3 años', 12, 600.00, 12, 'Lunes a Viernes 8:00-13:00', TRUE),
+(3, 'Programa Preescolar', 'Programa completo de educación preescolar con preparación para primaria', '3 - 5 años', 15, 700.00, 12, 'Lunes a Viernes 8:00-15:00', TRUE),
+(4, 'Programa Vacacional', 'Programa especial para vacaciones con actividades recreativas', '3 - 6 años', 20, 300.00, 2, 'Lunes a Viernes 9:00-16:00', TRUE);
 
--- Productos de accesorios
-(14, 'Mochila Escolar', 'Mochila escolar con logo institucional y compartimentos', 79.90, 35, 'accesorios', 'backpack.jpg', TRUE),
-(15, 'Lonchera Térmica', 'Lonchera térmica con logo institucional', 45.90, 45, 'accesorios', 'lunchbox.jpg', TRUE),
-(16, 'Gorro Institucional', 'Gorro con protección UV y logo bordado', 25.90, 55, 'accesorios', 'hat.jpg', TRUE),
-(17, 'Botella de Agua', 'Botella de agua reutilizable con logo', 19.90, 90, 'accesorios', 'bottle.jpg', TRUE),
-(18, 'Set de Toallas', 'Set de 2 toallas con logo institucional', 29.90, 40, 'accesorios', 'towels.jpg', TRUE),
-(19, 'Mandil de Arte', 'Mandil impermeable para actividades artísticas', 35.90, 30, 'accesorios', 'apron.jpg', TRUE),
-(20, 'Porta Útiles', 'Estuche para útiles escolares con compartimentos', 22.90, 70, 'accesorios', 'case.jpg', TRUE);
+-- Usuarios administradores y de ejemplo (contraseñas hasheadas)
+INSERT IGNORE INTO users (id, name, email, password, role, is_admin, phone, email_verified, created_at) VALUES 
+(1, 'Administrador Principal', 'admin@wawalu.edu.pe', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewKyNi2JL8MgWcl2', 'admin', TRUE, '999888777', TRUE, NOW()),
+(2, 'Diego Centeno', 'diego.centeno@vallegrande.edu.pe', '$2b$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', TRUE, '999888778', TRUE, NOW()),
+(3, 'María García', 'maria.garcia@example.com', '$2b$12$K4vGzaHCh8Hw1fHcPmC1vuZtHv.VgsP8rLPkJqZoThHKUhQm8bUNW', 'madre', FALSE, '987654321', TRUE, NOW()),
+(4, 'Juan Pérez', 'juan.perez@example.com', '$2b$12$K4vGzaHCh8Hw1fHcPmC1vuZtHv.VgsP8rLPkJqZoThHKUhQm8bUNW', 'padre', FALSE, '987654322', TRUE, NOW()),
+(5, 'Ana López', 'ana.lopez@example.com', '$2b$12$K4vGzaHCh8Hw1fHcPmC1vuZtHv.VgsP8rLPkJqZoThHKUhQm8bUNW', 'tutor', FALSE, '987654323', TRUE, NOW());
 
--- Crear un usuario administrador por defecto (password: admin123)
-INSERT IGNORE INTO users (id, name, email, password, role, is_admin, phone, created_at) VALUES 
-(1, 'Administrador', 'admin@wawalu.edu.pe', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewKyNi2JL8MgWcl2', 'admin', TRUE, '999888777', NOW());
+-- Productos de la tienda con información más completa
+INSERT IGNORE INTO products (id, name, description, price, cost_price, stock, category, talla, sku, image_url, active, featured) VALUES
+-- UNIFORMES
+(1, 'Uniforme Diario', 'Uniforme escolar diario completo con camisa y pantalón/falda de alta calidad', 89.90, 45.00, 20, 'uniformes', '6', 'UNI-001-T6', 'uniform1.jpg', TRUE, TRUE),
+(2, 'Uniforme Deportivo', 'Conjunto deportivo completo con polo y short transpirable', 79.90, 40.00, 15, 'uniformes', '8', 'UNI-002-T8', 'uniform2.jpg', TRUE, TRUE),
+(3, 'Polo Institucional', 'Polo con logo institucional bordado en algodón 100%', 29.90, 15.00, 50, 'uniformes', '4', 'POL-001-T4', 'polo.jpg', TRUE, FALSE),
+(4, 'Short Deportivo', 'Short deportivo con logo institucional y tela absorbente', 35.90, 18.00, 30, 'uniformes', '6', 'SHO-001-T6', 'short.jpg', TRUE, FALSE),
+(5, 'Medias Escolares', 'Par de medias escolares color blanco, material suave', 12.90, 6.00, 100, 'uniformes', NULL, 'MED-001', 'socks.jpg', TRUE, FALSE),
+(6, 'Casaca Institucional', 'Casaca con logo bordado y cierre frontal resistente', 89.90, 45.00, 25, 'uniformes', '10', 'CAS-001-T10', 'jacket.jpg', TRUE, TRUE),
 
--- Crear cuenta de administrador de Diego Centeno (password: Diego!123)
-INSERT IGNORE INTO users (id, name, email, password, role, is_admin, phone, created_at) VALUES 
-(2, 'Diego Centeno', 'diego.centeno@vallegrande.edu.pe', '$2b$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', TRUE, '999888778', NOW());
+-- ÚTILES ESCOLARES
+(7, 'Kit de Arte Completo', 'Kit completo de arte con pinceles, témperas, papel y más accesorios', 45.90, 25.00, 40, 'utiles', NULL, 'ART-001', 'artkit.jpg', TRUE, TRUE),
+(8, 'Cuaderno Institucional A4', 'Cuaderno institucional tamaño A4 con logo, 100 hojas', 8.90, 4.50, 200, 'utiles', NULL, 'CUA-001', 'notebook.jpg', TRUE, FALSE),
+(9, 'Set de Lápices de Colores', 'Set de lápices de colores de 24 unidades, no tóxicos', 15.90, 8.00, 80, 'utiles', NULL, 'LAP-001', 'pencils.jpg', TRUE, FALSE),
+(10, 'Plastilina Educativa', 'Set de plastilina no tóxica de 6 colores brillantes', 12.90, 6.50, 60, 'utiles', NULL, 'PLA-001', 'clay.jpg', TRUE, FALSE),
+(11, 'Tijeras de Seguridad', 'Tijeras punta roma de seguridad para niños, ergonómicas', 5.90, 3.00, 150, 'utiles', NULL, 'TIJ-001', 'scissors.jpg', TRUE, FALSE),
+(12, 'Folder Institucional', 'Folder con logo institucional tamaño A4, material resistente', 7.90, 4.00, 120, 'utiles', NULL, 'FOL-001', 'folder.jpg', TRUE, FALSE),
+(13, 'Témperas Escolares', 'Set de témperas de 12 colores no tóxicas, lavables', 18.90, 10.00, 75, 'utiles', NULL, 'TEM-001', 'paint.jpg', TRUE, FALSE),
 
--- Crear algunos usuarios de ejemplo (password: 123456)
-INSERT IGNORE INTO users (name, email, password, role, is_admin, phone, created_at) VALUES 
-('María García', 'maria.garcia@example.com', '$2b$12$K4vGzaHCh8Hw1fHcPmC1vuZtHv.VgsP8rLPkJqZoThHKUhQm8bUNW', 'madre', FALSE, '987654321', NOW()),
-('Juan Pérez', 'juan.perez@example.com', '$2b$12$K4vGzaHCh8Hw1fHcPmC1vuZtHv.VgsP8rLPkJqZoThHKUhQm8bUNW', 'padre', FALSE, '987654322', NOW()),
-('Ana López', 'ana.lopez@example.com', '$2b$12$K4vGzaHCh8Hw1fHcPmC1vuZtHv.VgsP8rLPkJqZoThHKUhQm8bUNW', 'tutor', FALSE, '987654323', NOW());
+-- ACCESORIOS
+(14, 'Mochila Escolar Premium', 'Mochila escolar con logo institucional y múltiples compartimentos', 79.90, 40.00, 35, 'accesorios', NULL, 'MOC-001', 'backpack.jpg', TRUE, TRUE),
+(15, 'Lonchera Térmica', 'Lonchera térmica con logo institucional y aislamiento', 45.90, 23.00, 45, 'accesorios', NULL, 'LON-001', 'lunchbox.jpg', TRUE, FALSE),
+(16, 'Gorro con Protección UV', 'Gorro con protección UV y logo bordado, ajustable', 25.90, 13.00, 55, 'accesorios', NULL, 'GOR-001', 'hat.jpg', TRUE, FALSE),
+(17, 'Botella de Agua Ecológica', 'Botella de agua reutilizable con logo, libre de BPA', 19.90, 10.00, 90, 'accesorios', NULL, 'BOT-001', 'bottle.jpg', TRUE, FALSE),
+(18, 'Set de Toallas', 'Set de 2 toallas con logo institucional, suaves y absorbentes', 29.90, 15.00, 40, 'accesorios', NULL, 'TOA-001', 'towels.jpg', TRUE, FALSE),
+(19, 'Mandil de Arte', 'Mandil impermeable para actividades artísticas con bolsillos', 35.90, 18.00, 30, 'accesorios', NULL, 'MAN-001', 'apron.jpg', TRUE, FALSE),
+(20, 'Porta Útiles Organizado', 'Estuche para útiles escolares con compartimentos organizados', 22.90, 12.00, 70, 'accesorios', NULL, 'POR-001', 'case.jpg', TRUE, FALSE);
 
--- Agregar algunas noticias de ejemplo
-INSERT IGNORE INTO news (title, content, excerpt, category, image_url, is_featured, author_id, published_at, created_at) VALUES
-('Bienvenidos al nuevo año escolar 2025', 'Estamos emocionados de dar la bienvenida a todos nuestros estudiantes y familias...', 'Iniciamos un nuevo año lleno de oportunidades de aprendizaje y crecimiento.', 'Anuncios', 'news1.jpg', TRUE, 1, NOW(), NOW()),
-('Inauguración del nuevo espacio de arte', 'Con gran alegría anunciamos la inauguración de nuestro nuevo espacio dedicado al arte...', 'Un espacio especialmente diseñado para fomentar la creatividad de nuestros niños.', 'Eventos', 'news2.jpg', TRUE, 1, NOW(), NOW()),
-('Taller de música para padres e hijos', 'Invitamos a todas las familias a participar en nuestro taller especial de música...', 'Una oportunidad única para compartir y aprender en familia.', 'Actividades', 'news3.jpg', FALSE, 1, NOW(), NOW());
+-- Más variantes de uniformes por tallas
+INSERT IGNORE INTO products (name, description, price, cost_price, stock, category, talla, sku, image_url, active, featured) VALUES
+-- Uniformes Diarios por tallas
+('Uniforme Diario Talla 2', 'Uniforme escolar diario completo - Talla 2', 89.90, 45.00, 15, 'uniformes', '2', 'UNI-001-T2', 'uniform1.jpg', TRUE, FALSE),
+('Uniforme Diario Talla 4', 'Uniforme escolar diario completo - Talla 4', 89.90, 45.00, 18, 'uniformes', '4', 'UNI-001-T4', 'uniform1.jpg', TRUE, FALSE),
+('Uniforme Diario Talla 8', 'Uniforme escolar diario completo - Talla 8', 89.90, 45.00, 22, 'uniformes', '8', 'UNI-001-T8', 'uniform1.jpg', TRUE, FALSE),
+('Uniforme Diario Talla 10', 'Uniforme escolar diario completo - Talla 10', 89.90, 45.00, 20, 'uniformes', '10', 'UNI-001-T10', 'uniform1.jpg', TRUE, FALSE),
+('Uniforme Diario Talla 12', 'Uniforme escolar diario completo - Talla 12', 89.90, 45.00, 16, 'uniformes', '12', 'UNI-001-T12', 'uniform1.jpg', TRUE, FALSE),
 
--- Insertar configuraciones básicas del sitio
-INSERT IGNORE INTO site_settings (`key`, `value`, description, updated_by) VALUES
-('site_name', 'Centro Educativo Wawalu', 'Nombre del sitio web', 2),
-('site_description', 'Centro de desarrollo educativo temprano especializado en el crecimiento integral de los niños', 'Descripción del sitio web', 2),
-('contact_email', 'diego.centeno@vallegrande.edu.pe', 'Email de contacto principal', 2),
-('contact_phone', '+51 999 888 777', 'Teléfono de contacto principal', 2),
-('contact_address', 'Av. Educación 123, Lima, Perú', 'Dirección física del centro', 2),
-('facebook_url', 'https://facebook.com/wawalu', 'URL de Facebook', 2),
-('instagram_url', 'https://instagram.com/wawalu', 'URL de Instagram', 2),
-('whatsapp_number', '+51999888777', 'Número de WhatsApp', 2),
-('enrollment_open', 'true', 'Estado de las matrículas (true/false)', 2),
-('enrollment_deadline', '2025-12-15', 'Fecha límite de matrícula', 2);
+-- Uniformes Deportivos por tallas
+('Uniforme Deportivo Talla 2', 'Conjunto deportivo completo - Talla 2', 79.90, 40.00, 12, 'uniformes', '2', 'UNI-002-T2', 'uniform2.jpg', TRUE, FALSE),
+('Uniforme Deportivo Talla 4', 'Conjunto deportivo completo - Talla 4', 79.90, 40.00, 16, 'uniformes', '4', 'UNI-002-T4', 'uniform2.jpg', TRUE, FALSE),
+('Uniforme Deportivo Talla 6', 'Conjunto deportivo completo - Talla 6', 79.90, 40.00, 18, 'uniformes', '6', 'UNI-002-T6', 'uniform2.jpg', TRUE, FALSE),
+('Uniforme Deportivo Talla 10', 'Conjunto deportivo completo - Talla 10', 79.90, 40.00, 14, 'uniformes', '10', 'UNI-002-T10', 'uniform2.jpg', TRUE, FALSE),
+('Uniforme Deportivo Talla 12', 'Conjunto deportivo completo - Talla 12', 79.90, 40.00, 13, 'uniformes', '12', 'UNI-002-T12', 'uniform2.jpg', TRUE, FALSE),
 
--- Verificar la creación exitosa de productos
-SELECT 'Productos creados exitosamente' as mensaje, COUNT(*) as total_productos FROM products;
-SELECT 'Por categoría:' as detalle, category as categoria, COUNT(*) as cantidad FROM products GROUP BY category;
+-- Polos por tallas
+('Polo Institucional Talla 2', 'Polo con logo institucional - Talla 2', 29.90, 15.00, 25, 'uniformes', '2', 'POL-001-T2', 'polo.jpg', TRUE, FALSE),
+('Polo Institucional Talla 6', 'Polo con logo institucional - Talla 6', 29.90, 15.00, 30, 'uniformes', '6', 'POL-001-T6', 'polo.jpg', TRUE, FALSE),
+('Polo Institucional Talla 8', 'Polo con logo institucional - Talla 8', 29.90, 15.00, 28, 'uniformes', '8', 'POL-001-T8', 'polo.jpg', TRUE, FALSE),
+('Polo Institucional Talla 10', 'Polo con logo institucional - Talla 10', 29.90, 15.00, 32, 'uniformes', '10', 'POL-001-T10', 'polo.jpg', TRUE, FALSE),
+('Polo Institucional Talla 12', 'Polo con logo institucional - Talla 12', 29.90, 15.00, 27, 'uniformes', '12', 'POL-001-T12', 'polo.jpg', TRUE, FALSE),
+
+-- Casacas por tallas
+('Casaca Institucional Talla 2', 'Casaca con logo bordado - Talla 2', 89.90, 45.00, 10, 'uniformes', '2', 'CAS-001-T2', 'jacket.jpg', TRUE, FALSE),
+('Casaca Institucional Talla 4', 'Casaca con logo bordado - Talla 4', 89.90, 45.00, 12, 'uniformes', '4', 'CAS-001-T4', 'jacket.jpg', TRUE, FALSE),
+('Casaca Institucional Talla 6', 'Casaca con logo bordado - Talla 6', 89.90, 45.00, 14, 'uniformes', '6', 'CAS-001-T6', 'jacket.jpg', TRUE, FALSE),
+('Casaca Institucional Talla 8', 'Casaca con logo bordado - Talla 8', 89.90, 45.00, 13, 'uniformes', '8', 'CAS-001-T8', 'jacket.jpg', TRUE, FALSE),
+('Casaca Institucional Talla 12', 'Casaca con logo bordado - Talla 12', 89.90, 45.00, 11, 'uniformes', '12', 'CAS-001-T12', 'jacket.jpg', TRUE, FALSE);
+
+-- Noticias de ejemplo
+INSERT IGNORE INTO news (title, content, excerpt, category, image_url, is_featured, is_published, author_id, published_at, created_at) VALUES
+('Bienvenidos al nuevo año escolar 2025', 
+ 'Estamos emocionados de dar la bienvenida a todos nuestros estudiantes y familias al nuevo año escolar 2025. Este año trae consigo nuevas oportunidades de aprendizaje, crecimiento y desarrollo integral para nuestros pequeños. Hemos preparado un programa educativo renovado con actividades innovadoras que fomentarán la creatividad, el pensamiento crítico y las habilidades sociales de nuestros estudiantes.',
+ 'Iniciamos un nuevo año lleno de oportunidades de aprendizaje y crecimiento para toda nuestra comunidad educativa.',
+ 'anuncios', 'news1.jpg', TRUE, TRUE, 1, NOW(), NOW()),
+
+('Inauguración del nuevo espacio de arte y creatividad', 
+ 'Con gran alegría anunciamos la inauguración de nuestro nuevo espacio dedicado al arte y la creatividad. Este ambiente especialmente diseñado cuenta con materiales de última generación, espacios amplios e iluminación natural que permitirá a nuestros estudiantes explorar y desarrollar su potencial artístico. El espacio incluye áreas para pintura, escultura, música y expresión corporal.',
+ 'Un espacio especialmente diseñado para fomentar la creatividad y el desarrollo artístico de nuestros niños.',
+ 'eventos', 'news2.jpg', TRUE, TRUE, 1, NOW(), NOW()),
+
+('Taller de música y movimiento para padres e hijos', 
+ 'Invitamos a todas las familias a participar en nuestro taller especial de música y movimiento. Esta actividad fortalecerá los vínculos familiares mientras desarrollamos habilidades musicales y motoras en los niños. Los talleres se realizarán los sábados de 10:00 a 11:30 AM en nuestro auditorio principal.',
+ 'Una oportunidad única para compartir, aprender y crear recuerdos especiales en familia.',
+ 'actividades', 'news3.jpg', FALSE, TRUE, 1, NOW(), NOW()),
+
+('Nuevo programa de alimentación saludable', 
+ 'Implementamos nuestro nuevo programa de alimentación saludable diseñado por nutricionistas especializados en nutrición infantil. Este programa incluye menús balanceados, huertos escolares donde los niños aprenderán sobre el origen de los alimentos, y talleres de cocina saludable para toda la familia.',
+ 'Promovemos hábitos alimenticios saludables desde la primera infancia con nuestro nuevo programa nutricional.',
+ 'academico', 'news4.jpg', FALSE, TRUE, 2, NOW(), NOW());
+
+-- Configuraciones del sitio
+INSERT IGNORE INTO site_settings (`key`, `value`, type, category, description, is_public, updated_by) VALUES
+('site_name', 'Centro Educativo Wawalu', 'string', 'general', 'Nombre oficial del sitio web', TRUE, 2),
+('site_description', 'Centro de desarrollo educativo temprano especializado en el crecimiento integral de los niños', 'string', 'general', 'Descripción del sitio web', TRUE, 2),
+('site_logo', '/static/img/logo.png', 'file', 'general', 'Logo principal del sitio', TRUE, 2),
+('contact_email', 'diego.centeno@vallegrande.edu.pe', 'string', 'contact', 'Email de contacto principal', TRUE, 2),
+('contact_phone', '+51 999 888 777', 'string', 'contact', 'Teléfono de contacto principal', TRUE, 2),
+('contact_whatsapp', '+51999888777', 'string', 'contact', 'Número de WhatsApp para contacto', TRUE, 2),
+('contact_address', 'Av. Educación 123, Lima, Perú', 'string', 'contact', 'Dirección física del centro educativo', TRUE, 2),
+('social_facebook', 'https://facebook.com/wawalu', 'string', 'social', 'URL de la página de Facebook', TRUE, 2),
+('social_instagram', 'https://instagram.com/wawalu', 'string', 'social', 'URL de la página de Instagram', TRUE, 2),
+('enrollment_open', 'true', 'boolean', 'enrollment', 'Estado de las matrículas (abierto/cerrado)', TRUE, 2),
+('enrollment_deadline', '2025-12-15', 'string', 'enrollment', 'Fecha límite para matrículas', TRUE, 2),
+('max_students_per_program', '20', 'number', 'enrollment', 'Máximo de estudiantes por programa', FALSE, 2),
+('school_hours', '8:00 AM - 5:00 PM', 'string', 'general', 'Horario de atención del centro', TRUE, 2),
+('academic_year', '2025', 'string', 'academic', 'Año académico actual', TRUE, 2);
+
+-- Galería de imágenes
+INSERT IGNORE INTO gallery (title, description, image_url, category, is_featured, alt_text, sort_order) VALUES
+('Actividades de Arte', 'Niños desarrollando su creatividad en el taller de arte', 'imagen1.jpg', 'actividades', TRUE, 'Niños pintando en el taller de arte', 1),
+('Momento de Lectura', 'Estudiantes disfrutando de la hora del cuento', 'imagen2.jpg', 'actividades', TRUE, 'Niños leyendo cuentos en círculo', 2),
+('Juegos al Aire Libre', 'Recreo y actividades físicas en nuestro patio', 'imagen3.jpg', 'actividades', FALSE, 'Niños jugando en el patio del colegio', 3),
+('Aula de Música', 'Aprendiendo música y ritmo de forma divertida', 'imagen4.jpg', 'actividades', FALSE, 'Clase de música con instrumentos', 4),
+('Laboratorio de Ciencias', 'Primeros experimentos científicos', 'imagen5.jpg', 'actividades', FALSE, 'Niños experimentando en laboratorio', 5),
+('Comedor Escolar', 'Hora del almuerzo con alimentos nutritivos', 'imagen6.jpg', 'instalaciones', FALSE, 'Niños almorzando en el comedor', 6),
+('Biblioteca Infantil', 'Espacio de lectura y aprendizaje', 'imagen7.jpg', 'instalaciones', TRUE, 'Biblioteca con libros infantiles', 7),
+('Aula Preescolar', 'Ambiente preparado para el aprendizaje', 'imagen8.jpg', 'instalaciones', FALSE, 'Aula equipada para preescolar', 8),
+('Actividad de Grupo', 'Trabajo colaborativo y socialización', 'imagen9.jpg', 'actividades', FALSE, 'Niños trabajando en equipo', 9),
+('Evento Familiar', 'Celebraciones con participación de familias', 'imagen10.jpg', 'eventos', TRUE, 'Evento familiar en el centro educativo', 10),
+('Graduación 2024', 'Ceremonia de graduación de nuestros estudiantes', 'imagen11.jpg', 'eventos', FALSE, 'Ceremonia de graduación', 11),
+('Taller de Padres', 'Actividades educativas para toda la familia', 'imagen12.jpg', 'eventos', FALSE, 'Taller educativo para padres e hijos', 12),
+('Nuevas Instalaciones', 'Modernos espacios para el aprendizaje', 'imagen13.jpg', 'instalaciones', FALSE, 'Vista de las nuevas instalaciones', 13);
+
+-- ========================================
+-- EVENTOS DEL CALENDARIO 2025
+-- ========================================
+INSERT IGNORE INTO events (title, description, start_date, end_date, type, location, is_public, created_by) VALUES
+('Inicio del Año Escolar 2025', 'Ceremonia de bienvenida para estudiantes y familias', '2025-03-01 09:00:00', '2025-03-01 11:00:00', 'academico', 'Auditorio Principal', TRUE, 1),
+('Reunión de Padres de Familia', 'Primera reunión informativa del año', '2025-03-10 18:00:00', '2025-03-10 20:00:00', 'reunion', 'Aula Magna', TRUE, 1),
+('Día de la Madre', 'Celebración especial del Día de la Madre', '2025-05-12 15:00:00', '2025-05-12 17:00:00', 'evento', 'Patio Principal', TRUE, 2),
+('Feria de Ciencias Infantil', 'Exposición de proyectos científicos de los estudiantes', '2025-06-15 09:00:00', '2025-06-15 16:00:00', 'academico', 'Todo el Centro', TRUE, 1),
+('Vacaciones de Invierno', 'Período de vacaciones de medio año', '2025-07-15 00:00:00', '2025-07-31 23:59:59', 'feriado', '', TRUE, 1),
+('Festival de Talentos', 'Muestra de habilidades artísticas de los estudiantes', '2025-08-25 15:00:00', '2025-08-25 18:00:00', 'evento', 'Auditorio Principal', TRUE, 2),
+('Día del Niño', 'Celebración especial para nuestros estudiantes', '2025-08-20 09:00:00', '2025-08-20 16:00:00', 'evento', 'Todo el Centro', TRUE, 1),
+('Ceremonia de Graduación', 'Graduación de estudiantes del programa preescolar', '2025-12-10 16:00:00', '2025-12-10 19:00:00', 'academico', 'Auditorio Principal', TRUE, 1);
+
+-- ========================================
+-- DATOS DE PRUEBA PARA PEDIDOS
+-- Pedidos de ejemplo para demonstrar funcionalidad "Mis Pedidos"
+-- ========================================
+
+-- Insertar pedidos de prueba para el usuario admin (ID: 1)
+INSERT IGNORE INTO orders (id, order_number, user_id, subtotal, total_amount, status, payment_method, payment_status, shipping_address, notes, created_at) VALUES
+(1, 'ORD-0001', 1, 84.50, 84.50, 'shipped', 'yape', 'paid', 'Av. Universitaria 1801, San Miguel, Lima', 'Pedido de prueba #1', DATE_SUB(NOW(), INTERVAL 5 DAY)),
+(2, 'ORD-0002', 1, 359.40, 359.40, 'delivered', 'transferencia', 'paid', 'Jr. Lampa 1069, Cercado de Lima', 'Pedido de prueba #2', DATE_SUB(NOW(), INTERVAL 10 DAY)),
+(3, 'ORD-0003', 1, 61.70, 61.70, 'pending', 'yape', 'pending', 'Av. Javier Prado Este 4200, Surco', 'Pedido de prueba #3', DATE_SUB(NOW(), INTERVAL 2 DAY)),
+(4, 'ORD-0004', 1, 125.80, 125.80, 'confirmed', 'transferencia', 'paid', 'Av. Brasil 2950, Magdalena del Mar', 'Pedido de prueba #4', DATE_SUB(NOW(), INTERVAL 7 DAY)),
+(5, 'ORD-0005', 1, 358.50, 358.50, 'delivered', 'yape', 'paid', 'Calle Los Olivos 789, San Isidro', 'Pedido de prueba #5', DATE_SUB(NOW(), INTERVAL 15 DAY)),
+(6, 'ORD-0006', 1, 161.70, 161.70, 'confirmed', 'transferencia', 'pending', 'Av. Universitaria 1801, San Miguel, Lima', 'Pedido de prueba #6', DATE_SUB(NOW(), INTERVAL 3 DAY)),
+(7, 'ORD-0007', 1, 515.00, 515.00, 'processing', 'yape', 'paid', 'Jr. Lampa 1069, Cercado de Lima', 'Pedido de prueba #7', DATE_SUB(NOW(), INTERVAL 1 DAY)),
+(8, 'ORD-0008', 1, 269.70, 269.70, 'confirmed', 'transferencia', 'paid', 'Av. Javier Prado Este 4200, Surco', 'Pedido de prueba #8', DATE_SUB(NOW(), INTERVAL 4 DAY));
+
+-- Insertar detalles de pedidos de prueba
+INSERT IGNORE INTO order_details (order_id, product_id, product_name, quantity, unit_price, total_price) VALUES
+-- Pedido 1
+(1, 1, 'Casaca Escolar', 2, 42.25, 84.50),
+-- Pedido 2  
+(2, 2, 'Medias Escolares', 3, 12.80, 38.40),
+(2, 3, 'Polo Escolar', 4, 28.50, 114.00),
+(2, 15, 'Gorro Escolar', 5, 41.40, 207.00),
+-- Pedido 3
+(3, 4, 'Short Deportivo', 1, 35.70, 35.70),
+(3, 6, 'Cuaderno Universitario', 2, 13.00, 26.00),
+-- Pedido 4
+(4, 7, 'Folder Manila', 3, 8.90, 26.70),
+(4, 8, 'Kit de Arte', 1, 99.10, 99.10),
+-- Pedido 5
+(5, 9, 'Lápices de Colores', 2, 15.60, 31.20),
+(5, 10, 'Arcilla Modelado', 4, 22.30, 89.20),
+(5, 11, 'Pintura Tempera', 6, 39.85, 239.10),
+-- Pedido 6
+(6, 12, 'Tijeras Escolares', 2, 18.40, 36.80),
+(6, 13, 'Botella de Agua', 3, 41.63, 124.90),
+-- Pedido 7
+(7, 14, 'Lonchera Térmica', 1, 55.20, 55.20),
+(7, 16, 'Mochila Escolar', 2, 89.60, 179.20),
+(7, 17, 'Estuche Escolar', 4, 70.15, 280.60),
+-- Pedido 8
+(8, 18, 'Toallas Húmedas', 3, 28.90, 86.70),
+(8, 19, 'Delantal Arte', 2, 46.50, 93.00),
+(8, 20, 'Uniforme Completo', 1, 90.00, 90.00);
+
+-- ========================================
+-- DATOS DE EJEMPLO PARA RECLAMACIONES
+-- ========================================
+INSERT IGNORE INTO reclamaciones (
+    numero_reclamacion, nombres, apellidos, tipo_documento, numero_documento,
+    telefono, email, direccion, tipo_bien, monto_reclamado, descripcion_bien,
+    tipo_reclamacion, detalle_reclamacion, pedido_consumidor, estado,
+    fecha_reclamacion, respuesta_empresa, acciones_adoptadas
+) VALUES
+('REC-20251001-001', 'María Elena', 'García López', 'DNI', '12345678', 
+ '+51 987 654 321', 'maria.garcia@example.com', 'Av. Los Olivos 123, San Isidro, Lima',
+ 'PRODUCTO', 89.90, 'Uniforme escolar diario completo talla 6 - Camisa blanca y pantalón azul',
+ 'RECLAMO', 'El uniforme que compré para mi hijo presenta defectos en la costura de la camisa. Después de un solo uso, se descosió la manga derecha y el bolsillo frontal. Además, el color del pantalón no coincide exactamente con la muestra que me mostraron en la tienda.',
+ 'Solicito el cambio inmediato del uniforme defectuoso por uno nuevo en perfectas condiciones, o en su defecto, la devolución completa del dinero pagado.',
+ 'RESUELTO', DATE_SUB(NOW(), INTERVAL 15 DAY),
+ 'Estimada Sra. García, lamentamos los inconvenientes ocasionados. Hemos procedido al cambio inmediato del uniforme y hemos reforzado nuestros controles de calidad.',
+ 'Se realizó el cambio del producto defectuoso. Se implementó revisión adicional de calidad en uniformes antes de la venta.'),
+
+('REC-20251002-002', 'Carlos Alberto', 'Mendoza Ruiz', 'DNI', '87654321',
+ '+51 998 765 432', 'carlos.mendoza@example.com', 'Jr. Las Flores 456, Miraflores, Lima',
+ 'SERVICIO', 0.00, 'Servicio de matrícula y proceso de inscripción para el programa preescolar',
+ 'QUEJA', 'El proceso de matrícula fue extremadamente lento y desorganizado. Tuve que hacer tres visitas al centro educativo para completar un trámite que me dijeron que se resolvería en una sola cita. El personal no tenía información clara sobre los documentos necesarios y me pidieron documentos adicionales que no estaban especificados inicialmente.',
+ 'Solicito una mejora en el proceso de matrícula con información clara y precisa desde el inicio, así como capacitación al personal para brindar un mejor servicio.',
+ 'EN_PROCESO', DATE_SUB(NOW(), INTERVAL 8 DAY),
+ 'Sr. Mendoza, agradecemos su feedback. Estamos implementando mejoras en nuestro proceso de matrícula para brindar un mejor servicio.',
+ 'Se está reorganizando el proceso de matrícula. Se creó una lista de verificación clara de documentos y se capacitó al personal administrativo.'),
+
+('REC-20251003-003', 'Ana Sofía', 'Vargas Torres', 'CE', '001234567',
+ '+51 976 543 210', 'ana.vargas@example.com', 'Calle San Martín 789, Barranco, Lima',
+ 'PRODUCTO', 45.90, 'Kit de arte completo con pinceles, témperas y papel',
+ 'RECLAMO', 'Compré un kit de arte para mi hija y al abrirlo en casa descubrí que faltaban varios elementos: 3 pinceles de diferentes tamaños, 2 colores de témpera (rojo y amarillo) y las hojas de papel estaban húmedas y arrugadas, probablemente por mal almacenamiento.',
+ 'Solicito la entrega de los elementos faltantes del kit de arte o la devolución parcial del dinero correspondiente a los items que no se incluyeron.',
+ 'PENDIENTE', DATE_SUB(NOW(), INTERVAL 3 DAY),
+ NULL, NULL),
+
+('REC-20251004-004', 'Roberto José', 'Fuentes Castro', 'DNI', '45678912',
+ '+51 965 432 109', 'roberto.fuentes@example.com', 'Av. Brasil 234, Magdalena del Mar, Lima',
+ 'SERVICIO', 500.00, 'Servicio educativo del programa de bebés - Modalidad completa',
+ 'RECLAMO', 'Mi bebé de 8 meses ha estado asistiendo al programa durante 2 meses, pero he notado que no se están cumpliendo las actividades prometidas en el programa. Las sesiones de estimulación temprana son muy cortas y no incluyen todos los ejercicios mencionados en el prospecto. Además, el ratio de niños por educadora es mayor al prometido inicialmente.',
+ 'Exijo el cumplimiento completo del programa educativo según lo contratado, con las horas y actividades prometidas, o una reducción proporcional en la mensualidad.',
+ 'PENDIENTE', DATE_SUB(NOW(), INTERVAL 1 DAY),
+ NULL, NULL),
+
+('REC-20251005-005', 'Lucía Carmen', 'Herrera Palma', 'DNI', '78912345',
+ '+51 954 321 098', 'lucia.herrera@example.com', 'Urb. San Felipe 567, Jesús María, Lima',
+ 'PRODUCTO', 25.90, 'Gorro institucional con protección UV y logo bordado',
+ 'QUEJA', 'El proceso de compra en la tienda fue muy deficiente. La vendedora no conocía bien los productos, me dio información incorrecta sobre las tallas disponibles y tuve que esperar más de 30 minutos para ser atendida a pesar de que no había otros clientes. La atención al cliente fue muy poco profesional.',
+ 'Solicito una mejora en la capacitación del personal de ventas y un mejor sistema de atención al cliente para evitar estas experiencias negativas.',
+ 'PENDIENTE', DATE_SUB(NOW(), INTERVAL 5 DAY),
+ NULL, NULL);
+
+-- ========================================
+-- VERIFICACIÓN Y MENSAJES FINALES
+-- ========================================
+
+-- Generar números únicos para órdenes y pagos
+UPDATE orders SET order_number = CONCAT('ORD-', YEAR(created_at), '-', LPAD(id, 6, '0')) WHERE order_number IS NULL OR order_number = '';
+UPDATE payments SET payment_number = CONCAT('PAY-', YEAR(created_at), '-', LPAD(id, 6, '0')) WHERE payment_number IS NULL OR payment_number = '';
+UPDATE order_payments SET payment_number = CONCAT('OPY-', YEAR(created_at), '-', LPAD(id, 6, '0')) WHERE payment_number IS NULL OR payment_number = '';
+
+-- Generar códigos únicos para estudiantes
+UPDATE students SET student_code = CONCAT('EST-', YEAR(created_at), '-', LPAD(id, 4, '0')) WHERE student_code IS NULL OR student_code = '';
+
+-- Finalizar transacción
+COMMIT;
+
+-- Verificación de datos creados
+SELECT 'RESUMEN DE DATOS CREADOS:' as info;
+SELECT 'Usuarios creados:' as tipo, COUNT(*) as cantidad FROM users;
+SELECT 'Programas creados:' as tipo, COUNT(*) as cantidad FROM programs;
+SELECT 'Productos creados:' as tipo, COUNT(*) as cantidad FROM products;
+SELECT 'Pedidos creados:' as tipo, COUNT(*) as cantidad FROM orders;
+SELECT 'Items de pedidos:' as tipo, COUNT(*) as cantidad FROM order_details;
+SELECT 'Noticias creadas:' as tipo, COUNT(*) as cantidad FROM news;
+SELECT 'Configuraciones creadas:' as tipo, COUNT(*) as cantidad FROM site_settings;
+SELECT 'Imágenes en galería:' as tipo, COUNT(*) as cantidad FROM gallery;
+SELECT 'Eventos programados:' as tipo, COUNT(*) as cantidad FROM events;
+
+SELECT 'PRODUCTOS POR CATEGORÍA:' as info;
+SELECT category as categoria, COUNT(*) as cantidad FROM products GROUP BY category;
+
+SELECT 'PEDIDOS POR ESTADO:' as info;
+SELECT status as estado, COUNT(*) as cantidad FROM orders GROUP BY status;
+
+SELECT 'CONFIGURACIÓN COMPLETADA EXITOSAMENTE ✅' as resultado;
+SELECT 'SISTEMA DE MIS PEDIDOS IMPLEMENTADO ✅' as funcionalidad;

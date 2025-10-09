@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% block title %}Libro de Reclamaciones - Wawalu{% endblock %}
+
+{% block head %}
+    <link href="{{ url_for('static', filename='css/libro_reclamaciones.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <header class="bg-blue-600 text-white py-16">
+        <div class="container mx-auto px-4 max-w-6xl text-center">
+            <div class="mb-6">
+                <span class="material-icons text-6xl mb-4 block">gavel</span>
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">Libro de Reclamaciones</h1>
+                <p class="text-xl text-blue-100 max-w-3xl mx-auto">
+                    Su opinión es importante para nosotros. Presente su reclamo o queja de forma fácil y segura.
+                </p>
+            </div>
+            
+            <div class="bg-blue-700 bg-opacity-50 rounded-lg p-4 max-w-4xl mx-auto border border-blue-500">
+                <p class="text-white font-medium">
+                    <span class="material-icons text-lg align-middle mr-2">info</span>
+                    Conforme a lo establecido en el Código de Protección y Defensa del Consumidor (Ley N° 29571)
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12 max-w-4xl">
+        <!-- Información Legal -->
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 mb-8 rounded-lg shadow-md">
+            <div class="flex items-start">
+                <span class="material-icons text-yellow-600 mr-3 mt-1 text-2xl">warning</span>
+                <div>
+                    <h3 class="text-lg font-semibold text-yellow-800 mb-3">Información Importante</h3>
+                    <ul class="text-yellow-700 space-y-2 text-sm">
+                        <li>• El presente libro de reclamaciones se encuentra a disposición de todos nuestros usuarios</li>
+                        <li>• Su reclamo será atendido en un plazo máximo de <strong>30 días calendario</strong></li>
+                        <li>• La presentación de esta hoja de reclamación no impide acudir a otras vías de solución de controversias</li>
+                        <li>• Para resolver su reclamo, no se exigirá la compra de algún bien o la contratación de algún servicio</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de Reclamación -->
+        <div class="bg-white rounded-xl shadow-lg border p-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Formulario de Reclamación</h2>
+                <p class="text-gray-600">Complete todos los campos obligatorios marcados con (*)</p>
+            </div>
+
+            <!-- Alertas -->
+            <div id="alertContainer" class="mb-6"></div>
+
+            <form id="reclamacionForm" class="space-y-8">
+                <!-- SECCIÓN 1: DATOS DEL CONSUMIDOR -->
+                <div class="border-b border-gray-200 pb-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                        <span class="material-icons mr-2 text-blue-600">person</span>
+                        1. Datos del Consumidor Reclamante
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Nombres -->
+                        <div>
+                            <label for="nombres" class="block text-sm font-medium text-gray-700 mb-2">
+                                Nombres *
+                            </label>
+                            <input type="text" id="nombres" name="nombres" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="Ingrese sus nombres">
+                        </div>
+
+                        <!-- Apellidos -->
+                        <div>
+                            <label for="apellidos" class="block text-sm font-medium text-gray-700 mb-2">
+                                Apellidos *
+                            </label>
+                            <input type="text" id="apellidos" name="apellidos" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="Ingrese sus apellidos">
+                        </div>
+
+                        <!-- Tipo de Documento -->
+                        <div>
+                            <label for="tipoDocumento" class="block text-sm font-medium text-gray-700 mb-2">
+                                Tipo de Documento *
+                            </label>
+                            <select id="tipoDocumento" name="tipoDocumento" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                                <option value="">Seleccione...</option>
+                                <option value="DNI">DNI</option>
+                                <option value="CE">Carné de Extranjería</option>
+                                <option value="PASAPORTE">Pasaporte</option>
+                                <option value="RUC">RUC</option>
+                            </select>
+                        </div>
+
+                        <!-- Número de Documento -->
+                        <div>
+                            <label for="numeroDocumento" class="block text-sm font-medium text-gray-700 mb-2">
+                                Número de Documento *
+                            </label>
+                            <input type="text" id="numeroDocumento" name="numeroDocumento" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="Ingrese el número">
+                        </div>
+
+                        <!-- Teléfono -->
+                        <div>
+                            <label for="telefono" class="block text-sm font-medium text-gray-700 mb-2">
+                                Teléfono *
+                            </label>
+                            <input type="tel" id="telefono" name="telefono" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="+51 999 999 999">
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                                Correo Electrónico *
+                            </label>
+                            <input type="email" id="email" name="email" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="ejemplo@correo.com">
+                        </div>
+
+                        <!-- Dirección -->
+                        <div class="md:col-span-2">
+                            <label for="direccion" class="block text-sm font-medium text-gray-700 mb-2">
+                                Dirección *
+                            </label>
+                            <input type="text" id="direccion" name="direccion" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="Ingrese su dirección completa">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 2: DATOS DEL BIEN CONTRATADO -->
+                <div class="border-b border-gray-200 pb-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                        <span class="material-icons mr-2 text-green-600">shopping_cart</span>
+                        2. Identificación del Bien Contratado
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Tipo -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-4">Tipo *</label>
+                            <div class="flex space-x-6">
+                                <label class="flex items-center">
+                                    <input type="radio" name="tipoBien" value="PRODUCTO" required
+                                        class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300">
+                                    <span class="ml-2 text-sm text-gray-700">Producto</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="tipoBien" value="SERVICIO" required
+                                        class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300">
+                                    <span class="ml-2 text-sm text-gray-700">Servicio</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Monto Reclamado -->
+                        <div>
+                            <label for="montoReclamado" class="block text-sm font-medium text-gray-700 mb-2">
+                                Monto Reclamado *
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">S/.</span>
+                                <input type="number" id="montoReclamado" name="montoReclamado" step="0.01" required
+                                    class="pl-8 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                    placeholder="0.00">
+                            </div>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="md:col-span-2">
+                            <label for="descripcionBien" class="block text-sm font-medium text-gray-700 mb-2">
+                                Descripción *
+                            </label>
+                            <textarea id="descripcionBien" name="descripcionBien" rows="3" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="Describa detalladamente el producto o servicio..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 3: DETALLE DE LA RECLAMACIÓN -->
+                <div class="border-b border-gray-200 pb-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                        <span class="material-icons mr-2 text-orange-600">report_problem</span>
+                        3. Detalle de la Reclamación
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <!-- Tipo de Reclamación -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-4">Tipo *</label>
+                            <div class="space-y-3">
+                                <label class="flex items-start">
+                                    <input type="radio" name="tipoReclamacion" value="RECLAMO" required
+                                        class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 mt-1">
+                                    <div class="ml-3">
+                                        <span class="text-sm font-medium text-gray-700">Reclamo</span>
+                                        <p class="text-xs text-gray-500">Disconformidad relacionada a los productos o servicios</p>
+                                    </div>
+                                </label>
+                                <label class="flex items-start">
+                                    <input type="radio" name="tipoReclamacion" value="QUEJA" required
+                                        class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 mt-1">
+                                    <div class="ml-3">
+                                        <span class="text-sm font-medium text-gray-700">Queja</span>
+                                        <p class="text-xs text-gray-500">Disconformidad no relacionada a los productos o servicios</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Detalle -->
+                        <div>
+                            <label for="detalleReclamacion" class="block text-sm font-medium text-gray-700 mb-2">
+                                Detalle de la Reclamación *
+                            </label>
+                            <textarea id="detalleReclamacion" name="detalleReclamacion" rows="6" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="Describa detalladamente su reclamo o queja..."></textarea>
+                        </div>
+
+                        <!-- Pedido del Consumidor -->
+                        <div>
+                            <label for="pedidoConsumidor" class="block text-sm font-medium text-gray-700 mb-2">
+                                Pedido del Consumidor *
+                            </label>
+                            <textarea id="pedidoConsumidor" name="pedidoConsumidor" rows="4" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="¿Qué solicita que se haga para resolver su reclamo?"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 4: OBSERVACIONES Y ACCIONES -->
+                <div class="border-b border-gray-200 pb-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                        <span class="material-icons mr-2 text-purple-600">note_add</span>
+                        4. Observaciones y Acciones Adoptadas por el Proveedor
+                    </h3>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600 italic">
+                            Esta sección será completada por nuestro equipo una vez recibida su reclamación.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Términos y Condiciones -->
+                <div class="flex items-start space-x-3">
+                    <input type="checkbox" id="aceptaTerminos" name="aceptaTerminos" required
+                        class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded mt-1">
+                    <label for="aceptaTerminos" class="text-sm text-gray-700">
+                        Declaro que la información proporcionada es veraz y autorizo su tratamiento para la atención de mi reclamo, 
+                        conforme a la Ley de Protección de Datos Personales. *
+                    </label>
+                </div>
+
+                <!-- Botones -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                    <button type="submit" id="submitButton"
+                        class="flex-1 bg-red-600 text-white px-8 py-4 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 font-semibold text-lg transition duration-300 disabled:opacity-50">
+                        <span class="material-icons mr-2 align-middle">send</span>
+                        Enviar Reclamación
+                    </button>
+                    <button type="button" onclick="limpiarFormulario()"
+                        class="flex-1 bg-gray-200 text-gray-700 px-8 py-4 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 font-semibold text-lg transition duration-300">
+                        <span class="material-icons mr-2 align-middle">refresh</span>
+                        Limpiar Formulario
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Información de Contacto -->
+        <div class="mt-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8">
+            <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Información de Contacto</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div class="flex flex-col items-center">
+                    <span class="material-icons text-4xl text-blue-600 mb-2">location_on</span>
+                    <h4 class="font-semibold text-gray-900 mb-1">Dirección</h4>
+                    <p class="text-gray-600 text-sm">Av. Universitaria 123<br>Lima, Perú</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <span class="material-icons text-4xl text-green-600 mb-2">phone</span>
+                    <h4 class="font-semibold text-gray-900 mb-1">Teléfono</h4>
+                    <p class="text-gray-600 text-sm">+51 999 999 999</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <span class="material-icons text-4xl text-purple-600 mb-2">email</span>
+                    <h4 class="font-semibold text-gray-900 mb-1">Email</h4>
+                    <p class="text-gray-600 text-sm">reclamos@wawalu.com</p>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/libro_reclamaciones.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,358 @@
+/* Estilos personalizados para la tienda - Estilo Esika */
+
+/* Radio buttons personalizados */
+.form-radio {
+    appearance: none;
+    border: 2px solid #d1d5db;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.form-radio:checked {
+    border-color: #2563eb;
+    background-color: #2563eb;
+}
+
+.form-radio:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: white;
+}
+
+.form-radio:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Sliders personalizados */
+.slider {
+    background: linear-gradient(to right, #e5e7eb 0%, #e5e7eb 100%);
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #2563eb;
+    cursor: pointer;
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease-in-out;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    background: #1d4ed8;
+    transform: scale(1.1);
+}
+
+.slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #2563eb;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Sidebar con sombra suave */
+.sidebar-filters {
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Efectos hover para las etiquetas */
+.filter-label {
+    transition: all 0.2s ease-in-out;
+    border-radius: 6px;
+    padding: 6px 8px;
+    margin: -6px -8px;
+}
+
+.filter-label:hover {
+    background-color: #f1f5f9;
+    transform: translateX(4px);
+}
+
+/* Botón limpiar filtros */
+.clear-filters-btn {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border: 1px solid #cbd5e1;
+    transition: all 0.3s ease-in-out;
+}
+
+.clear-filters-btn:hover {
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Cards de productos mejoradas */
+.product-card {
+    transition: all 0.3s ease-in-out;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    border-color: #3b82f6;
+}
+
+/* Badge de categoría */
+.category-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.category-badge.uniformes {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+}
+
+.category-badge.utiles {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.category-badge.accesorios {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+
+/* Precio destacado */
+.price-highlight {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #dc2626;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+}
+
+/* Header profesional */
+.header-stats {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* Toggle de vista */
+.view-btn {
+    transition: all 0.2s ease-in-out;
+    color: #6b7280;
+}
+
+.view-btn.active {
+    background-color: white;
+    color: #2563eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.view-btn:hover:not(.active) {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+/* Breadcrumbs mejorados */
+.breadcrumb-item {
+    transition: all 0.2s ease-in-out;
+}
+
+.breadcrumb-item:hover {
+    color: #2563eb;
+    transform: translateX(2px);
+}
+
+/* Etiquetas de filtros activos mejoradas */
+.filter-tag {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 1px solid #93c5fd;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 3px rgba(59, 130, 246, 0.1);
+}
+
+.filter-tag:hover {
+    background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+/* Mejorar el contador de filtros */
+#activeFiltersCount {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    padding: 4px 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+#activeFiltersCount:hover {
+    background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+    transform: scale(1.02);
+}
+
+/* Mejorar el indicador de rango de precio */
+#priceRange {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 1px solid #3b82f6;
+    border-radius: 8px;
+    padding: 4px 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+#priceRange:hover {
+    background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+    transform: scale(1.02);
+}
+
+/* Animación para cuando aparecen los elementos */
+@keyframes slideInFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filter-indicator {
+    animation: slideInFromTop 0.3s ease-out;
+}
+
+/* Mejorar el botón de limpiar filtros */
+#clearAllFilters {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border: 1px solid #f87171;
+    color: #dc2626;
+    transition: all 0.2s ease-in-out;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#clearAllFilters:hover {
+    background: linear-gradient(135deg, #fecaca 0%, #f87171 100%);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(248, 113, 113, 0.3);
+}
+
+/* Estilo para los badges de categoría en el header */
+#categoryBadge {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 1px solid #3b82f6;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Responsive improvements para filtros */
+@media (max-width: 768px) {
+    .filter-tag {
+        font-size: 10px;
+        padding: 3px 8px;
+    }
+    
+    #activeFiltersCount,
+    #priceRange {
+        font-size: 11px;
+        padding: 3px 6px;
+    }
+}
+
+/* Animaciones suaves */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+/* Scrollbar personalizada para el sidebar */
+.sidebar-filters::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-filters::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.sidebar-filters::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.sidebar-filters::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .sidebar-filters {
+        border-radius: 12px;
+        margin-bottom: 24px;
+    }
+    
+    .product-card:hover {
+        transform: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header-stats {
+        padding: 16px;
+        border-radius: 12px;
+    }
+    
+    .filter-label:hover {
+        transform: none;
+        background-color: #f1f5f9;
+    }
+}

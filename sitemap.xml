@@ -7,7 +7,7 @@
     <!-- Página principal -->
     <url>
         <loc>https://wawalu.com/</loc>
-        <lastmod>2025-09-29</lastmod>
+        <lastmod>2025-10-08</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
@@ -15,110 +15,162 @@
     <!-- Páginas principales -->
     <url>
         <loc>https://wawalu.com/nosotros</loc>
-        <lastmod>2025-09-29</lastmod>
+        <lastmod>2025-10-08</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
     </url>
 
     <url>
         <loc>https://wawalu.com/programas</loc>
-        <lastmod>2025-09-29</lastmod>
+        <lastmod>2025-10-08</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
     </url>
 
     <url>
         <loc>https://wawalu.com/calendario</loc>
-        <lastmod>2025-09-29</lastmod>
+        <lastmod>2025-10-08</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
 
     <url>
         <loc>https://wawalu.com/noticias</loc>
-        <lastmod>2025-09-29</lastmod>
+        <lastmod>2025-10-08</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.8</priority>
     </url>
 
     <url>
         <loc>https://wawalu.com/galeria</loc>
-        <lastmod>2025-09-29</lastmod>
+        <lastmod>2025-10-08</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
 
     <url>
         <loc>https://wawalu.com/tienda</loc>
-        <lastmod>2025-09-29</lastmod>
+        <lastmod>2025-10-08</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.8</priority>
     </url>
 
     <url>
         <loc>https://wawalu.com/contacto</loc>
-        <lastmod>2025-09-29</lastmod>
+        <lastmod>2025-10-08</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
 
-    <!-- Páginas de usuario -->
+    <!-- Páginas de usuario y autenticación -->
     <url>
         <loc>https://wawalu.com/login</loc>
-        <lastmod>2025-09-29</lastmod>
+        <lastmod>2025-10-08</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.5</priority>
     </url>
 
     <url>
-        <loc>https://wawalu.com/registro</loc>
-        <lastmod>2025-09-29</lastmod>
+        <loc>https://wawalu.com/register</loc>
+        <lastmod>2025-10-08</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.5</priority>
     </url>
 
+    <url>
+        <loc>https://wawalu.com/profile</loc>
+        <lastmod>2025-10-08</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.4</priority>
+    </url>
+
+    <!-- Páginas de matrícula e inscripción -->
+    <url>
+        <loc>https://wawalu.com/matricula</loc>
+        <lastmod>2025-10-08</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <url>
+        <loc>https://wawalu.com/enrollment/success</loc>
+        <lastmod>2025-10-08</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+
+    <!-- Páginas de comercio electrónico -->
     <url>
         <loc>https://wawalu.com/carrito</loc>
-        <lastmod>2025-09-29</lastmod>
+        <lastmod>2025-10-08</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.6</priority>
     </url>
 
     <url>
-        <loc>https://wawalu.com/inscripcion</loc>
-        <lastmod>2025-09-29</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-
-    <!-- Páginas de proceso de compra -->
-    <url>
         <loc>https://wawalu.com/checkout</loc>
-        <lastmod>2025-09-29</lastmod>
+        <lastmod>2025-10-08</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.4</priority>
     </url>
 
-    <!-- Páginas específicas de noticias (ejemplos) -->
+    <url>
+        <loc>https://wawalu.com/mis-pedidos</loc>
+        <lastmod>2025-10-08</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+
+    <!-- Páginas de servicio al cliente -->
+    <url>
+        <loc>https://wawalu.com/libro-reclamaciones</loc>
+        <lastmod>2025-10-08</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- Páginas dinámicas de noticias (ejemplos) -->
     <url>
         <loc>https://wawalu.com/noticias/1</loc>
-        <lastmod>2025-09-29</lastmod>
+        <lastmod>2025-10-08</lastmod>
         <changefreq>never</changefreq>
         <priority>0.6</priority>
     </url>
 
     <url>
         <loc>https://wawalu.com/noticias/2</loc>
-        <lastmod>2025-09-29</lastmod>
+        <lastmod>2025-10-08</lastmod>
         <changefreq>never</changefreq>
         <priority>0.6</priority>
     </url>
 
     <url>
         <loc>https://wawalu.com/noticias/3</loc>
-        <lastmod>2025-09-29</lastmod>
+        <lastmod>2025-10-08</lastmod>
         <changefreq>never</changefreq>
         <priority>0.6</priority>
+    </url>
+
+    <url>
+        <loc>https://wawalu.com/noticias/4</loc>
+        <lastmod>2025-10-08</lastmod>
+        <changefreq>never</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <url>
+        <loc>https://wawalu.com/noticias/5</loc>
+        <lastmod>2025-10-08</lastmod>
+        <changefreq>never</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- Páginas dinámicas de pedidos (ejemplos - solo las públicas) -->
+    <url>
+        <loc>https://wawalu.com/order_confirmation/1</loc>
+        <lastmod>2025-10-08</lastmod>
+        <changefreq>never</changefreq>
+        <priority>0.3</priority>
     </url>
 
 </urlset>

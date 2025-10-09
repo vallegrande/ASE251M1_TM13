@@ -1,0 +1,98 @@
+{% macro product_card(product, category='general', show_stock=true, card_size='normal') %}
+<!-- Componente Reutilizable: Tarjeta de Producto -->
+<!-- Uso: {{ product_card(product, category='uniformes', show_stock=false, card_size='large') }} -->
+<div class="product-card {{ category }} bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300 
+            {% if card_size == 'large' %}transform hover:scale-105{% endif %}" 
+     data-id="{{ product.id }}"
+     data-price="{{ product.price }}" 
+     data-name="{{ product.name }}" 
+     data-category="{{ category }}"
+     data-description="{{ product.description }}"
+     data-image="{{ product.image }}"
+     data-stock="{{ product.stock if product.stock is defined else 'Disponible' }}"
+     data-features="{{ product.features|tojson if product.features is defined else '[]' }}"
+     data-talla="{{ product.talla if product.talla is defined else '' }}">
+     
+    <!-- Imagen del producto -->
+    <div class="bg-gradient-to-br from-gray-100 to-gray-200 w-full 
+                {% if card_size == 'large' %}aspect-[4/3]{% else %}aspect-square{% endif %} 
+                flex items-center justify-center overflow-hidden relative group">
+        {% if product.image and product.image != 'default.jpg' %}
+        <img src="{{ url_for('static', filename='img/products/' + product.image) }}" 
+             alt="{{ product.name }}" 
+             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+             onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="hidden absolute inset-0 flex-col items-center justify-center text-gray-500 bg-gradient-to-br from-blue-50 to-blue-100">
+            <span class="material-icons text-4xl mb-2 text-blue-400">{{ 'school' if category == 'uniformes' else 'shopping_bag' if category == 'accesorios' else 'edit' }}</span>
+            <span class="text-sm font-semibold text-gray-600">{{ product.name[:20] }}...</span>
+        </div>
+        {% else %}
+        <div class="flex flex-col items-center justify-center text-gray-500 bg-gradient-to-br from-blue-50 to-blue-100 w-full h-full">
+            <span class="material-icons text-4xl mb-2 text-blue-400">{{ 'school' if category == 'uniformes' else 'shopping_bag' if category == 'accesorios' else 'edit' }}</span>
+            <span class="text-sm font-semibold text-gray-600">{{ product.name[:20] }}...</span>
+        </div>
+        {% endif %}
+        
+        <!-- Badge de categoría -->
+        <div class="absolute top-2 right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-bold shadow">
+            {{ category.title() }}
+        </div>
+        
+        <!-- Badge de oferta (opcional) -->
+        {% if product.discount is defined and product.discount > 0 %}
+        <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow">
+            -{{ product.discount }}%
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Detalles del producto -->
+    <div class="bg-white w-full p-4 flex flex-col">
+        <div class="flex items-start justify-between mb-2">
+            <h3 class="{% if card_size == 'large' %}text-lg{% else %}text-base{% endif %} font-bold text-gray-800 leading-tight">
+                {{ product.name }}
+            </h3>
+            {% if product.talla %}
+            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-2 flex-shrink-0">T. {{ product.talla }}</span>
+            {% endif %}
+        </div>
+        
+        <p class="text-gray-600 text-xs mb-3 line-clamp-2 flex-grow">
+            {{ product.description[:60] }}{% if product.description|length > 60 %}...{% endif %}
+        </p>
+        
+        {% if show_stock %}
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-green-600 font-semibold text-xs">
+                <span class="material-icons text-sm align-middle mr-1">inventory</span>
+                Stock: {{ product.stock if product.stock else 'Disponible' }}
+            </span>
+            <span class="text-blue-700 font-bold {% if card_size == 'large' %}text-xl{% else %}text-lg{% endif %}">
+                S/. {{ "%.2f"|format(product.price) }}
+            </span>
+        </div>
+        {% else %}
+        <div class="flex justify-end mb-3">
+            <span class="text-blue-700 font-bold {% if card_size == 'large' %}text-xl{% else %}text-lg{% endif %}">
+                S/. {{ "%.2f"|format(product.price) }}
+            </span>
+        </div>
+        {% endif %}
+        
+        <!-- Botones de acción -->
+        <div class="flex items-center space-x-2">
+            <button onclick="showProductDetails({{ product.id }})" 
+                    class="flex-1 bg-gray-50 text-gray-700 px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-700 font-medium shadow-sm transition text-sm">
+                <span class="material-icons text-sm mr-1">visibility</span>
+                Ver
+            </button>
+            <button onclick="addToCart({{ product.id }})" 
+                    class="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 font-medium shadow-sm transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    {% if product.stock is defined and product.stock == 0 %}disabled{% endif %}>
+                <span class="material-icons text-sm mr-1">add_shopping_cart</span>
+                Agregar
+            </button>
+        </div>
+    </div>
+</div>
+{% endmacro %}

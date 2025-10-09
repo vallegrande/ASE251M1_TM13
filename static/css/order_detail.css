@@ -1,0 +1,123 @@
+/* Order Detail Page Specific Styles */
+
+/* Timeline Styles */
+.order-timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.order-timeline::before {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e5e7eb;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -1.5rem;
+    top: 0.25rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    border: 2px solid #e5e7eb;
+    background: white;
+    z-index: 1;
+}
+
+.timeline-item.active::before {
+    border-color: #3b82f6;
+    background: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+.timeline-item.completed::before {
+    border-color: #10b981;
+    background: #10b981;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+}
+
+.timeline-item.completed::after {
+    content: '✓';
+    position: absolute;
+    left: -1.3rem;
+    top: 0.4rem;
+    color: white;
+    font-size: 0.6rem;
+    font-weight: bold;
+    z-index: 2;
+}
+
+/* Product Item Styles */
+.product-item {
+    transition: all 0.3s ease;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+}
+
+.product-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #3b82f6;
+    transform: translateY(-1px);
+}
+
+/* Print Styles */
+.print-section {
+    display: none;
+}
+
+@media print {
+    .print-section { 
+        display: block !important; 
+    }
+    
+    .container { 
+        max-width: none !important; 
+    }
+}
+
+/* Information Cards */
+.info-card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+.info-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #d1d5db;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .order-timeline {
+        padding-left: 1.5rem;
+    }
+    
+    .timeline-item::before {
+        left: -1.25rem;
+        width: 0.75rem;
+        height: 0.75rem;
+    }
+    
+    .timeline-item.completed::after {
+        left: -1.1rem;
+        top: 0.3rem;
+        font-size: 0.5rem;
+    }
+    
+    .product-item {
+        padding: 1rem;
+    }
+}

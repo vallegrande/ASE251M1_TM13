@@ -1,0 +1,234 @@
+/* Common Styles for Orders Pages */
+
+/* Shared Status Badge Styles */
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.status-pending { 
+    background-color: #fef3c7; 
+    color: #92400e; 
+}
+
+.status-confirmed { 
+    background-color: #dbeafe; 
+    color: #1e40af; 
+}
+
+.status-processing { 
+    background-color: #e0e7ff; 
+    color: #5b21b6; 
+}
+
+.status-shipped { 
+    background-color: #ecfdf5; 
+    color: #047857; 
+}
+
+.status-delivered { 
+    background-color: #dcfce7; 
+    color: #166534; 
+}
+
+.status-cancelled { 
+    background-color: #fee2e2; 
+    color: #dc2626; 
+}
+
+/* Common Button Styles */
+.action-button {
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.action-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.action-button:active {
+    transform: translateY(0);
+}
+
+.action-button.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+/* Loading States */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Common Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.3s ease;
+}
+
+/* Success/Error States */
+.success-state {
+    color: #059669;
+    background-color: #ecfdf5;
+    border-color: #10b981;
+}
+
+.error-state {
+    color: #dc2626;
+    background-color: #fef2f2;
+    border-color: #f87171;
+}
+
+.warning-state {
+    color: #d97706;
+    background-color: #fffbeb;
+    border-color: #fbbf24;
+}
+
+/* Payment Status Indicator */
+.payment-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.payment-status.paid {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.payment-status.pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.payment-status.failed {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .status-badge {
+        font-size: 0.625rem;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .action-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Utility Classes */
+.card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #d1d5db;
+}
+
+/* Print Utilities */
+@media print {
+    .no-print { 
+        display: none !important; 
+    }
+    
+    .print-only { 
+        display: block !important; 
+    }
+    
+    .card,
+    .shadow-sm,
+    .shadow-lg {
+        box-shadow: none !important;
+    }
+    
+    .border {
+        border: 1px solid #000 !important;
+    }
+    
+    .text-gray-900 {
+        color: #000 !important;
+    }
+    
+    .text-gray-600,
+    .text-gray-700 {
+        color: #333 !important;
+    }
+    
+    .rounded-lg {
+        border-radius: 0 !important;
+    }
+    
+    body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}

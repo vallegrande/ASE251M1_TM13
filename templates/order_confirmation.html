@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Confirmación de Pedido - Wawalu{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/orders_common.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/order_confirmation.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+        <!-- Header de confirmación -->
+        <div class="text-center mb-8 confirmation-header">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4 success-icon">
+                <svg class="w-8 h-8 text-green-600 checkmark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">¡Pedido Recibido!</h1>
+            <p class="text-gray-600">Tu pedido ha sido procesado exitosamente</p>
+        </div>
+
+        <!-- Información del pedido -->
+        <div class="info-card bg-white rounded-lg shadow-lg p-6 mb-6" data-order-id="{{ order.id }}">
+            <div class="border-b pb-4 mb-4">
+                <h2 class="text-xl font-semibold mb-4">Información del Pedido</h2>
+                <div class="order-info-grid grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="order-info-item">
+                        <p class="text-sm text-gray-600">Número de Pedido</p>
+                        <p class="font-semibold" data-order-number>#{{ order.id }}</p>
+                    </div>
+                    <div class="order-info-item">
+                        <p class="text-sm text-gray-600">Fecha</p>
+                        <p class="font-semibold">{{ order.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+                    </div>
+                    <div class="order-info-item">
+                        <p class="text-sm text-gray-600">Estado del Pedido</p>
+                        <span class="status-badge status-{{ order.status }}">
+                            {% if order.status == 'pending' %}
+                                Pendiente
+                            {% elif order.status == 'paid' %}
+                                Pagado
+                            {% elif order.status == 'shipped' %}
+                                Enviado
+                            {% elif order.status == 'delivered' %}
+                                Entregado
+                            {% else %}
+                                {{ order.status.title() }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="order-info-item">
+                        <p class="text-sm text-gray-600">Estado del Pago</p>
+                        <span class="status-badge status-{{ order.payment_status or 'pending' }}">
+                            {% if order.payment_status == 'pending' %}
+                                En Verificación
+                            {% elif order.payment_status == 'completed' %}
+                                Verificado
+                            {% elif order.payment_status == 'failed' %}
+                                Rechazado
+                            {% else %}
+                                En Proceso
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información de pago -->
+            {% if order.transaction_id %}
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold mb-3">Información de Pago</h3>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-600">Método de Pago</p>
+                            <div class="payment-method font-medium">
+                                {% if order.payment_method == 'yape' %}
+                                    <img src="{{ url_for('static', filename='icons/yape.png') }}" alt="Yape" class="inline h-6 w-auto">
+                                    Yape
+                                {% elif order.payment_method == 'transfer' %}
+                                    <span class="material-icons text-sm">account_balance</span>
+                                    Transferencia Bancaria
+                                {% else %}
+                                    {{ order.payment_method.title() }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Número de Operación</p>
+                            <p class="font-medium">{{ order.transaction_id }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Productos del pedido -->
+        <div class="info-card bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-4">Productos Pedidos</h3>
+            <div class="divide-y">
+                {% for item in items %}
+                <div class="product-item py-4 flex items-center space-x-4">
+                    <img src="{{ url_for('static', filename='img/products/' + item.image_url) }}" 
+                         alt="{{ item.name }}" 
+                         class="product-image w-16 h-16 object-cover rounded-lg cursor-pointer">
+                    <div class="flex-1">
+                        <h4 class="font-medium">{{ item.name }}</h4>
+                        <p class="text-sm text-gray-600">Cantidad: {{ item.quantity }}</p>
+                        <p class="text-sm text-gray-600">Precio unitario: S/. {{ "%.2f"|format(item.price_at_time) }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold">S/. {{ "%.2f"|format(item.price_at_time * item.quantity) }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Total -->
+            <div class="total-section border-t pt-4 mt-4 rounded-lg p-4">
+                <div class="flex justify-between items-center text-lg font-bold">
+                    <span>Total</span>
+                    <span class="text-blue-600">S/. {{ "%.2f"|format(order.total_amount) }}</span>
+                </div>
+                <p class="text-sm text-gray-500 text-right">(Incluye IGV)</p>
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="next-steps bg-blue-50 rounded-lg p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-3 text-blue-900">¿Qué sigue ahora?</h3>
+            <div class="space-y-3 text-blue-800">
+                <div class="step-item flex items-start">
+                    <span class="step-icon material-icons text-sm mr-2 mt-0.5">schedule</span>
+                    <div>
+                        <p class="font-medium">Verificación de Pago</p>
+                        <p class="text-sm">Nuestro equipo verificará tu comprobante de pago en un plazo de 24 horas.</p>
+                    </div>
+                </div>
+                <div class="step-item flex items-start">
+                    <span class="step-icon material-icons text-sm mr-2 mt-0.5">email</span>
+                    <div>
+                        <p class="font-medium">Confirmación por Email</p>
+                        <p class="text-sm">Te enviaremos un email una vez que verifiquemos tu pago.</p>
+                    </div>
+                </div>
+                <div class="step-item flex items-start">
+                    <span class="step-icon material-icons text-sm mr-2 mt-0.5">local_shipping</span>
+                    <div>
+                        <p class="font-medium">Preparación y Entrega</p>
+                        <p class="text-sm">Una vez confirmado el pago, prepararemos tu pedido para entrega o recojo.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="text-center space-y-4">
+            <a href="{{ url_for('shop') }}" class="action-button inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <span class="material-icons mr-2">shopping_cart</span>
+                Seguir Comprando
+            </a>
+            <br>
+            <a href="{{ url_for('contact') }}" class="action-button inline-flex items-center px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                <span class="material-icons mr-2">support_agent</span>
+                ¿Tienes alguna pregunta? Contáctanos
+            </a>
+        </div>
+
+        <!-- Información de contacto -->
+        <div class="mt-8 text-center text-gray-600">
+            <p class="mb-2">Para cualquier consulta sobre tu pedido:</p>
+            <div class="flex justify-center space-x-6 text-sm">
+                <div class="contact-info flex items-center cursor-pointer hover:text-blue-600 transition-colors">
+                    <span class="material-icons text-sm mr-1">phone</span>
+                    <span>942 139 788</span>
+                </div>
+                <div class="contact-info flex items-center cursor-pointer hover:text-blue-600 transition-colors">
+                    <span class="material-icons text-sm mr-1">email</span>
+                    <span>diego.centeno@vallegrande.edu.pe</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/order_confirmation.js') }}" defer></script>
+{% endblock %}

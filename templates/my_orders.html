@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}Mis Pedidos - Wawalu{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/orders_common.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/my_orders.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center space-x-4 mb-4">
+                <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
+                    <span class="material-icons text-white text-xl">shopping_bag</span>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Mis Pedidos</h1>
+                    <p class="text-gray-600">Gestiona y revisa todos tus pedidos realizados</p>
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-lg p-4 shadow-sm border">
+                    <div class="flex items-center">
+                        <span class="material-icons text-blue-600 mr-3">receipt_long</span>
+                        <div>
+                            <p class="text-2xl font-bold text-gray-900">{{ orders|length }}</p>
+                            <p class="text-sm text-gray-600">Total de Pedidos</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow-sm border">
+                    <div class="flex items-center">
+                        <span class="material-icons text-green-600 mr-3">check_circle</span>
+                        <div>
+                            <p class="text-2xl font-bold text-gray-900">{{ orders|selectattr('status', 'equalto', 'delivered')|list|length }}</p>
+                            <p class="text-sm text-gray-600">Entregados</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow-sm border">
+                    <div class="flex items-center">
+                        <span class="material-icons text-yellow-600 mr-3">local_shipping</span>
+                        <div>
+                            <p class="text-2xl font-bold text-gray-900">{{ orders|selectattr('status', 'in', ['confirmed', 'processing', 'shipped'])|list|length }}</p>
+                            <p class="text-sm text-gray-600">En Proceso</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow-sm border">
+                    <div class="flex items-center">
+                        <span class="material-icons text-gray-600 mr-3">attach_money</span>
+                        <div>
+                            <p class="text-2xl font-bold text-gray-900">S/ {{ "%.2f"|format(orders|sum(attribute='total_amount')|default(0)) }}</p>
+                            <p class="text-sm text-gray-600">Total Gastado</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if orders %}
+            <!-- Filtros -->
+            <div class="mb-6">
+                <div class="bg-white rounded-lg p-4 shadow-sm border">
+                    <div class="flex flex-wrap gap-2">
+                        <button class="filter-btn active px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-status="all">
+                            Todos
+                        </button>
+                        <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-status="pending">
+                            Pendientes
+                        </button>
+                        <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-status="confirmed">
+                            Confirmados
+                        </button>
+                        <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-status="processing">
+                            En Proceso
+                        </button>
+                        <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-status="shipped">
+                            Enviados
+                        </button>
+                        <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-status="delivered">
+                            Entregados
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Pedidos -->
+            <div class="space-y-6">
+                {% for order in orders %}
+                <div class="order-card bg-white rounded-lg shadow-sm p-6" data-status="{{ order.status }}">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4">
+                        <div class="flex items-center space-x-4 mb-4 lg:mb-0">
+                            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <span class="material-icons text-gray-600">receipt</span>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Pedido #{{ order.id }}</h3>
+                                <p class="text-sm text-gray-600">{{ order.created_at.strftime('%d de %B, %Y - %I:%M %p') }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4">
+                            <span class="status-badge status-{{ order.status }}">
+                                {% if order.status == 'pending' %}Pendiente
+                                {% elif order.status == 'confirmed' %}Confirmado
+                                {% elif order.status == 'processing' %}Procesando
+                                {% elif order.status == 'shipped' %}Enviado
+                                {% elif order.status == 'delivered' %}Entregado
+                                {% elif order.status == 'cancelled' %}Cancelado
+                                {% else %}{{ order.status|title }}
+                                {% endif %}
+                            </span>
+                            <span class="text-xl font-bold text-gray-900">S/ {{ "%.2f"|format(order.total_amount) }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Productos del pedido -->
+                    <div class="mb-4">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Productos ({{ order.products|length }})</h4>
+                        <div class="product-grid">
+                            {% for item in order.products[:6] %}
+                            <div class="relative group">
+                                <div class="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                                    <img src="{{ url_for('static', filename='img/products/' + item.image_url) if item.image_url else url_for('static', filename='img/products/default.jpg') }}" 
+                                         alt="{{ item.product_name }}" 
+                                         class="w-full h-full object-cover">
+                                </div>
+                                <div class="absolute -top-2 -right-2 bg-blue-600 text-white rounded-full w-6 h-6 text-xs flex items-center justify-center">
+                                    {{ item.quantity }}
+                                </div>
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                    <p class="text-white text-xs text-center px-2">{{ item.product_name }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                                                        {% if order.products|length > 6 %}
+                            <div class="aspect-square rounded-lg bg-gray-200 flex items-center justify-center">
+                                                                <span class="text-gray-600 text-sm font-medium">+{{ order.products|length - 6 }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Información adicional -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
+                        <div>
+                            <span class="font-medium text-gray-700">Método de Pago:</span>
+                            <span class="text-gray-600 ml-2">
+                                {% if order.payment_method == 'yape' %}Yape
+                                {% elif order.payment_method == 'transfer' %}Transferencia Bancaria
+                                {% elif order.payment_method == 'cash' %}Efectivo
+                                {% else %}{{ order.payment_method|title }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div>
+                            <span class="font-medium text-gray-700">Estado de Pago:</span>
+                            <span class="ml-2 {% if order.payment_status == 'paid' %}text-green-600{% elif order.payment_status == 'pending' %}text-yellow-600{% else %}text-red-600{% endif %}">
+                                {% if order.payment_status == 'paid' %}Pagado
+                                {% elif order.payment_status == 'pending' %}Pendiente
+                                {% else %}No Pagado
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                        {% if order.shipping_address %}
+                        <div class="mb-4 text-sm">
+                            <span class="font-medium text-gray-700">Dirección de Envío:</span>
+                            <span class="text-gray-600 ml-2">{{ order.shipping_address }}</span>
+                        </div>
+                        {% endif %}
+
+                    <!-- Acciones -->
+                    <div class="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
+                        <a href="{{ url_for('order_detail', order_id=order.id) }}" 
+                           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                            <span class="material-icons mr-2 text-sm">visibility</span>
+                            Ver Detalles
+                        </a>
+                        
+                        {% if order.status in ['delivered'] %}
+                        <button data-action="review" data-order-id="{{ order.id }}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                            <span class="material-icons mr-2 text-sm">rate_review</span>
+                            Dejar Reseña
+                        </button>
+                        {% endif %}
+                        
+                        {% if order.status in ['pending', 'confirmed'] %}
+                        <button data-action="cancel" data-order-id="{{ order.id }}" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
+                            <span class="material-icons mr-2 text-sm">cancel</span>
+                            Cancelar
+                        </button>
+                        {% endif %}
+                        
+                        <button data-action="reorder" data-order-id="{{ order.id }}" class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium">
+                            <span class="material-icons mr-2 text-sm">refresh</span>
+                            Reordenar
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Estado vacío -->
+            <div class="empty-state bg-white rounded-lg shadow-sm">
+                <div class="text-center">
+                    <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="material-icons text-gray-400 text-4xl">shopping_bag</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No tienes pedidos aún</h3>
+                    <p class="text-gray-600 mb-6">¡Comienza a explorar nuestros productos y haz tu primer pedido!</p>
+                    <a href="{{ url_for('shop') }}" 
+                       class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                        <span class="material-icons mr-2">store</span>
+                        Ir a la Tienda
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/my_orders.js') }}" defer></script>
+{% endblock %}

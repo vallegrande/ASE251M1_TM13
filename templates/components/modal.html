@@ -1,0 +1,138 @@
+{% macro modal(modal_id, title, size='medium', closable=true) %}
+<!-- Componente Reutilizable: Modal/Ventana Emergente -->
+<!-- Uso: {{ modal('confirmModal', 'Confirmar Acción', 'small', true) }} -->
+<!-- Tamaños: small, medium, large, full -->
+<div id="{{ modal_id }}" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="min-h-screen px-4 text-center flex items-center justify-center">
+        <!-- Overlay -->
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true" onclick="{% if closable %}closeModal('{{ modal_id }}'){% endif %}">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+
+        <!-- Modal content -->
+        <div class="inline-block align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all
+                    {% if size == 'small' %}sm:max-w-sm sm:w-full{% endif %}
+                    {% if size == 'medium' %}sm:max-w-2xl sm:w-full{% endif %}
+                    {% if size == 'large' %}sm:max-w-4xl sm:w-full{% endif %}
+                    {% if size == 'full' %}w-full h-full sm:max-w-6xl sm:h-5/6{% endif %}">
+            
+            <!-- Header -->
+            <div class="bg-white px-6 pt-6 pb-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg leading-6 font-bold text-gray-900" id="{{ modal_id }}_title">
+                        {{ title }}
+                    </h3>
+                    {% if closable %}
+                    <button onclick="closeModal('{{ modal_id }}')" 
+                            class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                        <span class="material-icons">close</span>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="bg-white px-6 py-4 {% if size == 'full' %}flex-1 overflow-y-auto{% endif %}" id="{{ modal_id }}_body">
+                {{ caller() if caller }}
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-gray-50 px-6 py-4 border-t border-gray-200" id="{{ modal_id }}_footer">
+                <!-- El contenido del footer se puede personalizar desde donde se llama el modal -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Funciones para manejar el modal {{ modal_id }}
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        
+        // Animación de entrada
+        setTimeout(() => {
+            modal.querySelector('.inline-block').style.transform = 'scale(1)';
+            modal.querySelector('.inline-block').style.opacity = '1';
+        }, 50);
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        // Animación de salida
+        modal.querySelector('.inline-block').style.transform = 'scale(0.95)';
+        modal.querySelector('.inline-block').style.opacity = '0';
+        
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }, 150);
+    }
+}
+
+// Cerrar modal con tecla Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        {% if closable %}
+        closeModal('{{ modal_id }}');
+        {% endif %}
+    }
+});
+
+// Estilo inicial para animaciones
+document.getElementById('{{ modal_id }}').querySelector('.inline-block').style.transform = 'scale(0.95)';
+document.getElementById('{{ modal_id }}').querySelector('.inline-block').style.opacity = '0';
+document.getElementById('{{ modal_id }}').querySelector('.inline-block').style.transition = 'all 0.15s ease-out';
+</script>
+{% endmacro %}
+
+{% macro confirmation_modal(modal_id, title, message, confirm_text='Confirmar', cancel_text='Cancelar', confirm_action='') %}
+<!-- Modal de Confirmación Especializado -->
+<!-- Uso: {{ confirmation_modal('deleteModal', 'Eliminar Producto', '¿Estás seguro de que quieres eliminar este producto?', 'Eliminar', 'Cancelar', 'deleteProduct()') }} -->
+{{ modal(modal_id, title, 'small', true) }}
+
+<script>
+document.getElementById('{{ modal_id }}_body').innerHTML = `
+    <div class="text-center">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+            <span class="material-icons text-red-600">warning</span>
+        </div>
+        <p class="text-sm text-gray-500 mb-6">{{ message }}</p>
+    </div>
+`;
+
+document.getElementById('{{ modal_id }}_footer').innerHTML = `
+    <div class="flex justify-end space-x-3">
+        <button onclick="closeModal('{{ modal_id }}')" 
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            {{ cancel_text }}
+        </button>
+        <button onclick="{{ confirm_action }}; closeModal('{{ modal_id }}');" 
+                class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+            {{ confirm_text }}
+        </button>
+    </div>
+`;
+</script>
+{% endmacro %}
+
+{% macro loading_modal(modal_id, message='Cargando...') %}
+<!-- Modal de Carga -->
+<!-- Uso: {{ loading_modal('loadingModal', 'Procesando pago...') }} -->
+{{ modal(modal_id, 'Procesando', 'small', false) }}
+
+<script>
+document.getElementById('{{ modal_id }}_body').innerHTML = `
+    <div class="text-center py-6">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+        <p class="text-sm text-gray-600">{{ message }}</p>
+    </div>
+`;
+
+document.getElementById('{{ modal_id }}_footer').style.display = 'none';
+</script>
+{% endmacro %}

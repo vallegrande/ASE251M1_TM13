@@ -1,3 +1,48 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Mejoras para el menú móvil */
+@layer components {
+    .mobile-menu-item {
+        @apply transition-all duration-200 ease-in-out;
+    }
+    
+    .mobile-menu-item:hover {
+        transform: translateX(4px);
+    }
+    
+    .border-r-3 {
+        border-right-width: 3px;
+    }
+    
+    .menu-enter {
+        animation: menuSlideIn 0.3s ease-out;
+    }
+    
+    .menu-exit {
+        animation: menuSlideOut 0.3s ease-in;
+    }
+}
+
+@keyframes menuSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes menuSlideOut {
+    from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+}

@@ -1,0 +1,439 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Administrar Reclamaciones - Wawalu{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-gray-900">Gestión de Reclamaciones</h1>
+        <div class="flex space-x-3">
+            <button onclick="exportarReclamaciones()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                <span class="material-icons mr-2">download</span>
+                Exportar
+            </button>
+            <button onclick="filtrarReclamaciones()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                <span class="material-icons mr-2">filter_list</span>
+                Filtros
+            </button>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-2 bg-yellow-100 rounded-lg">
+                    <span class="material-icons text-yellow-600">pending</span>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Pendientes</p>
+                    <p class="text-2xl font-bold text-gray-900" id="pendientes-count">{{ stats.pendientes or 0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-2 bg-blue-100 rounded-lg">
+                    <span class="material-icons text-blue-600">hourglass_empty</span>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">En Proceso</p>
+                    <p class="text-2xl font-bold text-gray-900" id="proceso-count">{{ stats.en_proceso or 0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-2 bg-green-100 rounded-lg">
+                    <span class="material-icons text-green-600">check_circle</span>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Resueltas</p>
+                    <p class="text-2xl font-bold text-gray-900" id="resueltas-count">{{ stats.resueltas or 0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-2 bg-gray-100 rounded-lg">
+                    <span class="material-icons text-gray-600">inventory</span>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Total</p>
+                    <p class="text-2xl font-bold text-gray-900" id="total-count">{{ stats.total or 0 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div id="filtros-panel" class="hidden bg-white rounded-lg shadow p-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                <select id="filtro-estado" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                    <option value="">Todos los estados</option>
+                    <option value="PENDIENTE">Pendiente</option>
+                    <option value="EN_PROCESO">En Proceso</option>
+                    <option value="RESUELTO">Resuelto</option>
+                    <option value="CERRADO">Cerrado</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
+                <select id="filtro-tipo" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                    <option value="">Todos los tipos</option>
+                    <option value="RECLAMO">Reclamo</option>
+                    <option value="QUEJA">Queja</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Fecha Desde</label>
+                <input type="date" id="filtro-fecha-desde" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Fecha Hasta</label>
+                <input type="date" id="filtro-fecha-hasta" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+            </div>
+        </div>
+        <div class="mt-4 flex space-x-3">
+            <button onclick="aplicarFiltros()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                Aplicar Filtros
+            </button>
+            <button onclick="limpiarFiltros()" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg">
+                Limpiar
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabla de Reclamaciones -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Lista de Reclamaciones</h3>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Número
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Cliente
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Tipo
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Monto
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Estado
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Fecha
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Acciones
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="tabla-reclamaciones">
+                    {% for reclamacion in reclamaciones %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {{ reclamacion.numero_reclamacion }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">
+                                    {{ reclamacion.nombres }} {{ reclamacion.apellidos }}
+                                </div>
+                                <div class="text-sm text-gray-500">{{ reclamacion.email }}</div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                                {{ 'bg-red-100 text-red-800' if reclamacion.tipo_reclamacion == 'RECLAMO' else 'bg-yellow-100 text-yellow-800' }}">
+                                {{ reclamacion.tipo_reclamacion }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            S/. {{ "%.2f"|format(reclamacion.monto_reclamado) }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                                {% if reclamacion.estado == 'PENDIENTE' %}bg-yellow-100 text-yellow-800
+                                {% elif reclamacion.estado == 'EN_PROCESO' %}bg-blue-100 text-blue-800
+                                {% elif reclamacion.estado == 'RESUELTO' %}bg-green-100 text-green-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ reclamacion.estado.replace('_', ' ') }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ reclamacion.fecha_reclamacion.strftime('%d/%m/%Y') }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <button onclick="verDetalle({{ reclamacion.id }})" 
+                                    class="text-blue-600 hover:text-blue-900">
+                                    <span class="material-icons text-sm">visibility</span>
+                                </button>
+                                <button onclick="editarReclamacion({{ reclamacion.id }})" 
+                                    class="text-green-600 hover:text-green-900">
+                                    <span class="material-icons text-sm">edit</span>
+                                </button>
+                                <button onclick="responderReclamacion({{ reclamacion.id }})" 
+                                    class="text-purple-600 hover:text-purple-900">
+                                    <span class="material-icons text-sm">reply</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div class="flex-1 flex justify-between sm:hidden">
+                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Anterior
+                </a>
+                <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Siguiente
+                </a>
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Mostrando <span class="font-medium">1</span> a <span class="font-medium">10</span> de <span class="font-medium">{{ reclamaciones|length }}</span> resultados
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        <!-- Botones de paginación aquí -->
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Ver Detalle -->
+<div id="modal-detalle" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium text-gray-900" id="modal-titulo">Detalle de Reclamación</h3>
+                <button onclick="cerrarModal('modal-detalle')" class="text-gray-400 hover:text-gray-600">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div id="contenido-detalle" class="space-y-4">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Responder -->
+<div id="modal-respuesta" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Responder Reclamación</h3>
+                <button onclick="cerrarModal('modal-respuesta')" class="text-gray-400 hover:text-gray-600">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <form id="form-respuesta" class="space-y-4">
+                <input type="hidden" id="reclamacion-id">
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                    <select id="nuevo-estado" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                        <option value="PENDIENTE">Pendiente</option>
+                        <option value="EN_PROCESO">En Proceso</option>
+                        <option value="RESUELTO">Resuelto</option>
+                        <option value="CERRADO">Cerrado</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Respuesta de la Empresa</label>
+                    <textarea id="respuesta-empresa" rows="4" 
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                        placeholder="Ingrese la respuesta oficial de la empresa..."></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Acciones Adoptadas</label>
+                    <textarea id="acciones-adoptadas" rows="3" 
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                        placeholder="Describa las acciones tomadas para resolver la reclamación..."></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Observaciones</label>
+                    <textarea id="observaciones" rows="2" 
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                        placeholder="Observaciones adicionales (opcional)..."></textarea>
+                </div>
+
+                <div class="flex space-x-3 pt-4">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
+                        Guardar Respuesta
+                    </button>
+                    <button type="button" onclick="cerrarModal('modal-respuesta')" 
+                        class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-lg">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Funciones para gestión de reclamaciones
+function filtrarReclamaciones() {
+    const panel = document.getElementById('filtros-panel');
+    panel.classList.toggle('hidden');
+}
+
+function aplicarFiltros() {
+    // Implementar lógica de filtros
+    console.log('Aplicando filtros...');
+}
+
+function limpiarFiltros() {
+    document.getElementById('filtro-estado').value = '';
+    document.getElementById('filtro-tipo').value = '';
+    document.getElementById('filtro-fecha-desde').value = '';
+    document.getElementById('filtro-fecha-hasta').value = '';
+}
+
+function verDetalle(id) {
+    // Cargar y mostrar detalle de la reclamación
+    fetch(`/admin/reclamaciones/${id}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                mostrarDetalle(data.reclamacion);
+                document.getElementById('modal-detalle').classList.remove('hidden');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function mostrarDetalle(reclamacion) {
+    const contenido = document.getElementById('contenido-detalle');
+    contenido.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-2">Datos del Cliente</h4>
+                <p><strong>Nombre:</strong> ${reclamacion.nombres} ${reclamacion.apellidos}</p>
+                <p><strong>Documento:</strong> ${reclamacion.tipo_documento} - ${reclamacion.numero_documento}</p>
+                <p><strong>Email:</strong> ${reclamacion.email}</p>
+                <p><strong>Teléfono:</strong> ${reclamacion.telefono}</p>
+                <p><strong>Dirección:</strong> ${reclamacion.direccion}</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-2">Información de la Reclamación</h4>
+                <p><strong>Número:</strong> ${reclamacion.numero_reclamacion}</p>
+                <p><strong>Tipo:</strong> ${reclamacion.tipo_reclamacion}</p>
+                <p><strong>Bien:</strong> ${reclamacion.tipo_bien}</p>
+                <p><strong>Monto:</strong> S/. ${parseFloat(reclamacion.monto_reclamado).toFixed(2)}</p>
+                <p><strong>Estado:</strong> ${reclamacion.estado}</p>
+                <p><strong>Fecha:</strong> ${new Date(reclamacion.fecha_reclamacion).toLocaleDateString()}</p>
+            </div>
+        </div>
+        <div class="mt-4">
+            <h4 class="font-semibold text-gray-900 mb-2">Descripción del Bien/Servicio</h4>
+            <p class="text-gray-700 bg-gray-50 p-3 rounded">${reclamacion.descripcion_bien}</p>
+        </div>
+        <div class="mt-4">
+            <h4 class="font-semibold text-gray-900 mb-2">Detalle de la Reclamación</h4>
+            <p class="text-gray-700 bg-gray-50 p-3 rounded">${reclamacion.detalle_reclamacion}</p>
+        </div>
+        <div class="mt-4">
+            <h4 class="font-semibold text-gray-900 mb-2">Pedido del Consumidor</h4>
+            <p class="text-gray-700 bg-gray-50 p-3 rounded">${reclamacion.pedido_consumidor}</p>
+        </div>
+        ${reclamacion.respuesta_empresa ? `
+        <div class="mt-4">
+            <h4 class="font-semibold text-gray-900 mb-2">Respuesta de la Empresa</h4>
+            <p class="text-gray-700 bg-blue-50 p-3 rounded">${reclamacion.respuesta_empresa}</p>
+        </div>` : ''}
+        ${reclamacion.acciones_adoptadas ? `
+        <div class="mt-4">
+            <h4 class="font-semibold text-gray-900 mb-2">Acciones Adoptadas</h4>
+            <p class="text-gray-700 bg-green-50 p-3 rounded">${reclamacion.acciones_adoptadas}</p>
+        </div>` : ''}
+    `;
+}
+
+function editarReclamacion(id) {
+    // Implementar edición de reclamación
+    console.log('Editando reclamación:', id);
+}
+
+function responderReclamacion(id) {
+    document.getElementById('reclamacion-id').value = id;
+    document.getElementById('modal-respuesta').classList.remove('hidden');
+}
+
+function cerrarModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+}
+
+function exportarReclamaciones() {
+    window.open('/admin/reclamaciones/export', '_blank');
+}
+
+// Manejo del formulario de respuesta
+document.getElementById('form-respuesta').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const id = document.getElementById('reclamacion-id').value;
+    const estado = document.getElementById('nuevo-estado').value;
+    const respuesta = document.getElementById('respuesta-empresa').value;
+    const acciones = document.getElementById('acciones-adoptadas').value;
+    const observaciones = document.getElementById('observaciones').value;
+    
+    fetch(`/admin/reclamaciones/${id}/responder`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            estado: estado,
+            respuesta_empresa: respuesta,
+            acciones_adoptadas: acciones,
+            observaciones: observaciones
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Respuesta guardada exitosamente');
+            location.reload();
+        } else {
+            alert('Error al guardar la respuesta');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al procesar la solicitud');
+    });
+});
+</script>
+{% endblock %}

@@ -2,7 +2,62 @@ document.addEventListener('DOMContentLoaded', function() {
     // Estado global
     let lastDeletedItem = null;
     let appliedCoupon = null;
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    // Determinar si el usuario está autenticado basado en datos del servidor
+    const isAuthenticated = window.cartData && window.cartData.is_authenticated !== undefined 
+        ? window.cartData.is_authenticated 
+        : false;
+    
+    console.log('Usuario autenticado en carrito:', isAuthenticated);
+    
+    // Usar datos del servidor si está autenticado, sino usar localStorage
+    let cart = [];
+    
+    console.log('🔍 DEBUG: isAuthenticated =', isAuthenticated);
+    console.log('🔍 DEBUG: window.cartData =', window.cartData);
+    
+    if (isAuthenticated && window.cartData && window.cartData.items && window.cartData.items.length > 0) {
+        // Convertir datos del servidor al formato esperado
+        cart = window.cartData.items.map(item => ({
+            id: item.product_id,
+            productId: item.product_id,
+            quantity: item.quantity,
+            name: item.name,
+            price: parseFloat(item.price),
+            image: item.image_url || 'default.jpg'
+        }));
+        console.log('📊 Carrito cargado desde servidor:', cart);
+    } else {
+        // Fallback a localStorage para usuarios no autenticados
+        const localStorageCart = localStorage.getItem('cart');
+        console.log('🔍 DEBUG: localStorage raw data:', localStorageCart);
+        
+        if (localStorageCart) {
+            try {
+                cart = JSON.parse(localStorageCart);
+                console.log('📊 Carrito parseado desde localStorage:', cart);
+                console.log('📊 Número de items en carrito:', cart.length);
+                
+                // Debug cada item
+                cart.forEach((item, index) => {
+                    console.log(`� Item ${index}:`, {
+                        id: item.id,
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity,
+                        talla: item.talla
+                    });
+                });
+            } catch (e) {
+                console.error('❌ Error parseando carrito desde localStorage:', e);
+                cart = [];
+            }
+        } else {
+            console.log('📊 No hay datos en localStorage, carrito vacío');
+            cart = [];
+        }
+    }
+    
     let itemBeingDeleted = null;
     
     // Elementos del DOM
@@ -41,9 +96,29 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Función para obtener información del producto
-    function getProductInfo(productId) {
-        return productsData[productId] || { 
-            name: 'Producto no disponible', 
+    function getProductInfo(productId, cartItem = null) {
+        console.log('🔍 getProductInfo called with:', { productId, cartItem });
+        
+        // Si el item del carrito tiene la información completa, usarla
+        if (cartItem && cartItem.name && cartItem.price !== undefined) {
+            console.log('✅ Usando datos del carrito:', cartItem);
+            return {
+                name: cartItem.name,
+                price: cartItem.price,
+                image: cartItem.image || 'default.jpg'
+            };
+        }
+        
+        // Fallback al diccionario de productos
+        const productInfo = productsData[productId];
+        if (productInfo) {
+            console.log('✅ Usando datos del diccionario:', productInfo);
+            return productInfo;
+        }
+        
+        console.warn('⚠️ Producto no encontrado, usando datos por defecto para ID:', productId);
+        return { 
+            name: `Producto ${productId}`, 
             price: 0, 
             image: 'default.jpg' 
         };
@@ -68,15 +143,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Función para actualizar la vista del carrito
     function updateCartView() {
+        console.log('🔄 updateCartView called with cart:', cart);
+        console.log('🔄 Cart length:', cart.length);
+        
+        const cartContainer = document.getElementById('cartContainer');
+        const emptyCartTemplate = document.getElementById('emptyCart');
+        
+        console.log('🔍 cartContainer found:', !!cartContainer);
+        console.log('🔍 emptyCartTemplate found:', !!emptyCartTemplate);
+        
         if (cart.length === 0) {
-            document.getElementById('cartContainer').classList.add('hidden');
-            emptyCartTemplate.classList.remove('hidden');
+            console.log('📦 Carrito vacío, mostrando template vacío');
+            if (cartContainer) cartContainer.classList.add('hidden');
+            if (emptyCartTemplate) emptyCartTemplate.classList.remove('hidden');
             updateCheckoutButton(0);
             return;
         }
 
-        document.getElementById('cartContainer').classList.remove('hidden');
-        emptyCartTemplate.classList.add('hidden');
+        console.log('📦 Carrito con productos, mostrando contenido');
+        if (cartContainer) cartContainer.classList.remove('hidden');
+        if (emptyCartTemplate) emptyCartTemplate.classList.add('hidden');
         
         // Limpiar contenedor y agregar header
         cartItemsContainer.innerHTML = `
@@ -90,10 +176,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         let subtotal = 0;
 
-        cart.forEach(item => {
-            const product = getProductInfo(item.id);
+        cart.forEach((item, index) => {
+            console.log(`🛒 Procesando item ${index}:`, item);
+            const product = getProductInfo(item.id, item);
+            console.log('📦 Información del producto:', product);
             const itemTotal = product.price * item.quantity;
             subtotal += itemTotal;
+            console.log('💰 Total del item:', itemTotal);
 
             const itemElement = document.createElement('div');
             itemElement.className = 'border-t border-gray-100 transition-all duration-300 hover:bg-gray-50';
@@ -162,6 +251,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Función para actualizar los totales
     function updateTotals(subtotal) {
+        // Si tenemos datos del servidor, usarlos
+        if (window.cartData) {
+            const serverData = window.cartData;
+            subtotalElement.textContent = `S/. ${serverData.subtotal.toFixed(2)}`;
+            taxElement.textContent = `S/. ${serverData.tax.toFixed(2)}`;
+            totalElement.textContent = `S/. ${serverData.total.toFixed(2)}`;
+            
+            if (serverData.shipping > 0) {
+                shippingElement.textContent = `S/. ${serverData.shipping.toFixed(2)}`;
+            } else {
+                shippingElement.textContent = 'Gratis';
+            }
+            
+            updateCheckoutButton(serverData.total);
+            console.log('💰 Totales actualizados desde servidor');
+            return;
+        }
+        
+        // Fallback: cálculo local
         const tax = subtotal * 0.18; // IGV 18%
         let shipping = 0;
 
@@ -410,7 +518,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Actualizar el total del item
         if (totalElement) {
-            const product = getProductInfo(productId);
+            const cartItem = cart.find(item => item.id == productId);
+            const product = getProductInfo(productId, cartItem);
             const newTotal = (product.price * newQuantity).toFixed(2);
             totalElement.style.transition = 'all 0.3s ease-out';
             totalElement.style.transform = 'scale(1.1)';
@@ -465,7 +574,8 @@ document.addEventListener('DOMContentLoaded', function() {
         itemBeingDeleted = productId;
         
         // Obtener información del producto
-        const product = getProductInfo(productId);
+        const cartItem = cart.find(item => item.id == productId);
+        const product = getProductInfo(productId, cartItem);
         
         // Actualizar el contenido del modal
         const modalTitle = deleteModal.querySelector('h3');
@@ -698,14 +808,49 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Guardar datos del carrito para el checkout
-        sessionStorage.setItem('checkout_cart', JSON.stringify(cart));
-        if (appliedCoupon) {
-            sessionStorage.setItem('applied_coupon', JSON.stringify(appliedCoupon));
-        }
-        
-        // Redirigir al checkout
-        window.location.href = '/checkout';
+        // Verificar si el usuario está autenticado
+        fetch('/api/check_auth', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.authenticated) {
+                // Usuario autenticado, proceder al checkout
+                sessionStorage.setItem('checkout_cart', JSON.stringify(cart));
+                if (appliedCoupon) {
+                    sessionStorage.setItem('applied_coupon', JSON.stringify(appliedCoupon));
+                }
+                window.location.href = '/checkout';
+            } else {
+                // Usuario no autenticado, redirigir al login
+                sessionStorage.setItem('checkout_cart', JSON.stringify(cart));
+                if (appliedCoupon) {
+                    sessionStorage.setItem('applied_coupon', JSON.stringify(appliedCoupon));
+                }
+                // Guardar la URL de retorno
+                sessionStorage.setItem('return_url', '/checkout');
+                showNotification('Debes iniciar sesión para continuar con la compra', 'info');
+                setTimeout(() => {
+                    window.location.href = '/login?return_url=' + encodeURIComponent('/checkout');
+                }, 1500);
+            }
+        })
+        .catch(error => {
+            console.error('Error checking authentication:', error);
+            // En caso de error, asumir que no está autenticado
+            sessionStorage.setItem('checkout_cart', JSON.stringify(cart));
+            if (appliedCoupon) {
+                sessionStorage.setItem('applied_coupon', JSON.stringify(appliedCoupon));
+            }
+            sessionStorage.setItem('return_url', '/checkout');
+            showNotification('Debes iniciar sesión para continuar con la compra', 'info');
+            setTimeout(() => {
+                window.location.href = '/login?return_url=' + encodeURIComponent('/checkout');
+            }, 1500);
+        });
     };
 
     // Evento para el botón de pago

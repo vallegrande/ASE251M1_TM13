@@ -1,0 +1,495 @@
+/* Libro de Reclamaciones - Estilos personalizados */
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Estilos generales */
+.reclamaciones-container {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+/* Header animado */
+.hero-section {
+    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* Cinta azul animada */
+.hero-section .bg-blue-600 {
+    animation: slideInFromTop 1s ease-out;
+    backdrop-filter: blur(10px);
+}
+
+@keyframes slideInFromTop {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Icono con efecto especial */
+.hero-section .bg-blue-600.p-4 {
+    animation: pulse 2s infinite;
+    box-shadow: 0 0 30px rgba(37, 99, 235, 0.5);
+}
+
+/* Información legal mejorada */
+.legal-info {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    position: relative;
+    border: 2px solid #f59e0b;
+}
+
+.legal-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="orange" opacity="0.1"/></svg>');
+}
+
+/* Texto con sombra para mejor legibilidad */
+.text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Efectos hover para elementos interactivos */
+.bg-yellow-500:hover {
+    background-color: #f59e0b;
+    transform: scale(1.05);
+    transition: all 0.3s ease;
+}
+
+/* Animación para los círculos decorativos */
+.hero-section .absolute.border-2 {
+    animation: float 6s ease-in-out infinite;
+}
+
+.hero-section .absolute.border-2:nth-child(2) {
+    animation-delay: -2s;
+}
+
+.hero-section .absolute.border-2:nth-child(3) {
+    animation-delay: -4s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+/* Formulario */
+.form-section {
+    animation: slideInRight 0.6s ease-out 0.2s both;
+}
+
+/* Campos de entrada mejorados */
+.form-input {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.form-input:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(220, 38, 38, 0.15);
+}
+
+.form-input:hover {
+    border-color: #dc2626;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);
+}
+
+/* Labels flotantes */
+.floating-label {
+    position: relative;
+}
+
+.floating-label input:focus + label,
+.floating-label input:not(:placeholder-shown) + label {
+    transform: translateY(-20px) scale(0.9);
+    color: #dc2626;
+}
+
+.floating-label label {
+    position: absolute;
+    left: 12px;
+    top: 16px;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    background: white;
+    padding: 0 4px;
+}
+
+/* Botones mejorados */
+.btn-primary {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-primary:hover::before {
+    left: 100%;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Secciones del formulario */
+.form-section-header {
+    position: relative;
+    padding-left: 40px;
+}
+
+.form-section-header::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 3px;
+    background: linear-gradient(90deg, #dc2626, #ef4444);
+    border-radius: 2px;
+}
+
+/* Radio buttons y checkboxes personalizados */
+.custom-radio {
+    position: relative;
+    cursor: pointer;
+}
+
+.custom-radio input[type="radio"] {
+    opacity: 0;
+    position: absolute;
+}
+
+.custom-radio .radio-mark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #f3f4f6;
+    border: 2px solid #d1d5db;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.custom-radio:hover .radio-mark {
+    border-color: #dc2626;
+    background-color: #fef2f2;
+}
+
+.custom-radio input:checked ~ .radio-mark {
+    background-color: #dc2626;
+    border-color: #dc2626;
+}
+
+.custom-radio .radio-mark::after {
+    content: "";
+    position: absolute;
+    display: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+}
+
+.custom-radio input:checked ~ .radio-mark::after {
+    display: block;
+}
+
+/* Alertas personalizadas */
+.alert {
+    animation: slideInRight 0.5s ease-out;
+    border-left: 4px solid;
+    position: relative;
+    overflow: hidden;
+}
+
+.alert::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 4px;
+    animation: pulse 2s infinite;
+}
+
+.alert-success {
+    background-color: #f0fdf4;
+    border-color: #22c55e;
+    color: #166534;
+}
+
+.alert-error {
+    background-color: #fef2f2;
+    border-color: #ef4444;
+    color: #991b1b;
+}
+
+.alert-warning {
+    background-color: #fffbeb;
+    border-color: #f59e0b;
+    color: #92400e;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f4f6;
+    border-top: 2px solid #dc2626;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Información legal */
+.legal-info {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    position: relative;
+}
+
+.legal-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="orange" opacity="0.1"/></svg>');
+}
+
+/* Información de contacto */
+.contact-info {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+}
+
+.contact-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-section-header {
+        padding-left: 0;
+        text-align: center;
+    }
+    
+    .form-section-header::before {
+        display: none;
+    }
+    
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-section p {
+        font-size: 1rem;
+    }
+}
+
+/* Validación visual */
+.form-input.error {
+    border-color: #ef4444;
+    background-color: #fef2f2;
+}
+
+.form-input.success {
+    border-color: #22c55e;
+    background-color: #f0fdf4;
+}
+
+.error-message {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    animation: fadeInUp 0.3s ease;
+}
+
+/* Tooltip */
+.tooltip {
+    position: relative;
+    cursor: help;
+}
+
+.tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    z-index: 1000;
+    animation: fadeInUp 0.3s ease;
+}
+
+.tooltip:hover::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% - 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1f2937;
+    z-index: 1000;
+}
+
+/* Progress indicator */
+.progress-indicator {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.progress-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+}
+
+.progress-step::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: #e5e7eb;
+    z-index: 1;
+}
+
+.progress-step:last-child::before {
+    display: none;
+}
+
+.progress-step.active::before {
+    background: #dc2626;
+}
+
+.progress-step-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.progress-step.active .progress-step-circle {
+    background: #dc2626;
+    color: white;
+}
+
+.progress-step.completed .progress-step-circle {
+    background: #22c55e;
+    color: white;
+}

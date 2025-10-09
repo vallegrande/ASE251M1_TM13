@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro - Wawalu</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
+{% extends "auth_base.html" %}
+
+{% block title %}Registro - Wawalu{% endblock %}
+
+{% block content %}
     <div class="min-h-screen flex">
         <!-- Logo Section - Left Side -->
         <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-r from-blue-500 to-blue-600">
@@ -165,6 +160,8 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
     <script src="{{ url_for('static', filename='js/register.js') }}"></script>
-</body>
-</html>
+{% endblock %}

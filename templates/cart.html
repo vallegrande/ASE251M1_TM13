@@ -9,6 +9,18 @@
     </div>
 </header>
 
+<!-- Pasar datos de Flask a JavaScript -->
+<script>
+    window.cartData = {
+        items: {{ cart_items|tojson }},
+        subtotal: {{ subtotal }},
+        tax: {{ tax }},
+        shipping: {{ shipping }},
+        total: {{ total }},
+        is_authenticated: {{ is_authenticated|tojson }}
+    };
+</script>
+
 <div class="container mx-auto px-4 py-8 min-h-screen">
     <div id="cartContainer" class="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <!-- Lista de productos -->
@@ -118,7 +130,7 @@
                 <span class="material-icons text-gray-400 text-7xl mb-6">shopping_cart</span>
                 <h2 class="text-2xl font-bold text-gray-800 mb-4">Tu carrito está vacío</h2>
                 <p class="text-gray-600 mb-8">¿No sabes qué comprar? ¡Miles de productos te esperan en nuestra tienda!</p>
-                <a href="/shop" 
+                <a href="/tienda" 
                    class="inline-flex items-center space-x-2 bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
                     <span class="material-icons">store</span>
                     <span>Explorar la Tienda</span>

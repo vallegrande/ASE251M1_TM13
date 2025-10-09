@@ -1,0 +1,119 @@
+{% macro alert(message, type='info', dismissible=true, icon=true, title=none) %}
+<!-- Componente Reutilizable: Alerta/Notificación -->
+<!-- Uso: {{ alert('Producto agregado al carrito', 'success', true, true, 'Éxito') }} -->
+<!-- Tipos: success, error, warning, info -->
+<div class="alert alert-{{ type }} 
+            {% if type == 'success' %}bg-green-50 border-green-200 text-green-800{% endif %}
+            {% if type == 'error' %}bg-red-50 border-red-200 text-red-800{% endif %}
+            {% if type == 'warning' %}bg-yellow-50 border-yellow-200 text-yellow-800{% endif %}
+            {% if type == 'info' %}bg-blue-50 border-blue-200 text-blue-800{% endif %}
+            border-l-4 p-4 rounded-lg shadow-sm mb-4 transition-all duration-300"
+     {% if dismissible %}id="alert-{{ loop.index0 if loop else 'default' }}"{% endif %}>
+    
+    <div class="flex items-start">
+        {% if icon %}
+        <div class="flex-shrink-0 mr-3">
+            <span class="material-icons text-lg
+                        {% if type == 'success' %}text-green-500{% endif %}
+                        {% if type == 'error' %}text-red-500{% endif %}
+                        {% if type == 'warning' %}text-yellow-500{% endif %}
+                        {% if type == 'info' %}text-blue-500{% endif %}">
+                {% if type == 'success' %}check_circle{% endif %}
+                {% if type == 'error' %}error{% endif %}
+                {% if type == 'warning' %}warning{% endif %}
+                {% if type == 'info' %}info{% endif %}
+            </span>
+        </div>
+        {% endif %}
+        
+        <div class="flex-1">
+            {% if title %}
+            <h3 class="font-semibold mb-1 text-sm">{{ title }}</h3>
+            {% endif %}
+            <p class="text-sm leading-relaxed">{{ message }}</p>
+        </div>
+        
+        {% if dismissible %}
+        <div class="flex-shrink-0 ml-3">
+            <button onclick="dismissAlert('alert-{{ loop.index0 if loop else 'default' }}')" 
+                    class="inline-flex text-gray-400 hover:text-gray-600 focus:outline-none transition-colors duration-200">
+                <span class="material-icons text-lg">close</span>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if dismissible %}
+<script>
+function dismissAlert(alertId) {
+    const alert = document.getElementById(alertId);
+    if (alert) {
+        alert.style.transform = 'translateX(100%)';
+        alert.style.opacity = '0';
+        setTimeout(() => {
+            alert.remove();
+        }, 300);
+    }
+}
+
+// Auto-dismiss after 5 seconds for success messages
+{% if type == 'success' %}
+setTimeout(() => {
+    dismissAlert('alert-{{ loop.index0 if loop else 'default' }}');
+}, 5000);
+{% endif %}
+</script>
+{% endif %}
+{% endmacro %}
+
+{% macro toast(message, type='info', duration=5000) %}
+<!-- Componente Toast para notificaciones flotantes -->
+<!-- Uso: {{ toast('Guardado exitosamente', 'success', 3000) }} -->
+<div class="toast fixed top-4 right-4 z-50 transform translate-x-full transition-transform duration-300 ease-in-out"
+     id="toast-{{ loop.index0 if loop else 'default' }}"
+     style="transform: translateX(100%);">
+    <div class="flex items-center p-4 rounded-lg shadow-lg max-w-sm
+                {% if type == 'success' %}bg-green-500 text-white{% endif %}
+                {% if type == 'error' %}bg-red-500 text-white{% endif %}
+                {% if type == 'warning' %}bg-yellow-500 text-white{% endif %}
+                {% if type == 'info' %}bg-blue-500 text-white{% endif %}">
+        <span class="material-icons mr-2">
+            {% if type == 'success' %}check_circle{% endif %}
+            {% if type == 'error' %}error{% endif %}
+            {% if type == 'warning' %}warning{% endif %}
+            {% if type == 'info' %}info{% endif %}
+        </span>
+        <span class="font-medium">{{ message }}</span>
+        <button onclick="dismissToast('toast-{{ loop.index0 if loop else 'default' }}')" 
+                class="ml-3 text-white hover:text-gray-200">
+            <span class="material-icons text-sm">close</span>
+        </button>
+    </div>
+</div>
+
+<script>
+// Mostrar toast
+setTimeout(() => {
+    const toast = document.getElementById('toast-{{ loop.index0 if loop else 'default' }}');
+    if (toast) {
+        toast.style.transform = 'translateX(0)';
+    }
+}, 100);
+
+// Auto-dismiss
+setTimeout(() => {
+    dismissToast('toast-{{ loop.index0 if loop else 'default' }}');
+}, {{ duration }});
+
+function dismissToast(toastId) {
+    const toast = document.getElementById(toastId);
+    if (toast) {
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }
+}
+</script>
+{% endmacro %}

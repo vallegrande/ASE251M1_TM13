@@ -2,6 +2,10 @@
 
 {% block title %}Tienda - Wawalu{% endblock %}
 
+{% block head %}
+    <link href="{{ url_for('static', filename='css/shop.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
     <!-- Hero Section -->
     <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
@@ -18,67 +22,106 @@
         <div class="flex flex-col lg:flex-row gap-8">
             <!-- Panel de Filtros -->
             <div class="w-full lg:w-1/4">
-                <div class="bg-white rounded-xl shadow-lg p-6 sticky top-24">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Filtros</h3>
+                <div class="sidebar-filters bg-white rounded-xl shadow-lg border p-6 sticky top-24">
+                    <div class="flex items-center justify-between mb-6 pb-3 border-b border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-800">Filtrar por</h3>
+                        <button id="clearFilters" class="clear-filters-btn text-sm text-blue-600 hover:text-blue-800 font-medium px-3 py-1 rounded-md">
+                            Limpiar todo
+                        </button>
+                    </div>
                     
                     <!-- Categorías -->
                     <div class="mb-6">
-                        <h4 class="text-sm font-medium text-gray-700 mb-3">Categorías</h4>
-                        <div class="space-y-2">
-                            <label class="flex items-center">
+                        <h4 class="text-sm font-semibold text-gray-800 mb-4 uppercase tracking-wide">Categorías</h4>
+                        <div class="space-y-3">
+                            <label class="flex items-center group cursor-pointer filter-label">
                                 <input type="radio" name="category" value="todos" checked 
-                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500">
-                                <span class="ml-2 text-gray-700">Todos</span>
+                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <span class="ml-3 text-sm text-gray-700 group-hover:text-blue-600 transition-colors">Todas las categorías</span>
                             </label>
-                            <label class="flex items-center">
+                            <label class="flex items-center group cursor-pointer filter-label">
                                 <input type="radio" name="category" value="uniformes"
-                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500">
-                                <span class="ml-2 text-gray-700">Uniformes</span>
+                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <span class="ml-3 text-sm text-gray-700 group-hover:text-blue-600 transition-colors">Uniformes Escolares</span>
                             </label>
-                            <label class="flex items-center">
+                            <label class="flex items-center group cursor-pointer filter-label">
                                 <input type="radio" name="category" value="utiles"
-                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500">
-                                <span class="ml-2 text-gray-700">Útiles</span>
+                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <span class="ml-3 text-sm text-gray-700 group-hover:text-blue-600 transition-colors">Útiles Escolares</span>
                             </label>
-                            <label class="flex items-center">
+                            <label class="flex items-center group cursor-pointer filter-label">
                                 <input type="radio" name="category" value="accesorios"
-                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500">
-                                <span class="ml-2 text-gray-700">Accesorios</span>
+                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <span class="ml-3 text-sm text-gray-700 group-hover:text-blue-600 transition-colors">Accesorios</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Filtro de Tallas (solo para Uniformes) -->
+                    <div class="mb-6 pb-6 border-b border-gray-100" id="sizeFilterContainer" style="display:none;">
+                        <h4 class="text-sm font-semibold text-gray-800 mb-4 uppercase tracking-wide">Tallas</h4>
+                        <div class="space-y-3">
+                            <label class="flex items-center group cursor-pointer filter-label">
+                                <input type="radio" name="size" value="todas" checked 
+                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <span class="ml-3 text-sm text-gray-700 group-hover:text-blue-600 transition-colors">Todas las tallas</span>
+                            </label>
+                            <label class="flex items-center group cursor-pointer filter-label">
+                                <input type="radio" name="size" value="2"
+                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <span class="ml-3 text-sm text-gray-700 group-hover:text-blue-600 transition-colors">Talla 2</span>
+                            </label>
+                            <label class="flex items-center group cursor-pointer filter-label">
+                                <input type="radio" name="size" value="4"
+                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <span class="ml-3 text-sm text-gray-700 group-hover:text-blue-600 transition-colors">Talla 4</span>
+                            </label>
+                            <label class="flex items-center group cursor-pointer filter-label">
+                                <input type="radio" name="size" value="6"
+                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <span class="ml-3 text-sm text-gray-700 group-hover:text-blue-600 transition-colors">Talla 6</span>
+                            </label>
+                            <label class="flex items-center group cursor-pointer filter-label">
+                                <input type="radio" name="size" value="8"
+                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <span class="ml-3 text-sm text-gray-700 group-hover:text-blue-600 transition-colors">Talla 8</span>
+                            </label>
+                            <label class="flex items-center group cursor-pointer filter-label">
+                                <input type="radio" name="size" value="10"
+                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <span class="ml-3 text-sm text-gray-700 group-hover:text-blue-600 transition-colors">Talla 10</span>
+                            </label>
+                            <label class="flex items-center group cursor-pointer filter-label">
+                                <input type="radio" name="size" value="12"
+                                    class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <span class="ml-3 text-sm text-gray-700 group-hover:text-blue-600 transition-colors">Talla 12</span>
                             </label>
                         </div>
                     </div>
 
                     <!-- Rango de Precio -->
-                    <div class="mb-6">
-                        <h4 class="text-sm font-medium text-gray-700 mb-3">Rango de Precio</h4>
+                    <div class="mb-6 pb-6 border-b border-gray-100">
+                        <h4 class="text-sm font-semibold text-gray-800 mb-4 uppercase tracking-wide">Precio</h4>
                         <div class="space-y-4">
                             <div>
-                                <label class="text-xs text-gray-600">Precio Mínimo</label>
+                                <div class="flex justify-between items-center mb-2">
+                                    <label class="text-xs text-gray-600 font-medium">Mínimo</label>
+                                    <span class="text-sm font-semibold text-gray-800 price-highlight" id="minPriceValue">S/. 0</span>
+                                </div>
                                 <input type="range" min="0" max="100" value="0" 
-                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                                     id="minPrice">
-                                <span class="text-sm text-gray-600" id="minPriceValue">S/. 0</span>
                             </div>
                             <div>
-                                <label class="text-xs text-gray-600">Precio Máximo</label>
+                                <div class="flex justify-between items-center mb-2">
+                                    <label class="text-xs text-gray-600 font-medium">Máximo</label>
+                                    <span class="text-sm font-semibold text-gray-800 price-highlight" id="maxPriceValue">S/. 100</span>
+                                </div>
                                 <input type="range" min="0" max="100" value="100" 
-                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                                     id="maxPrice">
-                                <span class="text-sm text-gray-600" id="maxPriceValue">S/. 100</span>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Ordenar Por -->
-                    <div class="mb-6">
-                        <h4 class="text-sm font-medium text-gray-700 mb-3">Ordenar Por</h4>
-                        <select id="sortBy" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                            <option value="default">Relevancia</option>
-                            <option value="price-asc">Precio: Menor a Mayor</option>
-                            <option value="price-desc">Precio: Mayor a Menor</option>
-                            <option value="name-asc">Nombre: A-Z</option>
-                            <option value="name-desc">Nombre: Z-A</option>
-                        </select>
                     </div>
 
                     <!-- Búsqueda -->
@@ -101,15 +144,99 @@
                         Aplicar Filtros
                     </button>
                 </div>
-
-                <!-- Etiquetas de filtros activos -->
-                <div id="activeFilters" class="mt-4 flex flex-wrap gap-2">
-                    <!-- Las etiquetas se agregarán dinámicamente con JavaScript -->
-                </div>
             </div>
 
-            <!-- Grid de Productos -->
-            <div class="w-full lg:w-3/4">
+            <!-- Grid de Productos con Header -->
+            <div class="flex-1">
+                <!-- Breadcrumbs -->
+                <nav class="flex mb-4" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                        <li class="inline-flex items-center">
+                            <a href="{{ url_for('home') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                                <span class="material-icons text-sm mr-1">home</span>
+                                Inicio
+                            </a>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <span class="material-icons text-gray-400 text-sm">chevron_right</span>
+                                <span class="ml-1 text-sm font-medium text-blue-600">Tienda</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+
+                <!-- Header profesional con estadísticas -->
+                <div class="bg-white rounded-xl shadow-lg border p-6 mb-6">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                        <!-- Información principal -->
+                        <div class="flex-1">
+                            <div class="flex items-center mb-2">
+                                <h1 class="text-3xl font-bold text-gray-900 mr-3">Nuestra Tienda</h1>
+                                <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full" id="categoryBadge">Todos los productos</span>
+                            </div>
+                            <div class="flex items-center space-x-6 text-sm text-gray-600">
+                                <div class="flex items-center">
+                                    <span class="material-icons text-sm mr-1 text-green-600">inventory</span>
+                                    <span id="productCount" class="font-medium">Cargando productos...</span>
+                                </div>
+                                <div class="flex items-center" id="priceRange" style="display:none;">
+                                    <span class="material-icons text-sm mr-1 text-blue-600">monetization_on</span>
+                                    <span class="font-medium">Rango: S/. <span id="minPriceDisplay">0</span> - S/. <span id="maxPriceDisplay">100</span></span>
+                                </div>
+                                <div class="flex items-center" id="activeFiltersCount" style="display:none;">
+                                    <span class="material-icons text-sm mr-1 text-orange-600">filter_alt</span>
+                                    <span class="font-medium"><span id="filtersCountNumber">0</span> <span id="filtersText">filtros activos</span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Controles de ordenamiento y vista -->
+                        <div class="flex items-center space-x-4">
+                            <!-- Toggle de vista -->
+                            <div class="flex items-center bg-gray-100 rounded-lg p-1" id="viewToggle">
+                                <button class="view-btn active p-2 rounded-md" data-view="grid">
+                                    <span class="material-icons text-sm">grid_view</span>
+                                </button>
+                                <button class="view-btn p-2 rounded-md" data-view="list">
+                                    <span class="material-icons text-sm">view_list</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Ordenamiento profesional -->
+                            <div class="flex items-center space-x-2">
+                                <label for="sortBy" class="text-sm font-medium text-gray-700">Ordenar:</label>
+                                <select id="sortBy" class="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none min-w-[160px]">
+                                    <option value="default">📍 Relevancia</option>
+                                    <option value="price-asc">💰 Precio: Menor a Mayor</option>
+                                    <option value="price-desc">💎 Precio: Mayor a Menor</option>
+                                    <option value="name-asc">🔤 Nombre: A-Z</option>
+                                    <option value="name-desc">🔤 Nombre: Z-A</option>
+                                    <option value="newest">✨ Más recientes</option>
+                                    <option value="popular">🔥 Más populares</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Barra de filtros activos mejorada -->
+                    <div id="activeFiltersBar" class="mt-4 pt-4 border-t border-gray-100" style="display:none;">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm font-medium text-gray-700">Filtros aplicados:</span>
+                                <div id="activeFilters" class="flex flex-wrap gap-2">
+                                    <!-- Las etiquetas se agregarán dinámicamente -->
+                                </div>
+                            </div>
+                            <button id="clearAllFilters" class="text-sm text-red-600 hover:text-red-800 font-medium flex items-center">
+                                <span class="material-icons text-sm mr-1">clear_all</span>
+                                Limpiar todo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid de Productos -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {% for category, items in products.items() %}
                         {% for product in items %}
@@ -121,31 +248,57 @@
                              data-description="{{ product.description }}"
                              data-image="{{ product.image }}"
                              data-stock="{{ product.stock if product.stock is defined else 'Disponible' }}"
-                             data-features="{{ product.features|tojson if product.features is defined else '[]' }}">
-                            <div class="relative pb-[100%] cursor-pointer" onclick="showProductDetails({{ product.id }})">
+                             data-features="{{ product.features|tojson if product.features is defined else '[]' }}"
+                             data-talla="{{ product.talla if product.talla is defined else '' }}">
+                            <!-- Imagen del producto -->
+                            <div class="bg-gradient-to-br from-gray-100 to-gray-200 w-full aspect-square flex items-center justify-center overflow-hidden relative group">
+                                {% if product.image and product.image != 'default.jpg' %}
                                 <img src="{{ url_for('static', filename='img/products/' + product.image) }}" 
                                      alt="{{ product.name }}" 
-                                     class="absolute top-0 left-0 w-full h-full object-cover">
-                                <div class="absolute inset-0 bg-black opacity-0 hover:opacity-10 transition-opacity duration-300"></div>
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                     onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="hidden absolute inset-0 flex-col items-center justify-center text-gray-500 bg-gradient-to-br from-blue-50 to-blue-100">
+                                    <span class="material-icons text-4xl mb-2 text-blue-400">{{ 'school' if category == 'uniformes' else 'shopping_bag' if category == 'accesorios' else 'edit' }}</span>
+                                    <span class="text-sm font-semibold text-gray-600">{{ product.name[:20] }}...</span>
+                                </div>
+                                {% else %}
+                                <div class="flex flex-col items-center justify-center text-gray-500 bg-gradient-to-br from-blue-50 to-blue-100 w-full h-full">
+                                    <span class="material-icons text-4xl mb-2 text-blue-400">{{ 'school' if category == 'uniformes' else 'shopping_bag' if category == 'accesorios' else 'edit' }}</span>
+                                    <span class="text-sm font-semibold text-gray-600">{{ product.name[:20] }}...</span>
+                                </div>
+                                {% endif %}
+                                <div class="absolute top-2 right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-bold shadow">
+                                    {{ category.title() }}
+                                </div>
                             </div>
-                            <div class="p-4">
-                                <h3 class="text-lg font-semibold text-gray-800 mb-2 cursor-pointer hover:text-blue-600" 
-                                    onclick="showProductDetails({{ product.id }})">{{ product.name }}</h3>
-                                <p class="text-gray-600 text-sm mb-4">{{ product.description }}</p>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-blue-600 font-bold">S/. {{ "%.2f"|format(product.price) }}</span>
-                                    <div class="flex items-center space-x-2">
-                                        <button onclick="showProductDetails({{ product.id }})" 
-                                                class="flex items-center space-x-1 bg-gray-100 text-gray-700 px-3 py-1 rounded hover:bg-gray-200 transition duration-300">
-                                            <span class="material-icons text-sm">visibility</span>
-                                            <span>Ver</span>
-                                        </button>
-                                        <button onclick="addToCart({{ product.id }})" 
-                                                class="flex items-center space-x-1 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition duration-300">
-                                            <span class="material-icons text-sm">add_shopping_cart</span>
-                                            <span>Agregar</span>
-                                        </button>
-                                    </div>
+                            <!-- Detalles del producto -->
+                            <div class="bg-white w-full p-4 flex flex-col">
+                                <div class="flex items-start justify-between mb-2">
+                                    <h3 class="text-base font-bold text-gray-800 leading-tight">{{ product.name }}</h3>
+                                    {% if product.talla %}
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-2 flex-shrink-0">T. {{ product.talla }}</span>
+                                    {% endif %}
+                                </div>
+                                <p class="text-gray-600 text-xs mb-3 line-clamp-2 flex-grow">{{ product.description[:60] }}{% if product.description|length > 60 %}...{% endif %}</p>
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-green-600 font-semibold text-xs">
+                                        <span class="material-icons text-sm align-middle mr-1">inventory</span>
+                                        Stock: {{ product.stock if product.stock else 'Disponible' }}
+                                    </span>
+                                    <span class="text-blue-700 font-bold text-lg">S/. {{ "%.2f"|format(product.price) }}</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="showProductDetails({{ product.id }})" 
+                                            class="flex-1 bg-gray-50 text-gray-700 px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-700 font-medium shadow-sm transition text-sm">
+                                        <span class="material-icons text-sm mr-1">visibility</span>
+                                        Ver
+                                    </button>
+                                    <button onclick="addToCart({{ product.id }})" 
+                                            class="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 font-medium shadow-sm transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                            {% if product.stock is defined and product.stock == 0 %}disabled{% endif %}>
+                                        <span class="material-icons text-sm mr-1">add_shopping_cart</span>
+                                        Agregar
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -189,6 +342,20 @@
                                 <h3 class="text-lg font-semibold mb-2">Características</h3>
                                 <ul id="modalProductFeatures" class="list-disc list-inside text-gray-600">
                                 </ul>
+                            </div>
+
+                            <!-- Selector de Talla (solo para uniformes) -->
+                            <div class="mb-6" id="modalSizeSelector" style="display:none;">
+                                <h3 class="text-lg font-semibold mb-2">Talla</h3>
+                                <select id="modalProductSize" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <option value="">Selecciona una talla</option>
+                                    <option value="2">Talla 2</option>
+                                    <option value="4">Talla 4</option>
+                                    <option value="6">Talla 6</option>
+                                    <option value="8">Talla 8</option>
+                                    <option value="10">Talla 10</option>
+                                    <option value="12">Talla 12</option>
+                                </select>
                             </div>
 
                             <!-- Disponibilidad y Stock -->

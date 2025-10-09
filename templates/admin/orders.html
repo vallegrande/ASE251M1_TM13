@@ -2,27 +2,184 @@
 
 {% block title %}Órdenes{% endblock %}
 
+{% block extra_css %}
+<style>
+    .status-badge {
+        @apply px-3 py-1 rounded-full text-sm font-medium;
+    }
+    .status-pending { @apply bg-yellow-100 text-yellow-800; }
+    .status-paid { @apply bg-green-100 text-green-800; }
+    .status-shipped { @apply bg-blue-100 text-blue-800; }
+    .status-delivered { @apply bg-purple-100 text-purple-800; }
+    .status-cancelled { @apply bg-red-100 text-red-800; }
+    .status-completed { @apply bg-green-100 text-green-800; }
+    .status-failed { @apply bg-red-100 text-red-800; }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-gray-900">Gestión de Órdenes</h1>
     <div class="flex space-x-2">
-        <select class="border border-gray-300 rounded-md px-3 py-2">
-            <option>Todas las órdenes</option>
-            <option>Pendientes</option>
-            <option>Procesadas</option>
-            <option>Enviadas</option>
-            <option>Completadas</option>
+        <select id="statusFilter" class="border border-gray-300 rounded-md px-3 py-2" onchange="filterOrders()">
+            <option value="">Todas las órdenes</option>
+            <option value="pending">Pendientes</option>
+            <option value="paid">Pagadas</option>
+            <option value="shipped">Enviadas</option>
+            <option value="delivered">Entregadas</option>
+            <option value="cancelled">Canceladas</option>
+        </select>
+        <select id="paymentFilter" class="border border-gray-300 rounded-md px-3 py-2" onchange="filterOrders()">
+            <option value="">Todos los pagos</option>
+            <option value="pending">Pagos pendientes</option>
+            <option value="completed">Pagos verificados</option>
+            <option value="failed">Pagos rechazados</option>
         </select>
     </div>
 </div>
 
-<div class="bg-white shadow-sm rounded-lg p-6">
-    <p class="text-gray-600">Esta sección está en desarrollo. Aquí podrás gestionar las órdenes de compra.</p>
-    
-    <div class="mt-8 text-center">
+<div class="bg-white shadow-sm rounded-lg">
+    {% if orders %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Orden</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Método de Pago</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado Orden</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado Pago</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200" id="ordersTableBody">
+                {% for order in orders %}
+                <tr data-order-status="{{ order.status }}" data-payment-status="{{ order.payment_status or 'pending' }}">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">#{{ order.id }}</div>
+                        {% if order.transaction_id %}
+                        <div class="text-sm text-gray-500">Op: {{ order.transaction_id }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">{{ order.user_name }}</div>
+                        <div class="text-sm text-gray-500">{{ order.user_email }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">S/. {{ "%.2f"|format(order.total_amount) }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if order.payment_method == 'yape' %}
+                            <div class="flex items-center">
+                                <img src="{{ url_for('static', filename='icons/yape.png') }}" alt="Yape" class="h-6 w-auto mr-2">
+                                <span class="text-sm text-gray-900">Yape</span>
+                            </div>
+                        {% elif order.payment_method == 'transfer' %}
+                            <div class="flex items-center">
+                                <span class="material-icons text-sm mr-1">account_balance</span>
+                                <span class="text-sm text-gray-900">Transferencia</span>
+                            </div>
+                        {% else %}
+                            <span class="text-sm text-gray-500">{{ order.payment_method or 'No especificado' }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="status-badge status-{{ order.status }}">
+                            {% if order.status == 'pending' %}
+                                Pendiente
+                            {% elif order.status == 'paid' %}
+                                Pagada
+                            {% elif order.status == 'shipped' %}
+                                Enviada
+                            {% elif order.status == 'delivered' %}
+                                Entregada
+                            {% elif order.status == 'cancelled' %}
+                                Cancelada
+                            {% else %}
+                                {{ order.status.title() }}
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="status-badge status-{{ order.payment_status or 'pending' }}">
+                            {% if (order.payment_status or 'pending') == 'pending' %}
+                                En Verificación
+                            {% elif order.payment_status == 'completed' %}
+                                Verificado
+                            {% elif order.payment_status == 'failed' %}
+                                Rechazado
+                            {% else %}
+                                {{ order.payment_status.title() }}
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ order.created_at.strftime('%d/%m/%Y') }}
+                        <br>
+                        <span class="text-xs">{{ order.created_at.strftime('%H:%M') }}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <a href="{{ url_for('admin_order_detail', order_id=order.id) }}" 
+                           class="text-blue-600 hover:text-blue-900 mr-3">Ver Detalle</a>
+                        {% if order.payment_status == 'pending' and order.receipt_image %}
+                        <button onclick="showPaymentModal({{ order.id }})" 
+                                class="text-green-600 hover:text-green-900">Verificar Pago</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="p-6 text-center">
         <div class="text-6xl text-gray-300 mb-4">📦</div>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">Próximamente</h3>
-        <p class="text-gray-500">Funcionalidad de gestión de órdenes y ventas</p>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No hay órdenes</h3>
+        <p class="text-gray-500">Cuando los clientes realicen pedidos, aparecerán aquí</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal para verificación de pago -->
+<div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <h3 class="text-lg font-semibold mb-4">Verificar Pago</h3>
+            <div id="paymentModalContent">
+                <!-- Contenido se carga dinámicamente -->
+            </div>
+        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterOrders() {
+    const statusFilter = document.getElementById('statusFilter').value;
+    const paymentFilter = document.getElementById('paymentFilter').value;
+    const rows = document.querySelectorAll('#ordersTableBody tr');
+    
+    rows.forEach(row => {
+        const orderStatus = row.dataset.orderStatus;
+        const paymentStatus = row.dataset.paymentStatus;
+        
+        const statusMatch = !statusFilter || orderStatus === statusFilter;
+        const paymentMatch = !paymentFilter || paymentStatus === paymentFilter;
+        
+        if (statusMatch && paymentMatch) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function showPaymentModal(orderId) {
+    // Implementar modal de verificación de pago
+    window.location.href = `/admin/orders/${orderId}`;
+}
+</script>
 {% endblock %}
