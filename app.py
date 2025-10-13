@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, jsonify, session, flash
+from flask import Flask, render_template, redirect, url_for, request, jsonify, session, flash, send_from_directory
 from flask_mysqldb import MySQL
 import os
 from pathlib import Path
@@ -39,6 +39,11 @@ FACEBOOK_URL = 'https://www.facebook.com/search/top?q=wawalu'
 # Configuración de correo SMTP (opcional para envío automático)
 SMTP_SERVER = 'smtp.gmail.com'  # O el servidor de tu proveedor
 SMTP_PORT = 587
+
+# Ruta para Términos y Condiciones
+@app.route('/terminos')
+def terms():
+    return render_template('terms.html')
 SMTP_EMAIL = os.getenv('SMTP_EMAIL', CONTACT_EMAIL)
 SMTP_PASSWORD = os.getenv('SMTP_PASSWORD', '')  # Contraseña de aplicación
 
@@ -61,8 +66,18 @@ def send_email(to_email, subject, body, is_html=False):
     """Función para enviar correos electrónicos"""
     try:
         if not SMTP_PASSWORD:
-            print("SMTP_PASSWORD no configurado, no se puede enviar correo")
+            print("❌ ERROR: SMTP_PASSWORD no configurado en .env")
+            print("📧 Para configurar Gmail:")
+            print("1. Ve a https://myaccount.google.com/security")
+            print("2. Activa 'Verificación en 2 pasos'")
+            print("3. Ve a 'Contraseñas de aplicaciones'")
+            print("4. Genera una contraseña para 'Correo'")
+            print("5. Agrega SMTP_PASSWORD=tu-contraseña-generada en .env")
             return False
+            
+        print(f"📧 Intentando enviar email a: {to_email}")
+        print(f"📧 Desde: {SMTP_EMAIL}")
+        print(f"📧 Servidor: {SMTP_SERVER}:{SMTP_PORT}")
             
         msg = MIMEMultipart()
         msg['From'] = SMTP_EMAIL
@@ -80,9 +95,12 @@ def send_email(to_email, subject, body, is_html=False):
         text = msg.as_string()
         server.sendmail(SMTP_EMAIL, to_email, text)
         server.quit()
+        
+        print("✅ Email enviado exitosamente!")
         return True
     except Exception as e:
-        print(f"Error enviando correo: {e}")
+        print(f"❌ Error enviando correo: {e}")
+        print(f"📧 Verifica tu configuración SMTP en .env")
         return False
 
 def generate_whatsapp_url(message):
@@ -131,6 +149,14 @@ mysql = MySQL(app)
 
 # Clave secreta para sesiones desde variable de entorno
 app.secret_key = os.getenv('SECRET_KEY', 'wawalu-secret-key-super-secure-2025')
+
+# Filtros personalizados para Jinja2
+@app.template_filter('nl2br')
+def nl2br_filter(text):
+    """Convierte saltos de línea en etiquetas <br>"""
+    if not text:
+        return text
+    return text.replace('\n', '<br>\n').replace('\r\n', '<br>\n')
 
 # Context processor para hacer información de contacto disponible globalmente
 @app.context_processor
@@ -253,6 +279,34 @@ def register():
             # Guardar cambios
             mysql.connection.commit()
             
+            # Enviar email de notificación de nuevo registro
+            email_subject = f"Nuevo Registro de Usuario - {name}"
+            
+            email_body = f"""
+Nuevo usuario registrado en la página web de Wawalu
+
+=== INFORMACIÓN DEL USUARIO ===
+Nombre completo: {name}
+Email: {email}
+Teléfono: {phone}
+Rol/Relación: {role}
+
+=== DETALLES DEL REGISTRO ===
+Fecha de registro: {datetime.now().strftime('%d/%m/%Y %H:%M')}
+IP de origen: {request.remote_addr}
+
+---
+Este usuario se registró desde el formulario de registro de Wawalu.
+Ya puede iniciar sesión y proceder con la matrícula de estudiantes.
+"""
+            
+            # Intentar enviar correo
+            print(f"🔄 Intentando enviar email de nuevo registro...")
+            print(f"📧 Destinatario: {CONTACT_EMAIL}")
+            print(f"📧 Asunto: {email_subject}")
+            email_sent = send_email(CONTACT_EMAIL, email_subject, email_body)
+            print(f"📧 Resultado del envío: {'✅ Exitoso' if email_sent else '❌ Falló'}")
+            
             return jsonify({
                 "success": True,
                 "message": "Registro exitoso"
@@ -328,7 +382,11 @@ def contact():
             """
             
             # Intentar enviar correo
+            print(f"🔄 Intentando enviar email desde formulario de contacto...")
+            print(f"📧 Destinatario: {CONTACT_EMAIL}")
+            print(f"📧 Asunto: {email_subject}")
             email_sent = send_email(CONTACT_EMAIL, email_subject, email_body)
+            print(f"📧 Resultado del envío: {'✅ Exitoso' if email_sent else '❌ Falló'}")
             
             # Generar URL de WhatsApp como alternativa
             whatsapp_message = f"Hola, soy {name}. {message}"
@@ -1002,6 +1060,67 @@ def process_order():
         cursor.execute('DELETE FROM shopping_cart WHERE user_id = %s', (user_id,))
         
         mysql.connection.commit()
+        
+        # Obtener información del usuario para el email
+        cursor.execute('SELECT name, email, phone FROM users WHERE id = %s', (user_id,))
+        user_info = cursor.fetchone()
+        user_name = user_info['name'] if user_info else 'Usuario desconocido'
+        user_email = user_info['email'] if user_info else 'No especificado'
+        user_phone = user_info['phone'] if user_info else 'No especificado'
+        
+        # Generar lista de productos para el email
+        products_list = []
+        for item in cart_items:
+            product_total = float(item['price']) * item['quantity']
+            products_list.append(f"- {item['name']} (Cantidad: {item['quantity']}) - S/ {product_total:.2f}")
+        
+        products_text = "\n".join(products_list)
+        
+        # Enviar email de notificación de nueva orden al administrador
+        admin_email_subject = f"Nueva Orden #{order_id} - {user_name}"
+        
+        admin_email_body = f"""
+Nueva orden recibida desde la tienda online de Wawalu
+
+=== INFORMACIÓN DE LA ORDEN ===
+Número de orden: #{order_id}
+Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M')}
+Estado: Pendiente
+
+=== INFORMACIÓN DEL CLIENTE ===
+Nombre: {user_name}
+Email: {user_email}
+Teléfono: {user_phone}
+
+=== PRODUCTOS ORDENADOS ===
+{products_text}
+
+=== DETALLES DE PAGO ===
+Subtotal: S/ {total_amount:.2f}
+IGV (18%): S/ {tax:.2f}
+Envío: S/ {shipping:.2f}
+TOTAL: S/ {final_total:.2f}
+
+Método de pago: {payment_method}
+{f'Número de operación: {operation_number}' if operation_number else 'Sin número de operación proporcionado'}
+
+=== DIRECCIÓN DE ENVÍO ===
+{shipping_address if shipping_address else 'No especificada'}
+
+=== NOTAS ADICIONALES ===
+{notes if notes else 'Ninguna'}
+
+---
+Esta orden fue generada desde la tienda online de Wawalu.
+Por favor, revise y procese esta orden en el panel de administración.
+"""
+        
+        # Enviar email al administrador
+        print(f"🔄 Intentando enviar email de nueva orden...")
+        print(f"📧 Destinatario: {CONTACT_EMAIL}")
+        print(f"📧 Asunto: {admin_email_subject}")
+        email_sent = send_email(CONTACT_EMAIL, admin_email_subject, admin_email_body)
+        print(f"📧 Resultado del envío: {'✅ Exitoso' if email_sent else '❌ Falló'}")
         
         return jsonify({
             'success': True, 
@@ -2120,6 +2239,242 @@ def profile():
     
     return render_template('profile.html', user=user, parent_info=parent_info)
 
+@app.route('/informes')
+def informes():
+    """Página de informes para padres - Ver informes enviados por profesores"""
+    if 'logged_in' not in session:
+        flash('Por favor inicia sesión para ver los informes', 'warning')
+        return redirect(url_for('login'))
+    
+    # Verificar que sea un padre/madre/tutor (no admin)
+    if session.get('is_admin'):
+        return redirect(url_for('admin_dashboard'))
+    
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    
+    # Obtener los estudiantes asociados al padre/madre/tutor
+    cursor.execute('''
+        SELECT s.id, CONCAT(s.first_name, ' ', s.last_name) as name, p.name as program_name 
+        FROM students s
+        LEFT JOIN programs p ON s.program_id = p.id
+        WHERE s.guardian_id = %s
+        ORDER BY s.first_name, s.last_name
+    ''', (session['id'],))
+    students = cursor.fetchall()
+    
+    # Obtener filtros de la URL
+    student_filter = request.args.get('student_id', '')
+    type_filter = request.args.get('report_type', '')
+    status_filter = request.args.get('status', '')
+    
+    # Construir consulta de informes con filtros
+    where_conditions = ['s.guardian_id = %s']
+    params = [session['id']]
+    
+    if student_filter:
+        where_conditions.append('r.student_id = %s')
+        params.append(student_filter)
+    
+    if type_filter:
+        where_conditions.append('r.report_type = %s')
+        params.append(type_filter)
+    
+    if status_filter:
+        where_conditions.append('r.status = %s')
+        params.append(status_filter)
+    
+    where_clause = ' AND '.join(where_conditions)
+    
+    # Obtener informes con filtros aplicados
+    cursor.execute(f'''
+        SELECT r.*, 
+               CONCAT(s.first_name, ' ', s.last_name) as student_name,
+               u.name as teacher_name
+        FROM reports r
+        LEFT JOIN students s ON r.student_id = s.id
+        LEFT JOIN users u ON r.teacher_id = u.id
+        WHERE {where_clause}
+        ORDER BY r.created_at DESC
+        LIMIT 50
+    ''', params)
+    reports = cursor.fetchall()
+    
+    cursor.close()
+    
+    return render_template('reports.html', reports=reports, students=students)
+
+@app.route('/mark_report_read', methods=['POST'])
+def mark_report_read():
+    """Marcar un informe como leído"""
+    if 'logged_in' not in session:
+        return jsonify({'success': False, 'message': 'No autorizado'}), 401
+    
+    try:
+        data = request.get_json()
+        report_id = data.get('report_id')
+        
+        if not report_id:
+            return jsonify({'success': False, 'message': 'ID de informe requerido'}), 400
+        
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Verificar que el informe pertenece a un estudiante del padre logueado
+        cursor.execute('''
+            SELECT r.id 
+            FROM reports r
+            JOIN students s ON r.student_id = s.id
+            WHERE r.id = %s AND s.guardian_id = %s
+        ''', (report_id, session['id']))
+        
+        if not cursor.fetchone():
+            cursor.close()
+            return jsonify({'success': False, 'message': 'Informe no encontrado'}), 404
+        
+        # Marcar como leído
+        cursor.execute('''
+            UPDATE reports 
+            SET status = 'read', read_at = NOW() 
+            WHERE id = %s
+        ''', (report_id,))
+        
+        mysql.connection.commit()
+        cursor.close()
+        
+        return jsonify({'success': True, 'message': 'Informe marcado como leído'})
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': 'Error interno del servidor'}), 500
+
+@app.route('/notifications')
+def notifications():
+    """Página de notificaciones para usuarios"""
+    if 'logged_in' not in session:
+        flash('Por favor inicia sesión para ver las notificaciones', 'warning')
+        return redirect(url_for('login'))
+    
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    
+    # Obtener notificaciones del usuario
+    cursor.execute('''
+        SELECT rn.*, r.title as report_title, r.subject as report_subject,
+               CONCAT(s.first_name, ' ', s.last_name) as student_name
+        FROM report_notifications rn
+        LEFT JOIN reports r ON rn.report_id = r.id
+        LEFT JOIN students s ON r.student_id = s.id
+        WHERE rn.recipient_id = %s
+        ORDER BY rn.created_at DESC
+        LIMIT 50
+    ''', (session['id'],))
+    
+    notifications = cursor.fetchall()
+    
+    # Marcar notificaciones in-app como leídas
+    cursor.execute('''
+        UPDATE report_notifications 
+        SET read_at = NOW() 
+        WHERE recipient_id = %s AND notification_type = 'in_app' AND read_at IS NULL
+    ''', (session['id'],))
+    
+    mysql.connection.commit()
+    cursor.close()
+    
+    return render_template('notifications.html', notifications=notifications)
+
+@app.route('/notification_preferences')
+def notification_preferences():
+    """Página de preferencias de notificación"""
+    if 'logged_in' not in session:
+        flash('Por favor inicia sesión para configurar las notificaciones', 'warning')
+        return redirect(url_for('login'))
+    
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    
+    # Obtener preferencias actuales del usuario
+    cursor.execute('''
+        SELECT * FROM notification_preferences 
+        WHERE user_id = %s
+        ORDER BY notification_type, report_type
+    ''', (session['id'],))
+    
+    preferences = cursor.fetchall()
+    cursor.close()
+    
+    return render_template('notification_preferences.html', preferences=preferences)
+
+@app.route('/update_notification_preferences', methods=['POST'])
+def update_notification_preferences():
+    """Actualizar preferencias de notificación"""
+    if 'logged_in' not in session:
+        return jsonify({'success': False, 'message': 'No autorizado'}), 401
+    
+    try:
+        data = request.get_json()
+        user_id = session['id']
+        
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Eliminar preferencias existentes del usuario
+        cursor.execute('DELETE FROM notification_preferences WHERE user_id = %s', (user_id,))
+        
+        # Insertar nuevas preferencias
+        for pref in data.get('preferences', []):
+            cursor.execute('''
+                INSERT INTO notification_preferences 
+                (user_id, notification_type, report_type, is_enabled, frequency, 
+                 quiet_hours_start, quiet_hours_end, weekend_notifications, priority_filter)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ''', (
+                user_id, pref.get('notification_type'), pref.get('report_type'),
+                pref.get('is_enabled', True), pref.get('frequency', 'immediate'),
+                pref.get('quiet_hours_start'), pref.get('quiet_hours_end'),
+                pref.get('weekend_notifications', True), pref.get('priority_filter', 'all')
+            ))
+        
+        mysql.connection.commit()
+        cursor.close()
+        
+        return jsonify({'success': True, 'message': 'Preferencias actualizadas correctamente'})
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': 'Error actualizando preferencias'}), 500
+
+@app.route('/send_test_notification', methods=['POST'])
+def send_test_notification():
+    """Enviar notificación de prueba"""
+    if 'logged_in' not in session:
+        return jsonify({'success': False, 'message': 'No autorizado'}), 401
+    
+    try:
+        data = request.get_json()
+        notification_type = data.get('type', 'email')
+        
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Crear una notificación de prueba
+        cursor.execute('''
+            INSERT INTO report_notifications 
+            (report_id, recipient_id, notification_type, status, priority, subject, message, 
+             recipient_email, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW())
+        ''', (
+            1, session['id'], notification_type, 'sent', 'normal',
+            'Notificación de Prueba - Sistema Wawalu',
+            'Esta es una notificación de prueba para verificar que el sistema funciona correctamente.',
+            session.get('email', 'test@example.com')
+        ))
+        
+        mysql.connection.commit()
+        cursor.close()
+        
+        return jsonify({
+            'success': True, 
+            'message': f'Notificación de prueba ({notification_type}) enviada correctamente'
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': 'Error enviando notificación de prueba'}), 500
+        return jsonify({'success': False, 'message': 'Error interno del servidor'}), 500
+
 @app.route('/profile/update', methods=['POST'])
 def update_profile():
     if 'logged_in' not in session:
@@ -2335,7 +2690,68 @@ def submit_enrollment():
             VALUES (%s, %s, %s, CURDATE())
         ''', (student_id, data['programId'], 'pending'))
         
+        # Obtener información del programa para el email
+        cursor.execute('SELECT name, description, price FROM programs WHERE id = %s', (data['programId'],))
+        program_info = cursor.fetchone()
+        program_name = program_info['name'] if program_info else 'Programa no encontrado'
+        program_description = program_info['description'] if program_info else ''
+        program_price = program_info['price'] if program_info else 0
+        
+        # Obtener información del padre/tutor
+        cursor.execute('SELECT name, email, phone FROM users WHERE id = %s', (session['id'],))
+        parent_info = cursor.fetchone()
+        parent_name = parent_info['name'] if parent_info else 'No especificado'
+        parent_email = parent_info['email'] if parent_info else 'No especificado'
+        parent_phone = parent_info['phone'] if parent_info else 'No especificado'
+        
         mysql.connection.commit()
+        
+        # Enviar email de notificación de matrícula
+        email_subject = f"Nueva Matrícula - {data['firstName']} {data['lastName']} - Programa: {program_name}"
+        
+        email_body = f"""
+Nueva matrícula recibida desde la página web de Wawalu
+
+=== INFORMACIÓN DEL ESTUDIANTE ===
+Nombre completo: {data['firstName']} {data['lastName']}
+Fecha de nacimiento: {data['birthDate']}
+Tipo de sangre: {data['bloodType']}
+Alergias: {data.get('allergies', 'Ninguna especificada')}
+Notas médicas: {data.get('medicalNotes', 'Ninguna especificada')}
+
+=== CONTACTO DE EMERGENCIA ===
+Nombre: {data['emergencyContact']}
+Teléfono: {data['emergencyPhone']}
+
+=== INFORMACIÓN DEL PADRE/TUTOR ===
+Nombre: {parent_name}
+Email: {parent_email}
+Teléfono: {parent_phone}
+DNI: {data['parentDNI']}
+Ocupación: {data['parentOccupation']}
+Relación: {data['relationship']}
+
+=== PROGRAMA SELECCIONADO ===
+Nombre: {program_name}
+Descripción: {program_description}
+Precio: S/ {program_price}
+
+=== ESTADO DE LA MATRÍCULA ===
+Estado: Pendiente de revisión
+Fecha de matrícula: {datetime.now().strftime('%d/%m/%Y %H:%M')}
+ID del estudiante: {student_id}
+
+---
+Esta matrícula fue enviada desde el formulario de inscripción de Wawalu.
+Por favor, revise y procese esta solicitud en el panel de administración.
+"""
+        
+        # Intentar enviar correo
+        print(f"🔄 Intentando enviar email de matrícula...")
+        print(f"📧 Destinatario: {CONTACT_EMAIL}")
+        print(f"📧 Asunto: {email_subject}")
+        email_sent = send_email(CONTACT_EMAIL, email_subject, email_body)
+        print(f"📧 Resultado del envío: {'✅ Exitoso' if email_sent else '❌ Falló'}")
         
         return jsonify({
             "success": True,
@@ -2348,9 +2764,58 @@ def submit_enrollment():
             "message": f"Error al procesar la matrícula: {str(e)}"
         }), 500
 
+@app.route('/api/user/profile', methods=['GET'])
+def get_user_profile():
+    """Endpoint para obtener los datos del usuario logueado"""
+    if 'logged_in' not in session:
+        return jsonify({
+            "success": False,
+            "message": "Usuario no autenticado"
+        }), 401
+    
+    try:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Obtener datos del usuario
+        cursor.execute('SELECT name, email, phone, role FROM users WHERE id = %s', (session['id'],))
+        user_data = cursor.fetchone()
+        
+        if user_data:
+            # Obtener información adicional del padre si existe
+            cursor.execute('SELECT dni, occupation, address FROM parent_info WHERE user_id = %s', (session['id'],))
+            parent_info = cursor.fetchone()
+            
+            response_data = {
+                'name': user_data['name'],
+                'email': user_data['email'],
+                'phone': user_data['phone'],
+                'role': user_data['role'],
+                'dni': parent_info['dni'] if parent_info else '',
+                'occupation': parent_info['occupation'] if parent_info else '',
+                'address': parent_info['address'] if parent_info else ''
+            }
+            
+            return jsonify(response_data), 200
+        else:
+            return jsonify({
+                "success": False,
+                "message": "Usuario no encontrado"
+            }), 404
+            
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": f"Error al obtener datos del usuario: {str(e)}"
+        }), 500
+
 @app.route('/enrollment/success')
 def enrollment_success():
     return render_template('enrollment_success.html')
+
+@app.route('/debug/enrollment')
+def debug_enrollment():
+    """Página de debug para el formulario de matrícula"""
+    return send_from_directory('.', 'debug_enrollment.html')
 
 @app.route('/api/check_auth', methods=['GET'])
 def check_auth():

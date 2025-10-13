@@ -1,0 +1,35 @@
+{# Componente de formulario de producto reutilizable #}
+<form id="productForm" method="post" class="space-y-4">
+    <div>
+        <label for="name" class="block text-sm font-medium text-gray-700">Nombre</label>
+        <input type="text" name="name" id="name" value="{{ product.name if product else '' }}" required class="mt-1 px-4 py-2 border rounded-lg w-full">
+    </div>
+    <div>
+        <label for="description" class="block text-sm font-medium text-gray-700">Descripción</label>
+        <textarea name="description" id="description" rows="2" class="mt-1 px-4 py-2 border rounded-lg w-full">{{ product.description if product else '' }}</textarea>
+    </div>
+    <div>
+        <label for="category" class="block text-sm font-medium text-gray-700">Categoría</label>
+        <input type="text" name="category" id="category" value="{{ product.category if product else '' }}" required class="mt-1 px-4 py-2 border rounded-lg w-full">
+    </div>
+    <div>
+        <label for="price" class="block text-sm font-medium text-gray-700">Precio</label>
+        <input type="number" step="0.01" name="price" id="price" value="{{ product.price if product else '' }}" required class="mt-1 px-4 py-2 border rounded-lg w-full">
+    </div>
+    <div>
+        <label for="stock" class="block text-sm font-medium text-gray-700">Stock</label>
+        <input type="number" name="stock" id="stock" value="{{ product.stock if product else '' }}" required class="mt-1 px-4 py-2 border rounded-lg w-full">
+    </div>
+    <div>
+        <label for="image_url" class="block text-sm font-medium text-gray-700">URL de Imagen</label>
+        <input type="text" name="image_url" id="image_url" value="{{ product.image_url if product else '' }}" class="mt-1 px-4 py-2 border rounded-lg w-full">
+    </div>
+    <div class="flex justify-end gap-2">
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center">
+            <span class="material-icons mr-2">save</span> Guardar
+        </button>
+        <button type="button" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 flex items-center" onclick="closeProductModal()">
+            <span class="material-icons mr-2">close</span> Cancelar
+        </button>
+    </div>
+</form>

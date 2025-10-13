@@ -40,7 +40,8 @@ class Calendar {
     }
 
     updateCalendarHeader() {
-        const headerTitle = document.querySelector('.calendar-header h2');
+        // Selecciona el h2 con la clase calendar-header directamente
+        const headerTitle = document.querySelector('.calendar-header');
         if (headerTitle) {
             headerTitle.textContent = `${this.monthNames[this.currentDate.getMonth()]} ${this.currentDate.getFullYear()}`;
         }
@@ -67,6 +68,10 @@ class Calendar {
         // Obtener eventos del mes actual
         const monthEvents = this.getMonthEvents();
 
+        // Obtener la fecha de hoy
+        const today = new Date();
+        const isCurrentMonth = (today.getFullYear() === this.currentDate.getFullYear() && today.getMonth() === this.currentDate.getMonth());
+
         // Crear espacios vacíos para los días antes del primer día del mes
         for (let i = 0; i < startingDay; i++) {
             const emptyDay = document.createElement('div');
@@ -77,15 +82,20 @@ class Calendar {
         // Crear los días del mes
         for (let day = 1; day <= totalDays; day++) {
             const dayElement = document.createElement('div');
-            dayElement.className = 'aspect-square relative group';
-            
+            let extraClass = '';
+            // Resaltar el día de hoy
+            if (isCurrentMonth && day === today.getDate()) {
+                extraClass = 'calendar-today';
+            }
+            dayElement.className = `aspect-square relative group ${extraClass}`;
+
             const hasEvent = monthEvents.some(event => event.day === day);
             const eventDetails = monthEvents.find(event => event.day === day);
-            
+
             dayElement.innerHTML = `
-                <div class="absolute inset-0 rounded-lg ${hasEvent ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-gray-50'} 
+                <div class="absolute inset-0 rounded-lg ${hasEvent ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-gray-50'} ${extraClass ? 'border-2 border-blue-500 shadow-lg' : ''}
                      transition duration-300 transform hover:scale-105 cursor-pointer p-2 opacity-0">
-                    <div class="text-right text-sm font-semibold text-gray-700 mb-2">${day}</div>
+                    <div class="text-right text-sm font-semibold ${extraClass ? 'text-blue-700' : 'text-gray-700'} mb-2">${day}</div>
                     ${eventDetails ? `<div class="text-xs text-blue-600">${eventDetails.title}</div>` : ''}
                 </div>
             `;

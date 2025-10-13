@@ -1,0 +1,9 @@
+{# Componente de botones de acción reutilizable para tablas #}
+<div class="flex gap-2">
+    <button type="button" class="edit-btn bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded p-2 flex items-center" title="Editar" onclick="openEditUserModal({{ user.id }})">
+        <span class="material-icons">edit</span>
+    </button>
+    <button type="button" class="delete-btn bg-red-100 hover:bg-red-200 text-red-700 rounded p-2 flex items-center" title="Eliminar" onclick="confirmDeleteUser({{ user.id }})">
+        <span class="material-icons">delete</span>
+    </button>
+</div>

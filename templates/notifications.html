@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+
+{% block title %}Notificaciones - Wawalu{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/input.css') }}">
+<style>
+    .notification-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px;
+        padding: 20px;
+        border-left: 4px solid #6B7280;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .notification-card.unread {
+        border-left-color: #3B82F6;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    }
+    
+    .notification-card.sent {
+        border-left-color: #10B981;
+    }
+    
+    .notification-card.failed {
+        border-left-color: #EF4444;
+    }
+    
+    .notification-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+    
+    .notification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .notification-type-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .badge-email { background: #dbeafe; color: #1e40af; }
+    .badge-sms { background: #dcfce7; color: #166534; }
+    .badge-push { background: #fef3c7; color: #92400e; }
+    .badge-in_app { background: #f3e8ff; color: #7c3aed; }
+    
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-sent { background: #dcfce7; color: #166534; }
+    .status-delivered { background: #dbeafe; color: #1e40af; }
+    .status-failed { background: #fecaca; color: #991b1b; }
+    
+    .notification-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 10px;
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .notification-content {
+        color: #374151;
+        line-height: 1.6;
+    }
+    
+    .no-notifications {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6b7280;
+    }
+    
+    .no-notifications i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        color: #d1d5db;
+    }
+    
+    .filter-bar {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .filter-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        align-items: center;
+    }
+    
+    .filter-item {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .filter-item label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+    }
+    
+    .filter-item select {
+        padding: 8px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        min-width: 150px;
+    }
+    
+    @media (max-width: 768px) {
+        .notification-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .filter-group {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .filter-item select {
+            min-width: auto;
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                <i class="fas fa-bell mr-3 text-blue-600"></i>
+                Notificaciones
+            </h1>
+            <p class="text-gray-600">Centro de notificaciones y alertas del sistema</p>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filter-bar">
+            <form method="GET" class="filter-group">
+                <div class="filter-item">
+                    <label for="type_filter">Tipo:</label>
+                    <select name="type" id="type_filter" onchange="this.form.submit()">
+                        <option value="">Todos los tipos</option>
+                        <option value="email" {% if request.args.get('type') == 'email' %}selected{% endif %}>Email</option>
+                        <option value="sms" {% if request.args.get('type') == 'sms' %}selected{% endif %}>SMS</option>
+                        <option value="push" {% if request.args.get('type') == 'push' %}selected{% endif %}>Push</option>
+                        <option value="in_app" {% if request.args.get('type') == 'in_app' %}selected{% endif %}>En la app</option>
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label for="status_filter">Estado:</label>
+                    <select name="status" id="status_filter" onchange="this.form.submit()">
+                        <option value="">Todos los estados</option>
+                        <option value="pending" {% if request.args.get('status') == 'pending' %}selected{% endif %}>Pendiente</option>
+                        <option value="sent" {% if request.args.get('status') == 'sent' %}selected{% endif %}>Enviado</option>
+                        <option value="delivered" {% if request.args.get('status') == 'delivered' %}selected{% endif %}>Entregado</option>
+                        <option value="failed" {% if request.args.get('status') == 'failed' %}selected{% endif %}>Fallido</option>
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <button type="button" onclick="sendTestNotification()" 
+                            class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Enviar Prueba
+                    </button>
+                </div>
+                
+                <div class="filter-item">
+                    <a href="{{ url_for('notification_preferences') }}" 
+                       class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-cog mr-2"></i>
+                        Configurar
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Lista de Notificaciones -->
+        {% if notifications %}
+            <div class="notifications-container">
+                {% for notification in notifications %}
+                <div class="notification-card {{ notification.status }}">
+                    <div class="notification-header">
+                        <div>
+                            <h3 class="font-semibold text-gray-900">{{ notification.subject }}</h3>
+                            {% if notification.report_title %}
+                            <p class="text-sm text-gray-600 mt-1">
+                                Informe: {{ notification.report_title }}
+                                {% if notification.student_name %}
+                                - Estudiante: {{ notification.student_name }}
+                                {% endif %}
+                            </p>
+                            {% endif %}
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="notification-type-badge badge-{{ notification.notification_type }}">
+                                {% if notification.notification_type == 'email' %}Email
+                                {% elif notification.notification_type == 'sms' %}SMS
+                                {% elif notification.notification_type == 'push' %}Push
+                                {% else %}App
+                                {% endif %}
+                            </span>
+                            <span class="status-badge status-{{ notification.status }}">
+                                {% if notification.status == 'pending' %}Pendiente
+                                {% elif notification.status == 'sent' %}Enviado
+                                {% elif notification.status == 'delivered' %}Entregado
+                                {% elif notification.status == 'failed' %}Fallido
+                                {% else %}{{ notification.status|title }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>{{ notification.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                        </div>
+                        {% if notification.sent_at %}
+                        <div class="meta-item">
+                            <i class="fas fa-paper-plane text-green-600"></i>
+                            <span>Enviado: {{ notification.sent_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                        </div>
+                        {% endif %}
+                        {% if notification.delivered_at %}
+                        <div class="meta-item">
+                            <i class="fas fa-check text-blue-600"></i>
+                            <span>Entregado: {{ notification.delivered_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                        </div>
+                        {% endif %}
+                        {% if notification.error_message %}
+                        <div class="meta-item">
+                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                            <span>Error: {{ notification.error_message }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="notification-content">
+                        {{ notification.message|nl2br|safe }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-notifications">
+                <i class="fas fa-bell-slash"></i>
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">No hay notificaciones</h3>
+                <p class="text-gray-500">
+                    {% if request.args.get('type') or request.args.get('status') %}
+                    No se encontraron notificaciones con los filtros seleccionados.
+                    {% else %}
+                    Aún no has recibido notificaciones. Las nuevas notificaciones aparecerán aquí.
+                    {% endif %}
+                </p>
+                {% if request.args.get('type') or request.args.get('status') %}
+                <a href="{{ url_for('notifications') }}" class="text-blue-600 hover:text-blue-700 mt-4 inline-block">
+                    <i class="fas fa-times mr-2"></i>Limpiar filtros
+                </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Función para enviar notificación de prueba
+function sendTestNotification() {
+    const button = event.target;
+    const originalText = button.innerHTML;
+    
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enviando...';
+    button.disabled = true;
+    
+    fetch('/send_test_notification', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: 'email'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Notificación de prueba enviada correctamente', 'success');
+            // Recargar la página después de 2 segundos
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showNotification('Error al enviar notificación de prueba', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error de conexión', 'error');
+    })
+    .finally(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
+}
+
+// Función para mostrar notificaciones
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    }`;
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas ${type === 'success' ? 'fa-check' : 'fa-exclamation-triangle'} mr-2"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}

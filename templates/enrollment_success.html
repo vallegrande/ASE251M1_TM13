@@ -4,42 +4,198 @@
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="text-center">
-            <span class="material-icons text-green-500" style="font-size: 4rem;">
-                check_circle
-            </span>
+    <div class="sm:mx-auto sm:w-full sm:max-w-2xl">
+        <!-- Icono de éxito -->
+        <div class="text-center mb-8">
+            <div class="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-green-100">
+                <span class="material-icons text-green-600" style="font-size: 3rem;">
+                    check_circle
+                </span>
+            </div>
         </div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            ¡Matrícula Enviada!
-        </h2>
-        <p class="mt-2 text-center text-sm text-gray-600">
-            Tu solicitud de matrícula ha sido recibida correctamente
-        </p>
-    </div>
 
-    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <div class="text-center">
-                <p class="text-gray-700 mb-6">
-                    Revisaremos tu solicitud y te contactaremos pronto para confirmar la matrícula y coordinar el pago.
-                </p>
-                
-                <div class="mt-8 space-y-4">
-                    <a href="{{ url_for('home') }}" 
-                       class="w-full flex justify-center items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+        <!-- Título principal -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                ¡Matrícula Enviada Exitosamente!
+            </h1>
+            <p class="text-lg text-gray-600">
+                Tu solicitud de matrícula ha sido recibida y procesada correctamente
+            </p>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+            <div class="px-8 py-6">
+                <!-- Estado actual -->
+                <div class="border-l-4 border-green-400 bg-green-50 p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <span class="material-icons text-green-400">info</span>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-green-800">
+                                Estado: Matrícula recibida y en proceso de revisión
+                            </p>
+                            <p class="text-sm text-green-700 mt-1">
+                                Hemos enviado una notificación a nuestro equipo administrativo.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Próximos pasos -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                        <span class="material-icons mr-2 text-blue-600">timeline</span>
+                        Próximos Pasos
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100">
+                                    <span class="text-sm font-medium text-blue-600">1</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-medium text-gray-900">Revisión de Documentos</h3>
+                                <p class="text-sm text-gray-600">Nuestro equipo revisará la información proporcionada (24-48 horas)</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100">
+                                    <span class="text-sm font-medium text-blue-600">2</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-medium text-gray-900">Confirmación de Matrícula</h3>
+                                <p class="text-sm text-gray-600">Te contactaremos para confirmar la matrícula y coordinar el pago</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100">
+                                    <span class="text-sm font-medium text-blue-600">3</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-medium text-gray-900">Documentación</h3>
+                                <p class="text-sm text-gray-600">Envío de documentos adicionales si son requeridos</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded-full bg-green-100">
+                                    <span class="text-sm font-medium text-green-600">4</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-medium text-gray-900">¡Inicio de Clases!</h3>
+                                <p class="text-sm text-gray-600">Tu hijo/a estará listo para comenzar su aventura educativa</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información de contacto -->
+                <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <span class="material-icons mr-2 text-blue-600">contact_phone</span>
+                        ¿Necesitas ayuda?
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center">
+                            <span class="material-icons text-gray-400 mr-3">email</span>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Email</p>
+                                <p class="text-sm text-gray-600">diego.centeno@vallegrande.edu.pe</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="material-icons text-gray-400 mr-3">phone</span>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Teléfono</p>
+                                <p class="text-sm text-gray-600">+51 942 139 788</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="{{ url_for('index') }}" 
+                       class="flex-1 flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition duration-200">
                         <span class="material-icons mr-2">home</span>
                         Volver al Inicio
                     </a>
                     
                     <a href="{{ url_for('contact') }}"
-                       class="w-full flex justify-center items-center px-4 py-2 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                       class="flex-1 flex justify-center items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition duration-200">
                         <span class="material-icons mr-2">contact_support</span>
                         Contactar Soporte
+                    </a>
+                    
+                    <a href="https://wa.me/51942139788?text=Hola,%20tengo%20una%20consulta%20sobre%20mi%20matrícula"
+                       target="_blank"
+                       class="flex-1 flex justify-center items-center px-6 py-3 border border-green-300 text-base font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition duration-200">
+                        <span class="material-icons mr-2">message</span>
+                        WhatsApp
                     </a>
                 </div>
             </div>
         </div>
+
+        <!-- Mensaje adicional -->
+        <div class="text-center mt-8">
+            <p class="text-sm text-gray-500">
+                Gracias por confiar en Wawalu para la educación de tu hijo/a
+            </p>
+        </div>
     </div>
 </div>
+
+<script>
+// Confetti animation cuando carga la página
+document.addEventListener('DOMContentLoaded', function() {
+    // Simple confetti effect
+    setTimeout(() => {
+        const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+        for (let i = 0; i < 50; i++) {
+            createConfetti(colors[Math.floor(Math.random() * colors.length)]);
+        }
+    }, 500);
+});
+
+function createConfetti(color) {
+    const confetti = document.createElement('div');
+    confetti.style.cssText = `
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        background: ${color};
+        top: -10px;
+        left: ${Math.random() * 100}vw;
+        z-index: 1000;
+        pointer-events: none;
+        opacity: 0.8;
+        border-radius: 50%;
+    `;
+    
+    document.body.appendChild(confetti);
+    
+    const animation = confetti.animate([
+        { transform: 'translateY(0) rotate(0deg)', opacity: 0.8 },
+        { transform: `translateY(100vh) rotate(360deg)`, opacity: 0 }
+    ], {
+        duration: 3000 + Math.random() * 2000,
+        easing: 'linear'
+    });
+    
+    animation.onfinish = () => confetti.remove();
+}
+</script>
 {% endblock %}

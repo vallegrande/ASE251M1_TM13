@@ -59,12 +59,7 @@
                             {% endif %}
                         </td>
                         <td class="px-6 py-4">
-                            <button onclick="editUser({{ user.id }})" class="text-blue-600 hover:text-blue-800 mr-3">
-                                Editar
-                            </button>
-                            <button onclick="confirmDeleteUser({{ user.id }})" class="text-red-600 hover:text-red-800">
-                                Eliminar
-                            </button>
+                            {% include 'admin/components/action_buttons.html' %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -74,71 +69,19 @@
     </div>
 </div>
 
-<!-- Add/Edit User Modal -->
-<div id="userModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+<!-- Add/Edit User Modal reutilizando componente -->
+<div id="userModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+    <div class="relative mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
         <div class="mt-3">
-            <h3 class="text-lg font-medium" id="modalTitle">Agregar Usuario</h3>
-            <form id="userForm" class="mt-4">
-                <input type="hidden" id="userId">
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="userName">
-                        Nombre Completo
-                    </label>
-                    <input type="text" id="userName" name="name" required
-                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="userEmail">
-                        Email
-                    </label>
-                    <input type="email" id="userEmail" name="email" required
-                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="userRole">
-                        Rol
-                    </label>
-                    <select id="userRole" name="role" required
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="padre">Padre</option>
-                        <option value="madre">Madre</option>
-                        <option value="tutor">Tutor</option>
-                        <option value="staff">Staff</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="userPassword">
-                        Contraseña
-                    </label>
-                    <input type="password" id="userPassword" name="password"
-                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                    <p class="text-gray-600 text-xs italic">Dejar en blanco para mantener la contraseña actual (al editar)</p>
-                </div>
-                <div class="mb-4">
-                    <label class="flex items-center">
-                        <input type="checkbox" id="userAdmin" name="is_admin" class="mr-2">
-                        <span class="text-gray-700 text-sm font-bold">Es Administrador</span>
-                    </label>
-                </div>
-                <div class="flex justify-end gap-4">
-                    <button type="button" onclick="closeUserModal()"
-                            class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
-                        Cancelar
-                    </button>
-                    <button type="submit"
-                            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                        Guardar
-                    </button>
-                </div>
-            </form>
+            <h3 class="text-lg font-medium mb-4" id="modalTitle">Agregar/Editar Usuario</h3>
+            {% include 'admin/components/user_form.html' %}
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-<script>
+<script src="{{ url_for('static', filename='js/admin_users.js') }}" defer></script>
 function openAddUserModal() {
     document.getElementById('modalTitle').textContent = 'Agregar Usuario';
     document.getElementById('userForm').reset();

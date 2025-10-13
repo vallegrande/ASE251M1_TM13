@@ -2,6 +2,62 @@
 
 {% block title %}Matrícula - Wawalu{% endblock %}
 
+{% block head %}
+<style>
+    .step-indicator {
+        transition: all 0.3s ease;
+    }
+    .step-indicator.active {
+        background-color: #3B82F6;
+        color: white;
+    }
+    .step-indicator.completed {
+        background-color: #10B981;
+        color: white;
+    }
+    .step-content {
+        transition: all 0.3s ease;
+    }
+    .step-content.hidden {
+        display: none;
+    }
+    .form-field.error input,
+    .form-field.error select,
+    .form-field.error textarea {
+        border-color: #EF4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+    .form-field.success input,
+    .form-field.success select,
+    .form-field.success textarea {
+        border-color: #10B981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+    .field-error {
+        color: #EF4444;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    .field-success {
+        color: #10B981;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    .loading-overlay {
+        background: rgba(255, 255, 255, 0.9);
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
@@ -31,180 +87,393 @@
         </div>
         {% endif %}
 
+        <!-- Indicador de Pasos -->
+        <div class="mb-8 {% if not session.logged_in %}opacity-50{% endif %}">
+            <div class="flex items-center justify-center space-x-4">
+                <div class="step-indicator active flex items-center justify-center w-10 h-10 rounded-full bg-gray-300 text-gray-600 font-semibold">
+                    1
+                </div>
+                <div class="flex-1 h-1 bg-gray-300"></div>
+                <div class="step-indicator flex items-center justify-center w-10 h-10 rounded-full bg-gray-300 text-gray-600 font-semibold">
+                    2
+                </div>
+                <div class="flex-1 h-1 bg-gray-300"></div>
+                <div class="step-indicator flex items-center justify-center w-10 h-10 rounded-full bg-gray-300 text-gray-600 font-semibold">
+                    3
+                </div>
+                <div class="flex-1 h-1 bg-gray-300"></div>
+                <div class="step-indicator flex items-center justify-center w-10 h-10 rounded-full bg-gray-300 text-gray-600 font-semibold">
+                    4
+                </div>
+            </div>
+            <div class="flex justify-between mt-2 text-sm text-gray-600">
+                <span>Datos del Apoderado</span>
+                <span>Datos del Estudiante</span>
+                <span>Información Médica</span>
+                <span>Confirmación</span>
+            </div>
+        </div>
+
         <!-- Formulario -->
-        <form id="enrollmentForm" class="bg-white shadow-md rounded-lg p-8 {% if not session.logged_in %}opacity-50 pointer-events-none{% endif %}">
-            <!-- Error Display -->
-            <div id="errorDisplay" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
-            </div>
-
-            <!-- Datos del Padre/Madre/Apoderado -->
-            <div class="mb-8">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Datos del Padre/Madre/Apoderado</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="parentName" class="block text-sm font-medium text-gray-700 mb-2">Nombres y Apellidos</label>
-                        <input type="text" id="parentName" name="parentName" required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label for="parentDNI" class="block text-sm font-medium text-gray-700 mb-2">DNI</label>
-                        <input type="text" id="parentDNI" name="parentDNI" required maxlength="8" pattern="\d{8}"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="12345678">
-                    </div>
-                    <div>
-                        <label for="parentEmail" class="block text-sm font-medium text-gray-700 mb-2">Correo Electrónico</label>
-                        <input type="email" id="parentEmail" name="parentEmail" required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label for="parentPhone" class="block text-sm font-medium text-gray-700 mb-2">Teléfono</label>
-                        <input type="tel" id="parentPhone" name="parentPhone" required pattern="[0-9]{9}"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="999999999">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="parentAddress" class="block text-sm font-medium text-gray-700 mb-2">Dirección</label>
-                        <input type="text" id="parentAddress" name="parentAddress" required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label for="parentOccupation" class="block text-sm font-medium text-gray-700 mb-2">Ocupación</label>
-                        <input type="text" id="parentOccupation" name="parentOccupation" required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label for="relationship" class="block text-sm font-medium text-gray-700 mb-2">Parentesco</label>
-                        <select id="relationship" name="relationship" required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Seleccione...</option>
-                            <option value="padre">Padre</option>
-                            <option value="madre">Madre</option>
-                            <option value="tutor">Tutor Legal</option>
-                            <option value="otro">Otro</option>
-                        </select>
+        <div class="bg-white shadow-lg rounded-lg p-8 relative {% if not session.logged_in %}opacity-50 pointer-events-none{% endif %}">
+            <form id="enrollmentForm">
+                <!-- Loading Overlay -->
+                <div id="loadingOverlay" class="loading-overlay hidden">
+                    <div class="text-center">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                        <p class="text-gray-600">Procesando matrícula...</p>
                     </div>
                 </div>
-            </div>
 
-            <!-- Datos del Estudiante -->
-            <div class="mb-8">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Datos del Estudiante</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">Nombres</label>
-                        <input type="text" id="firstName" name="firstName" required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <!-- Error Display -->
+                <div id="errorDisplay" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+                    <span class="block sm:inline" id="errorMessage"></span>
+                </div>
+
+                <!-- Success Display -->
+                <div id="successDisplay" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
+                    <span class="block sm:inline" id="successMessage"></span>
+                </div>
+
+                <!-- Paso 1: Datos del Apoderado -->
+                <div id="step1" class="step-content">
+                    <div class="mb-8">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+                            <span class="material-icons mr-2 text-blue-600">person</span>
+                            Datos del Padre/Madre/Apoderado
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-field">
+                                <label for="parentName" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Nombres y Apellidos <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="parentName" name="parentName" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                    placeholder="Ingrese nombres y apellidos completos">
+                                <div class="field-message"></div>
+                            </div>
+                            <div class="form-field">
+                                <label for="parentDNI" class="block text-sm font-medium text-gray-700 mb-2">
+                                    DNI <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="parentDNI" name="parentDNI" required maxlength="8" pattern="\d{8}"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                    placeholder="12345678">
+                                <div class="field-message"></div>
+                            </div>
+                            <div class="form-field">
+                                <label for="parentEmail" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Correo Electrónico <span class="text-red-500">*</span>
+                                </label>
+                                <input type="email" id="parentEmail" name="parentEmail" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                    placeholder="ejemplo@correo.com">
+                                <div class="field-message"></div>
+                            </div>
+                            <div class="form-field">
+                                <label for="parentPhone" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Teléfono <span class="text-red-500">*</span>
+                                </label>
+                                <input type="tel" id="parentPhone" name="parentPhone" required pattern="[0-9]{9}"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                    placeholder="999999999">
+                                <div class="field-message"></div>
+                            </div>
+                            <div class="form-field md:col-span-2">
+                                <label for="parentAddress" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Dirección <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="parentAddress" name="parentAddress" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                    placeholder="Ingrese la dirección completa">
+                                <div class="field-message"></div>
+                            </div>
+                            <div class="form-field">
+                                <label for="parentOccupation" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Ocupación <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="parentOccupation" name="parentOccupation" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                    placeholder="Ingrese su ocupación">
+                                <div class="field-message"></div>
+                            </div>
+                            <div class="form-field">
+                                <label for="relationship" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Parentesco <span class="text-red-500">*</span>
+                                </label>
+                                <select id="relationship" name="relationship" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                                    <option value="">Seleccione...</option>
+                                    <option value="padre">Padre</option>
+                                    <option value="madre">Madre</option>
+                                    <option value="tutor">Tutor Legal</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                                <div class="field-message"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">Apellidos</label>
-                        <input type="text" id="lastName" name="lastName" required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label for="birthDate" class="block text-sm font-medium text-gray-700 mb-2">Fecha de Nacimiento</label>
-                        <input type="date" id="birthDate" name="birthDate" required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label for="bloodType" class="block text-sm font-medium text-gray-700 mb-2">Grupo Sanguíneo</label>
-                        <select id="bloodType" name="bloodType" required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Seleccione...</option>
-                            <option value="O+">O+</option>
-                            <option value="O-">O-</option>
-                            <option value="A+">A+</option>
-                            <option value="A-">A-</option>
-                            <option value="B+">B+</option>
-                            <option value="B-">B-</option>
-                            <option value="AB+">AB+</option>
-                            <option value="AB-">AB-</option>
-                        </select>
+                    <div class="flex justify-end">
+                        <button type="button" id="nextStep1" 
+                            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                            Siguiente
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Información Médica -->
-            <div class="mb-8">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Información Médica</h2>
-                <div class="grid grid-cols-1 gap-6">
-                    <div>
-                        <label for="allergies" class="block text-sm font-medium text-gray-700 mb-2">Alergias</label>
-                        <textarea id="allergies" name="allergies" rows="2"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Indique si el estudiante tiene alguna alergia..."></textarea>
+                <!-- Paso 2: Datos del Estudiante -->
+                <div id="step2" class="step-content hidden">
+                    <div class="mb-8">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+                            <span class="material-icons mr-2 text-blue-600">school</span>
+                            Datos del Estudiante
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-field">
+                                <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Nombres <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="firstName" name="firstName" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                    placeholder="Nombres del estudiante">
+                                <div class="field-message"></div>
+                            </div>
+                            <div class="form-field">
+                                <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Apellidos <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="lastName" name="lastName" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                    placeholder="Apellidos del estudiante">
+                                <div class="field-message"></div>
+                            </div>
+                            <div class="form-field">
+                                <label for="birthDate" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Fecha de Nacimiento <span class="text-red-500">*</span>
+                                </label>
+                                <input type="date" id="birthDate" name="birthDate" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                                <div class="field-message"></div>
+                                <div id="ageDisplay" class="text-sm text-gray-600 mt-1"></div>
+                            </div>
+                            <div class="form-field">
+                                <label for="bloodType" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Grupo Sanguíneo <span class="text-red-500">*</span>
+                                </label>
+                                <select id="bloodType" name="bloodType" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                                    <option value="">Seleccione...</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                </select>
+                                <div class="field-message"></div>
+                            </div>
+                            <div class="form-field">
+                                <label for="emergencyContact" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Contacto de Emergencia <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="emergencyContact" name="emergencyContact" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                    placeholder="Nombre del contacto de emergencia">
+                                <div class="field-message"></div>
+                            </div>
+                            <div class="form-field">
+                                <label for="emergencyPhone" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Teléfono de Emergencia <span class="text-red-500">*</span>
+                                </label>
+                                <input type="tel" id="emergencyPhone" name="emergencyPhone" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                    pattern="[0-9]{9}" placeholder="999999999">
+                                <div class="field-message"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label for="medicalNotes" class="block text-sm font-medium text-gray-700 mb-2">Notas Médicas</label>
-                        <textarea id="medicalNotes" name="medicalNotes" rows="2"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Indique si hay alguna condición médica que debamos conocer..."></textarea>
+                    <div class="flex justify-between">
+                        <button type="button" id="prevStep2" 
+                            class="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-200">
+                            Anterior
+                        </button>
+                        <button type="button" id="nextStep2" 
+                            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                            Siguiente
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Contacto de Emergencia -->
-            <div class="mb-8">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Contacto de Emergencia</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="emergencyContact" class="block text-sm font-medium text-gray-700 mb-2">Nombre del Contacto</label>
-                        <input type="text" id="emergencyContact" name="emergencyContact" required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <!-- Paso 3: Información Médica y Programa -->
+                <div id="step3" class="step-content hidden">
+                    <div class="mb-8">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+                            <span class="material-icons mr-2 text-blue-600">medical_services</span>
+                            Información Médica y Programa
+                        </h2>
+                        <div class="space-y-6">
+                            <div class="form-field">
+                                <label for="allergies" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Alergias
+                                </label>
+                                <textarea id="allergies" name="allergies" rows="3"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                    placeholder="Indique si el estudiante tiene alguna alergia o escriba 'Ninguna'"></textarea>
+                                <div class="field-message"></div>
+                            </div>
+                            <div class="form-field">
+                                <label for="medicalNotes" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Notas Médicas
+                                </label>
+                                <textarea id="medicalNotes" name="medicalNotes" rows="3"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                    placeholder="Indique si hay alguna condición médica que debamos conocer o escriba 'Ninguna'"></textarea>
+                                <div class="field-message"></div>
+                            </div>
+                            <div class="form-field">
+                                <label for="program" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Programa <span class="text-red-500">*</span>
+                                </label>
+                                <select id="program" name="program" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                                    <option value="">Seleccione un programa...</option>
+                                    {% for program in programs %}
+                                    <option value="{{ program.id }}" 
+                                            data-price="{{ program.price }}" 
+                                            data-description="{{ program.description }}"
+                                            data-age-range="{{ program.age_range }}">
+                                        {{ program.name }} - {{ program.age_range }} - S/. {{ "%.2f"|format(program.price) }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="field-message"></div>
+                            </div>
+                            <div id="programDetails" class="hidden bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+                                <h4 class="font-semibold text-blue-800 mb-2">Detalles del Programa</h4>
+                                <div id="programDescription" class="text-blue-700 mb-2"></div>
+                                <div id="programPrice" class="text-blue-800 font-semibold"></div>
+                                <div id="ageCompatibility" class="text-sm mt-2"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label for="emergencyPhone" class="block text-sm font-medium text-gray-700 mb-2">Teléfono de Emergencia</label>
-                        <input type="tel" id="emergencyPhone" name="emergencyPhone" required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            pattern="[0-9]{9}" placeholder="999999999">
+                    <div class="flex justify-between">
+                        <button type="button" id="prevStep3" 
+                            class="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-200">
+                            Anterior
+                        </button>
+                        <button type="button" id="nextStep3" 
+                            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                            Siguiente
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Selección de Programa -->
-            <div class="mb-8">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Selección de Programa</h2>
-                <div>
-                    <label for="program" class="block text-sm font-medium text-gray-700 mb-2">Programa</label>
-                    <select id="program" name="program" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Seleccione un programa...</option>
-                        {% for program in programs %}
-                        <option value="{{ program.id }}" data-price="{{ program.price }}">
-                            {{ program.name }} - {{ program.age_range }} - S/. {{ "%.2f"|format(program.price) }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
+                <!-- Paso 4: Confirmación -->
+                <div id="step4" class="step-content hidden">
+                    <div class="mb-8">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+                            <span class="material-icons mr-2 text-blue-600">check_circle</span>
+                            Confirmación de Matrícula
+                        </h2>
+                        
+                        <!-- Resumen de la matrícula -->
+                        <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Resumen de la Matrícula</h3>
+                            
+                            <!-- Datos del Apoderado -->
+                            <div class="mb-4">
+                                <h4 class="font-semibold text-gray-700 mb-2">Apoderado:</h4>
+                                <div class="text-sm text-gray-600 space-y-1">
+                                    <p><strong>Nombre:</strong> <span id="summaryParentName"></span></p>
+                                    <p><strong>DNI:</strong> <span id="summaryParentDNI"></span></p>
+                                    <p><strong>Email:</strong> <span id="summaryParentEmail"></span></p>
+                                    <p><strong>Teléfono:</strong> <span id="summaryParentPhone"></span></p>
+                                    <p><strong>Relación:</strong> <span id="summaryRelationship"></span></p>
+                                </div>
+                            </div>
+                            
+                            <!-- Datos del Estudiante -->
+                            <div class="mb-4">
+                                <h4 class="font-semibold text-gray-700 mb-2">Estudiante:</h4>
+                                <div class="text-sm text-gray-600 space-y-1">
+                                    <p><strong>Nombre:</strong> <span id="summaryStudentName"></span></p>
+                                    <p><strong>Fecha de nacimiento:</strong> <span id="summaryBirthDate"></span></p>
+                                    <p><strong>Edad:</strong> <span id="summaryAge"></span></p>
+                                    <p><strong>Grupo sanguíneo:</strong> <span id="summaryBloodType"></span></p>
+                                    <p><strong>Contacto de emergencia:</strong> <span id="summaryEmergencyContact"></span></p>
+                                </div>
+                            </div>
+                            
+                            <!-- Programa seleccionado -->
+                            <div class="mb-4">
+                                <h4 class="font-semibold text-gray-700 mb-2">Programa:</h4>
+                                <div class="text-sm text-gray-600 space-y-1">
+                                    <p><strong>Nombre:</strong> <span id="summaryProgramName"></span></p>
+                                    <p><strong>Precio:</strong> <span id="summaryProgramPrice" class="text-lg font-semibold text-green-600"></span></p>
+                                </div>
+                            </div>
+                        </div>
 
-            <!-- Términos y Condiciones -->
-            <div class="mb-8">
-                <div class="flex items-start">
-                    <div class="flex items-center h-5">
-                        <input id="terms" name="terms" type="checkbox" required
-                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <!-- Términos y Condiciones -->
+                        <div class="mb-6">
+                            <div class="flex items-start space-x-3">
+                                <div class="flex items-center h-5">
+                                    <input id="terms" name="terms" type="checkbox" required
+                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                </div>
+                                <div class="text-sm">
+                                    <label for="terms" class="font-medium text-gray-700">
+                                        Acepto los <a href="{{ url_for('terms') }}" class="text-blue-600 hover:text-blue-500" target="_blank" rel="noopener">términos y condiciones</a> <span class="text-red-500">*</span>
+                                    </label>
+                                    <p class="text-gray-500 mt-1">
+                                        Al marcar esta casilla, acepto las políticas de la institución y confirmo que la información proporcionada es verídica. 
+                                        Entiendo que esta matrícula está sujeta a la disponibilidad de cupos y la verificación de la información.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información importante -->
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <span class="material-icons text-yellow-400">info</span>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-yellow-800">Información importante</h3>
+                                    <div class="mt-2 text-sm text-yellow-700">
+                                        <ul class="list-disc list-inside space-y-1">
+                                            <li>La matrícula será procesada y confirmada en un plazo de 24-48 horas.</li>
+                                            <li>Recibirá un correo electrónico de confirmación con los siguientes pasos.</li>
+                                            <li>El pago debe realizarse dentro de los 7 días posterior a la confirmación.</li>
+                                            <li>La documentación requerida debe ser entregada antes del inicio de clases.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="ml-3 text-sm">
-                        <label for="terms" class="font-medium text-gray-700">Acepto los términos y condiciones</label>
-                        <p class="text-gray-500">Al marcar esta casilla, acepto las políticas de la institución y confirmo que la información proporcionada es verídica.</p>
+                    
+                    <div class="flex justify-between">
+                        <button type="button" id="prevStep4" 
+                            class="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-200">
+                            Anterior
+                        </button>
+                        <button type="submit" id="submitButton"
+                            class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200">
+                            <span class="material-icons mr-2">send</span>
+                            Enviar Matrícula
+                        </button>
                     </div>
                 </div>
-            </div>
-
-            <!-- Botón de Envío -->
-            <div class="flex justify-end">
-                <button type="submit" id="submitButton"
-                    class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150">
-                    <span class="material-icons mr-2">how_to_reg</span>
-                    Enviar Matrícula
-                </button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/enrollment.js') }}"></script>
+<script src="{{ url_for('static', filename='js/enrollment-fixed.js') }}"></script>
 {% endblock %}

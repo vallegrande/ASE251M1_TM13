@@ -1,0 +1,522 @@
+{% extends "base.html" %}
+
+{% block title %}Preferencias de Notificación - Wawalu{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/input.css') }}">
+<style>
+    .preferences-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+    }
+    
+    .preference-section {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .preference-section h3 {
+        color: #374151;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    
+    .preference-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .preference-row:last-child {
+        border-bottom: none;
+    }
+    
+    .preference-label {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .preference-controls {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+    
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        border-radius: 24px;
+        transition: 0.4s;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        border-radius: 50%;
+        transition: 0.4s;
+    }
+    
+    input:checked + .slider {
+        background-color: #3B82F6;
+    }
+    
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+    
+    .frequency-select {
+        padding: 8px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        min-width: 150px;
+    }
+    
+    .time-input {
+        padding: 8px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        width: 120px;
+    }
+    
+    .notification-type-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+        color: #6b7280;
+    }
+    
+    .icon-email { color: #3B82F6; }
+    .icon-sms { color: #10B981; }
+    .icon-push { color: #F59E0B; }
+    .icon-app { color: #8B5CF6; }
+    
+    .save-button {
+        background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .save-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+    
+    .save-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    .info-box {
+        background: #f0f9ff;
+        border: 1px solid #0ea5e9;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .info-box i {
+        color: #0ea5e9;
+        margin-right: 10px;
+    }
+    
+    @media (max-width: 768px) {
+        .preference-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .preference-controls {
+            width: 100%;
+            justify-content: space-between;
+        }
+        
+        .frequency-select,
+        .time-input {
+            min-width: auto;
+            flex: 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                <i class="fas fa-cog mr-3 text-blue-600"></i>
+                Preferencias de Notificación
+            </h1>
+            <p class="text-gray-600">Configura cómo y cuándo quieres recibir notificaciones</p>
+        </div>
+
+        <div class="preferences-container">
+            <!-- Información -->
+            <div class="info-box">
+                <i class="fas fa-info-circle"></i>
+                <strong>Personaliza tus notificaciones:</strong> Configura el tipo de notificaciones que deseas recibir y cuándo recibirlas. Puedes activar o desactivar cada tipo según tus preferencias.
+            </div>
+
+            <form id="preferencesForm">
+                <!-- Notificaciones por Email -->
+                <div class="preference-section">
+                    <h3>
+                        <i class="fas fa-envelope notification-type-icon icon-email"></i>
+                        Notificaciones por Email
+                    </h3>
+                    
+                    <div class="preference-row">
+                        <div class="preference-label">
+                            <strong>Informes Académicos</strong>
+                            <p class="text-sm text-gray-600">Notas, evaluaciones y progreso académico</p>
+                        </div>
+                        <div class="preference-controls">
+                            <label class="toggle-switch">
+                                <input type="checkbox" data-type="email" data-report="academic" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <select class="frequency-select" data-type="email" data-report="academic">
+                                <option value="immediate">Inmediato</option>
+                                <option value="daily_digest">Resumen diario</option>
+                                <option value="weekly_digest">Resumen semanal</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="preference-row">
+                        <div class="preference-label">
+                            <strong>Informes de Comportamiento</strong>
+                            <p class="text-sm text-gray-600">Conducta y disciplina</p>
+                        </div>
+                        <div class="preference-controls">
+                            <label class="toggle-switch">
+                                <input type="checkbox" data-type="email" data-report="behavioral" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <select class="frequency-select" data-type="email" data-report="behavioral">
+                                <option value="immediate">Inmediato</option>
+                                <option value="daily_digest">Resumen diario</option>
+                                <option value="weekly_digest">Resumen semanal</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="preference-row">
+                        <div class="preference-label">
+                            <strong>Informes Médicos</strong>
+                            <p class="text-sm text-gray-600">Salud y emergencias médicas</p>
+                        </div>
+                        <div class="preference-controls">
+                            <label class="toggle-switch">
+                                <input type="checkbox" data-type="email" data-report="medical" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <select class="frequency-select" data-type="email" data-report="medical">
+                                <option value="immediate">Inmediato</option>
+                                <option value="daily_digest">Resumen diario</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notificaciones por SMS -->
+                <div class="preference-section">
+                    <h3>
+                        <i class="fas fa-sms notification-type-icon icon-sms"></i>
+                        Notificaciones por SMS
+                    </h3>
+                    
+                    <div class="preference-row">
+                        <div class="preference-label">
+                            <strong>Solo Urgentes</strong>
+                            <p class="text-sm text-gray-600">Emergencias y situaciones prioritarias</p>
+                        </div>
+                        <div class="preference-controls">
+                            <label class="toggle-switch">
+                                <input type="checkbox" data-type="sms" data-report="urgent">
+                                <span class="slider"></span>
+                            </label>
+                            <select class="frequency-select" data-type="sms" data-report="urgent">
+                                <option value="immediate">Inmediato</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="preference-row">
+                        <div class="preference-label">
+                            <strong>Informes Médicos</strong>
+                            <p class="text-sm text-gray-600">Problemas de salud importantes</p>
+                        </div>
+                        <div class="preference-controls">
+                            <label class="toggle-switch">
+                                <input type="checkbox" data-type="sms" data-report="medical">
+                                <span class="slider"></span>
+                            </label>
+                            <select class="frequency-select" data-type="sms" data-report="medical">
+                                <option value="immediate">Inmediato</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notificaciones Push -->
+                <div class="preference-section">
+                    <h3>
+                        <i class="fas fa-mobile-alt notification-type-icon icon-push"></i>
+                        Notificaciones Push
+                    </h3>
+                    
+                    <div class="preference-row">
+                        <div class="preference-label">
+                            <strong>Todos los Informes</strong>
+                            <p class="text-sm text-gray-600">Notificaciones instantáneas en el dispositivo</p>
+                        </div>
+                        <div class="preference-controls">
+                            <label class="toggle-switch">
+                                <input type="checkbox" data-type="push" data-report="all">
+                                <span class="slider"></span>
+                            </label>
+                            <select class="frequency-select" data-type="push" data-report="all">
+                                <option value="immediate">Inmediato</option>
+                                <option value="daily_digest">Resumen diario</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notificaciones en la App -->
+                <div class="preference-section">
+                    <h3>
+                        <i class="fas fa-bell notification-type-icon icon-app"></i>
+                        Notificaciones en la App
+                    </h3>
+                    
+                    <div class="preference-row">
+                        <div class="preference-label">
+                            <strong>Todos los Informes</strong>
+                            <p class="text-sm text-gray-600">Alertas dentro de la aplicación</p>
+                        </div>
+                        <div class="preference-controls">
+                            <label class="toggle-switch">
+                                <input type="checkbox" data-type="in_app" data-report="all" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <select class="frequency-select" data-type="in_app" data-report="all">
+                                <option value="immediate">Inmediato</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuración de Horarios -->
+                <div class="preference-section">
+                    <h3>
+                        <i class="fas fa-clock notification-type-icon"></i>
+                        Horarios de Silencio
+                    </h3>
+                    
+                    <div class="preference-row">
+                        <div class="preference-label">
+                            <strong>Período Silencioso</strong>
+                            <p class="text-sm text-gray-600">No recibir notificaciones durante estas horas</p>
+                        </div>
+                        <div class="preference-controls">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="quietHoursEnabled">
+                                <span class="slider"></span>
+                            </label>
+                            <input type="time" class="time-input" id="quietStart" value="22:00" disabled>
+                            <span class="text-gray-500">a</span>
+                            <input type="time" class="time-input" id="quietEnd" value="07:00" disabled>
+                        </div>
+                    </div>
+                    
+                    <div class="preference-row">
+                        <div class="preference-label">
+                            <strong>Notificaciones en Fin de Semana</strong>
+                            <p class="text-sm text-gray-600">Recibir notificaciones sábados y domingos</p>
+                        </div>
+                        <div class="preference-controls">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="weekendNotifications" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón Guardar -->
+                <div class="text-center mt-8">
+                    <button type="submit" class="save-button">
+                        <i class="fas fa-save mr-2"></i>
+                        Guardar Preferencias
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Configurar campos de horario silencioso
+document.getElementById('quietHoursEnabled').addEventListener('change', function() {
+    const startInput = document.getElementById('quietStart');
+    const endInput = document.getElementById('quietEnd');
+    
+    if (this.checked) {
+        startInput.disabled = false;
+        endInput.disabled = false;
+    } else {
+        startInput.disabled = true;
+        endInput.disabled = true;
+    }
+});
+
+// Cargar preferencias existentes
+document.addEventListener('DOMContentLoaded', function() {
+    loadExistingPreferences();
+});
+
+function loadExistingPreferences() {
+    // Aquí cargarías las preferencias existentes del usuario
+    // Por ahora, establecemos valores por defecto
+    
+    {% if preferences %}
+    const preferences = {{ preferences|tojson }};
+    
+    preferences.forEach(pref => {
+        const checkbox = document.querySelector(`[data-type="${pref.notification_type}"][data-report="${pref.report_type}"]`);
+        const select = document.querySelector(`select[data-type="${pref.notification_type}"][data-report="${pref.report_type}"]`);
+        
+        if (checkbox) {
+            checkbox.checked = pref.is_enabled;
+        }
+        
+        if (select) {
+            select.value = pref.frequency;
+        }
+    });
+    {% endif %}
+}
+
+// Guardar preferencias
+document.getElementById('preferencesForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const preferences = [];
+    const checkboxes = document.querySelectorAll('input[type="checkbox"][data-type]');
+    
+    checkboxes.forEach(checkbox => {
+        const type = checkbox.dataset.type;
+        const reportType = checkbox.dataset.report;
+        const isEnabled = checkbox.checked;
+        const select = document.querySelector(`select[data-type="${type}"][data-report="${reportType}"]`);
+        const frequency = select ? select.value : 'immediate';
+        
+        preferences.push({
+            notification_type: type,
+            report_type: reportType,
+            is_enabled: isEnabled,
+            frequency: frequency,
+            quiet_hours_start: document.getElementById('quietHoursEnabled').checked ? document.getElementById('quietStart').value : null,
+            quiet_hours_end: document.getElementById('quietHoursEnabled').checked ? document.getElementById('quietEnd').value : null,
+            weekend_notifications: document.getElementById('weekendNotifications').checked
+        });
+    });
+    
+    const button = document.querySelector('.save-button');
+    const originalText = button.innerHTML;
+    
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Guardando...';
+    button.disabled = true;
+    
+    fetch('/update_notification_preferences', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            preferences: preferences
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Preferencias guardadas correctamente', 'success');
+        } else {
+            showNotification('Error al guardar las preferencias', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error de conexión', 'error');
+    })
+    .finally(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
+});
+
+// Función para mostrar notificaciones
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    }`;
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas ${type === 'success' ? 'fa-check' : 'fa-exclamation-triangle'} mr-2"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}

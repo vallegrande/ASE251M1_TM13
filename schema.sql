@@ -799,6 +799,135 @@ INSERT IGNORE INTO reclamaciones (
  NULL, NULL);
 
 -- ========================================
+-- SISTEMA DE INFORMES Y NOTIFICACIONES
+-- ========================================
+
+-- Tabla principal de informes de profesores a estudiantes
+CREATE TABLE IF NOT EXISTS reports (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,
+    teacher_id INT NOT NULL,
+    subject VARCHAR(100) NOT NULL COMMENT 'Materia o asunto del informe',
+    title VARCHAR(200) NOT NULL COMMENT 'Título del informe',
+    content TEXT NOT NULL COMMENT 'Contenido del informe',
+    report_type ENUM('academic', 'behavioral', 'medical', 'general') DEFAULT 'general',
+    status ENUM('draft', 'sent', 'read') DEFAULT 'sent',
+    priority ENUM('low', 'normal', 'high', 'urgent') DEFAULT 'normal',
+    is_private BOOLEAN DEFAULT FALSE COMMENT 'Si es confidencial solo para padres',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    read_at TIMESTAMP NULL COMMENT 'Fecha cuando el padre leyó el informe',
+    teacher_notes TEXT NULL COMMENT 'Notas adicionales del profesor',
+    parent_response TEXT NULL COMMENT 'Respuesta del padre al informe',
+    response_at TIMESTAMP NULL COMMENT 'Fecha de respuesta del padre',
+    INDEX idx_student_id (student_id),
+    INDEX idx_teacher_id (teacher_id),
+    INDEX idx_created_at (created_at),
+    INDEX idx_status (status),
+    INDEX idx_priority (priority),
+    INDEX idx_report_type (report_type),
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (teacher_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci 
+COMMENT='Tabla principal para informes de profesores a estudiantes';
+
+-- Tabla para adjuntos de informes
+CREATE TABLE IF NOT EXISTS report_attachments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    report_id INT NOT NULL,
+    filename VARCHAR(255) NOT NULL COMMENT 'Nombre del archivo en el servidor',
+    original_filename VARCHAR(255) NOT NULL COMMENT 'Nombre original del archivo',
+    file_path VARCHAR(500) NOT NULL COMMENT 'Ruta completa del archivo',
+    file_type VARCHAR(50) NOT NULL COMMENT 'Tipo MIME del archivo',
+    file_size INT NOT NULL COMMENT 'Tamaño en bytes',
+    file_category ENUM('image', 'document', 'audio', 'video', 'other') DEFAULT 'other',
+    description TEXT NULL COMMENT 'Descripción del adjunto',
+    uploaded_by INT NOT NULL COMMENT 'ID del usuario que subió el archivo',
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE,
+    download_count INT DEFAULT 0 COMMENT 'Contador de descargas',
+    INDEX idx_report_id (report_id),
+    INDEX idx_file_type (file_type),
+    INDEX idx_uploaded_by (uploaded_by),
+    INDEX idx_file_category (file_category),
+    FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE,
+    FOREIGN KEY (uploaded_by) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Tabla para adjuntos de informes (fotos, documentos, etc.)';
+
+-- Tabla para notificaciones de informes
+CREATE TABLE IF NOT EXISTS report_notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    report_id INT NOT NULL,
+    recipient_id INT NOT NULL COMMENT 'ID del padre/tutor que recibe la notificación',
+    notification_type ENUM('email', 'sms', 'push', 'in_app') DEFAULT 'email',
+    notification_method ENUM('immediate', 'daily_digest', 'weekly_digest') DEFAULT 'immediate',
+    status ENUM('pending', 'sent', 'delivered', 'failed', 'bounced') DEFAULT 'pending',
+    priority ENUM('low', 'normal', 'high') DEFAULT 'normal',
+    subject VARCHAR(200) NOT NULL COMMENT 'Asunto de la notificación',
+    message TEXT NOT NULL COMMENT 'Contenido de la notificación',
+    recipient_email VARCHAR(255) NULL COMMENT 'Email del destinatario',
+    recipient_phone VARCHAR(20) NULL COMMENT 'Teléfono del destinatario',
+    sent_at TIMESTAMP NULL COMMENT 'Fecha de envío',
+    delivered_at TIMESTAMP NULL COMMENT 'Fecha de entrega confirmada',
+    read_at TIMESTAMP NULL COMMENT 'Fecha de lectura (para notificaciones in-app)',
+    error_message TEXT NULL COMMENT 'Mensaje de error si falló',
+    retry_count INT DEFAULT 0 COMMENT 'Número de reintentos',
+    max_retries INT DEFAULT 3 COMMENT 'Máximo número de reintentos',
+    next_retry_at TIMESTAMP NULL COMMENT 'Próximo intento programado',
+    metadata JSON NULL COMMENT 'Datos adicionales de la notificación',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_report_id (report_id),
+    INDEX idx_recipient_id (recipient_id),
+    INDEX idx_status (status),
+    INDEX idx_notification_type (notification_type),
+    INDEX idx_priority (priority),
+    INDEX idx_sent_at (sent_at),
+    INDEX idx_next_retry_at (next_retry_at),
+    FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE,
+    FOREIGN KEY (recipient_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Tabla para notificaciones de informes (email, SMS, push, etc.)';
+
+-- Tabla para preferencias de notificación
+CREATE TABLE IF NOT EXISTS notification_preferences (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    notification_type ENUM('email', 'sms', 'push', 'in_app') NOT NULL,
+    report_type ENUM('academic', 'behavioral', 'medical', 'general', 'all') DEFAULT 'all',
+    is_enabled BOOLEAN DEFAULT TRUE,
+    frequency ENUM('immediate', 'daily_digest', 'weekly_digest', 'monthly_digest') DEFAULT 'immediate',
+    quiet_hours_start TIME NULL COMMENT 'Hora de inicio del período silencioso',
+    quiet_hours_end TIME NULL COMMENT 'Hora de fin del período silencioso',
+    weekend_notifications BOOLEAN DEFAULT TRUE,
+    priority_filter ENUM('all', 'normal_and_high', 'high_only', 'urgent_only') DEFAULT 'all',
+    language_code VARCHAR(5) DEFAULT 'es' COMMENT 'Idioma preferido para notificaciones',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_user_type_report (user_id, notification_type, report_type),
+    INDEX idx_user_id (user_id),
+    INDEX idx_notification_type (notification_type),
+    INDEX idx_is_enabled (is_enabled),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Preferencias de notificación por usuario';
+
+-- Datos de ejemplo para el sistema de informes
+INSERT INTO reports (student_id, teacher_id, subject, title, content, report_type, priority, status) VALUES
+(1, 1, 'Matemáticas', 'Progreso Académico - Octubre 2025', 'El estudiante ha mostrado una mejora significativa en su comprensión de operaciones básicas.\n\nSe observa:\n- Mayor participación en clase\n- Resolución correcta de ejercicios\n- Trabajo colaborativo efectivo\n\nSe recomienda continuar con la práctica en casa para reforzar lo aprendido.', 'academic', 'normal', 'sent'),
+(1, 1, 'Comportamiento', 'Observación Conductual Semanal', 'El alumno demuestra excelente comportamiento en clase y colabora activamente con sus compañeros.\n\nAspectos positivos:\n- Respeta las normas de convivencia\n- Ayuda a sus compañeros\n- Participa ordenadamente\n\nSe destaca su liderazgo positivo en actividades grupales.', 'behavioral', 'normal', 'sent'),
+(1, 1, 'General', 'Informe Mensual de Progreso', 'Resumen general del progreso del estudiante durante el mes de octubre.\n\nLogros destacados:\n- Adaptación positiva al programa educativo\n- Cumplimiento de tareas y responsabilidades\n- Desarrollo de habilidades sociales\n\nÁreas de mejora:\n- Puntualidad en entrega de trabajos\n- Mayor participación en actividades extracurriculares', 'general', 'normal', 'sent'),
+(1, 1, 'Ciencias Naturales', 'Proyecto de Investigación', 'El estudiante ha completado exitosamente el proyecto sobre el sistema solar.\n\nCalificación: Excelente (18/20)\n\nFortalezas observadas:\n- Investigación detallada y bien documentada\n- Presentación creativa y organizada\n- Dominio del tema\n\nSugerencias:\n- Incluir más fuentes bibliográficas\n- Practicar exposición oral', 'academic', 'normal', 'read');
+
+-- Preferencias de notificación por defecto para usuarios
+INSERT INTO notification_preferences (user_id, notification_type, report_type, is_enabled, frequency) VALUES
+(1, 'email', 'all', TRUE, 'immediate'),
+(1, 'sms', 'urgent', TRUE, 'immediate'),
+(1, 'in_app', 'all', TRUE, 'immediate'),
+(1, 'push', 'high', FALSE, 'immediate');
+
+-- ========================================
 -- VERIFICACIÓN Y MENSAJES FINALES
 -- ========================================
 
@@ -824,6 +953,10 @@ SELECT 'Noticias creadas:' as tipo, COUNT(*) as cantidad FROM news;
 SELECT 'Configuraciones creadas:' as tipo, COUNT(*) as cantidad FROM site_settings;
 SELECT 'Imágenes en galería:' as tipo, COUNT(*) as cantidad FROM gallery;
 SELECT 'Eventos programados:' as tipo, COUNT(*) as cantidad FROM events;
+SELECT 'Informes creados:' as tipo, COUNT(*) as cantidad FROM reports;
+SELECT 'Adjuntos de informes:' as tipo, COUNT(*) as cantidad FROM report_attachments;
+SELECT 'Notificaciones:' as tipo, COUNT(*) as cantidad FROM report_notifications;
+SELECT 'Preferencias de notificación:' as tipo, COUNT(*) as cantidad FROM notification_preferences;
 
 SELECT 'PRODUCTOS POR CATEGORÍA:' as info;
 SELECT category as categoria, COUNT(*) as cantidad FROM products GROUP BY category;
@@ -831,5 +964,12 @@ SELECT category as categoria, COUNT(*) as cantidad FROM products GROUP BY catego
 SELECT 'PEDIDOS POR ESTADO:' as info;
 SELECT status as estado, COUNT(*) as cantidad FROM orders GROUP BY status;
 
+SELECT 'INFORMES POR TIPO:' as info;
+SELECT report_type as tipo, COUNT(*) as cantidad FROM reports GROUP BY report_type;
+
+SELECT 'INFORMES POR ESTADO:' as info;
+SELECT status as estado, COUNT(*) as cantidad FROM reports GROUP BY status;
+
 SELECT 'CONFIGURACIÓN COMPLETADA EXITOSAMENTE ✅' as resultado;
 SELECT 'SISTEMA DE MIS PEDIDOS IMPLEMENTADO ✅' as funcionalidad;
+SELECT 'SISTEMA DE INFORMES Y NOTIFICACIONES IMPLEMENTADO ✅' as nueva_funcionalidad;

@@ -1,3 +1,12 @@
+/* Día actual resaltado */
+.calendar-today > div,
+.calendar-today .calendar-day {
+    border: 2px solid #2563eb !important; /* azul-600 */
+    box-shadow: 0 0 0 2px #93c5fd33;
+    background: #dbeafe !important; /* azul-100 */
+    color: #1d4ed8 !important; /* azul-700 */
+    z-index: 2;
+}
 /* Animaciones para el calendario */
 
 /* Animaciones de slide para cambio de mes */
