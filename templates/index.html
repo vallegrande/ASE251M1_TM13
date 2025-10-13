@@ -3,50 +3,19 @@
 {% block title %}Wawalu{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8 max-w-6xl">
-    <!-- Hero Section -->
-    <header class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-blue-600 mb-4">Bienvenido a Wawalu</h1>
-        <p class="text-gray-600 text-lg max-w-2xl mx-auto">
-            "Lo que se dé a los niños, los niños darán a la sociedad" - Karl Menninger
-        </p>
-    </header>
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
 
-    <!-- Slider Principal -->
+    <!-- Slider Principal (full-bleed fuera del container para evitar padding superior) -->
     <div class="slider-container mb-16">
         <div class="slider">
-            <div class="slide">
-                <img src="{{ url_for('static', filename='img/imagen1.jpg') }}" alt="Niños jugando" class="w-full h-[400px] object-cover">
-                <div class="slide-content">
-                    <h2 class="text-3xl font-bold mb-3">Aprendizaje a través del juego</h2>
-                    <p class="text-lg mb-6">Descubre cómo nuestro método educativo fomenta el desarrollo integral</p>
-                    <a href="{{ url_for('enrollment') }}" class="matricula-btn inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-lg font-medium transition-all duration-300">
-                        <span class="material-icons">school</span>
-                        Matrícula 2025
-                    </a>
-                </div>
+            <div class="slide" aria-hidden="false">
+                <img src="{{ url_for('static', filename='img/imagen1.jpg') }}" alt="Niños jugando" class="slide-img">
             </div>
-            <div class="slide">
-                <img src="{{ url_for('static', filename='img/imagen2.jpg') }}" alt="Actividades creativas" class="w-full h-[400px] object-cover">
-                <div class="slide-content">
-                    <h2 class="text-3xl font-bold mb-3">Expresión Artística</h2>
-                    <p class="text-lg mb-6">Desarrollamos la creatividad y la imaginación</p>
-                    <a href="{{ url_for('enrollment') }}" class="matricula-btn inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-lg font-medium transition-all duration-300">
-                        <span class="material-icons">school</span>
-                        Matrícula 2025
-                    </a>
-                </div>
+            <div class="slide" aria-hidden="true">
+                <img src="{{ url_for('static', filename='img/imagen2.jpg') }}" alt="Actividades creativas" class="slide-img">
             </div>
-            <div class="slide">
-                <img src="{{ url_for('static', filename='img/imagen3.jpg') }}" alt="Espacios educativos" class="w-full h-[400px] object-cover">
-                <div class="slide-content">
-                    <h2 class="text-3xl font-bold mb-3">Espacios Seguros</h2>
-                    <p class="text-lg mb-6">Ambientes diseñados para el aprendizaje y la exploración</p>
-                    <a href="{{ url_for('enrollment') }}" class="matricula-btn inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-lg font-medium transition-all duration-300">
-                        <span class="material-icons">school</span>
-                        Matrícula 2025
-                    </a>
-                </div>
+            <div class="slide" aria-hidden="true">
+                <img src="{{ url_for('static', filename='img/imagen3.jpg') }}" alt="Espacios educativos" class="slide-img">
             </div>
         </div>
         <div class="slider-dots"></div>
@@ -56,6 +25,16 @@
         <button class="slider-control slider-next" aria-label="Siguiente">
             <span class="material-icons">chevron_right</span>
         </button>
+        <!-- Hero overlay fijo sobre todas las imágenes -->
+        <div class="hero-overlay" aria-hidden="false">
+            <div class="hero-inner">
+                <h1>Wawalu</h1>
+                <h2>Aprendizaje a través del juego</h2>
+                <div class="mt-6">
+                    <a href="{{ url_for('enrollment') }}" class="btn-matricula">Matrícula</a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Menú Dinámico -->

@@ -1,8 +1,40 @@
 from flask import Flask, render_template, redirect, url_for, request, jsonify, session, flash, send_from_directory
-from flask_mysqldb import MySQL
 import os
 from pathlib import Path
-import MySQLdb.cursors
+
+# Database adapter: try to use flask_mysqldb (mysqlclient) first, otherwise fall back to PyMySQL shim
+try:
+    from flask_mysqldb import MySQL
+    import MySQLdb.cursors
+except Exception:
+    # Fallback for environments where compiling mysqlclient is difficult (eg. Windows)
+    # Use PyMySQL and provide a lightweight MySQL class with a `.connection` property
+    import pymysql
+    pymysql.install_as_MySQLdb()
+    import MySQLdb.cursors  # now available via the shim
+
+    class MySQL:
+        def __init__(self, app=None):
+            self.app = None
+            if app:
+                self.init_app(app)
+
+        def init_app(self, app):
+            self.app = app
+
+        @property
+        def connection(self):
+            cfg = self.app.config
+            # Return a new connection each time to mimic flask_mysqldb behavior
+            return pymysql.connect(
+                host=cfg.get('MYSQL_HOST', 'localhost'),
+                user=cfg.get('MYSQL_USER', 'root'),
+                password=cfg.get('MYSQL_PASSWORD', ''),
+                db=cfg.get('MYSQL_DB', ''),
+                port=int(cfg.get('MYSQL_PORT', 3306)),
+                cursorclass=pymysql.cursors.DictCursor,
+                autocommit=cfg.get('MYSQL_AUTOCOMMIT', True)
+            )
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from datetime import datetime
