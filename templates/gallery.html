@@ -91,21 +91,21 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6" id="gallery-grid">
             {% if images %}
                 {% for image in images %}
-                <div class="gallery-item {{ image.category }} overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105" data-category="{{ image.category }}" data-title="{{ image.title }}">
-                    <a href="{{ url_for('static', filename='img/' + image.image_url) }}" data-lightbox="gallery" data-title="{{ image.title }}">
-                        <div class="relative pb-[100%]">
-                            <img src="{{ url_for('static', filename='img/' + image.image_url) }}" 
-                                 alt="{{ image.title }}" 
-                                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                                 loading="lazy">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
-                                <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
-                                    <h3 class="text-lg font-semibold">{{ image.title }}</h3>
-                                    <p class="text-sm">{{ image.description or image.category.title() }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+                <div class="gallery-item flip-card {{ image.category }} overflow-visible rounded-lg shadow-lg" data-category="{{ image.category }}" data-title="{{ image.title }}">
+                                    <div class="flip-card-inner aspect-square">
+                                        <div class="flip-card-front w-full h-full rounded-lg overflow-hidden flex items-center justify-center">
+                                            <img src="{{ url_for('static', filename='img/' + image.image_url) }}"
+                                                     alt="{{ image.title }}"
+                                                     class="w-full h-full object-cover rounded-lg"
+                                                     loading="lazy">
+                                        </div>
+                                                                                                    <div class="flip-card-back w-full h-full rounded-lg flex flex-col justify-center items-center bg-gradient-to-br from-white via-blue-100 to-blue-200 p-6 relative overflow-hidden">
+                                                                                                        <span class="material-icons text-5xl mb-2 animate-bounce text-yellow-400 opacity-80 absolute top-6 right-6 pointer-events-none">auto_awesome</span>
+                                                                                                        <h3 class="text-2xl font-extrabold mb-2 drop-shadow-lg animate-fadein text-blue-900 text-center">{{ image.title }}</h3>
+                                                                                                        <p class="text-lg text-center mb-2 animate-fadein2 text-blue-800 font-medium">{{ image.description or image.category.title() }}</p>
+                                                                                                        <a href="{{ url_for('static', filename='img/' + image.image_url) }}" data-lightbox="gallery" data-title="{{ image.title }}" class="mt-4 inline-block px-6 py-2 bg-yellow-400 text-blue-900 font-bold rounded-full shadow hover:bg-yellow-300 transition-all duration-300 animate-fadein3">Ver grande</a>
+                                                                                                    </div>
+                                    </div>
                 </div>
                 {% endfor %}
             {% else %}
