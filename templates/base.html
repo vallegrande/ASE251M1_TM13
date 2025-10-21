@@ -78,6 +78,13 @@
                             </span>
                             <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 group-hover:w-full transition-all duration-300"></div>
                         </a>
+                        <a href="{{ url_for('admission') }}" class="group relative text-gray-700 hover:text-green-700 px-3 py-2 font-medium transition-all duration-300 rounded-xl hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 {{ 'text-green-700 bg-gradient-to-r from-green-50 to-green-100 shadow-sm' if request.endpoint == 'admission' }}">
+                            <span class="flex items-center space-x-2">
+                                <span class="material-icons text-lg group-hover:scale-110 transition-transform">assignment</span>
+                                <span class="text-sm font-semibold">Admisión</span>
+                            </span>
+                            <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-green-500 to-green-700 group-hover:w-full transition-all duration-300"></div>
+                        </a>
                         <a href="{{ url_for('contact') }}" class="group relative text-gray-700 hover:text-blue-600 px-3 py-2 font-medium transition-all duration-300 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 {{ 'text-blue-600 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-sm' if request.endpoint == 'contact' }}">
                             <span class="flex items-center space-x-2">
                                 <span class="material-icons text-lg group-hover:scale-110 transition-transform">contact_support</span>
@@ -593,6 +600,7 @@
                         &copy; 2025 Wawalu. Todos los derechos reservados.
                     </p>
                     <div class="flex items-center space-x-6 text-sm text-gray-400">
+                        <a href="{{ url_for('admission') }}" class="hover:text-green-700 transition duration-150">Admisión</a>
                         <a href="{{ url_for('terms') }}" class="hover:text-blue-400 transition duration-150">Términos y Condiciones</a>
                         <a href="#" class="hover:text-blue-400 transition duration-150">Política de Privacidad</a>
                         <a href="#" class="hover:text-blue-400 transition duration-150">Cookies</a>

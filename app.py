@@ -1,6 +1,24 @@
 from flask import Flask, render_template, redirect, url_for, request, jsonify, session, flash, send_from_directory
 import os
 from pathlib import Path
+from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
+from datetime import datetime
+from dotenv import load_dotenv
+from decimal import Decimal
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import urllib.parse
+import qrcode
+from io import BytesIO
+from flask import send_file
+
+# Inicialización de Flask
+app = Flask(__name__)
+
+# ...código existente...
+from pathlib import Path
 
 # Database adapter: try to use flask_mysqldb (mysqlclient) first, otherwise fall back to PyMySQL shim
 try:
@@ -16,7 +34,7 @@ except Exception:
     class MySQL:
         def __init__(self, app=None):
             self.app = None
-            if app:
+            if app is not None:
                 self.init_app(app)
 
         def init_app(self, app):
@@ -24,31 +42,23 @@ except Exception:
 
         @property
         def connection(self):
+            if not self.app:
+                raise RuntimeError("MySQL not initialized with Flask app")
             cfg = self.app.config
-            # Return a new connection each time to mimic flask_mysqldb behavior
-            return pymysql.connect(
-                host=cfg.get('MYSQL_HOST', 'localhost'),
+            conn = pymysql.connect(
+                host=cfg.get('MYSQL_HOST', 'wawalu.czi4a8qyuwk5.us-east-1.rds.amazonaws.com'),
                 user=cfg.get('MYSQL_USER', 'root'),
-                password=cfg.get('MYSQL_PASSWORD', ''),
-                db=cfg.get('MYSQL_DB', ''),
+                password=cfg.get('MYSQL_PASSWORD', 'diego123456'),
+                db=cfg.get('MYSQL_DB', 'wawalu_db'),
                 port=int(cfg.get('MYSQL_PORT', 3306)),
                 cursorclass=pymysql.cursors.DictCursor,
-                autocommit=cfg.get('MYSQL_AUTOCOMMIT', True)
+                autocommit=cfg.get('MYSQL_AUTOCOMMIT', True),
+                connect_timeout=cfg.get('MYSQL_CONNECT_TIMEOUT', 60)
             )
-from werkzeug.security import generate_password_hash, check_password_hash
-from functools import wraps
-from datetime import datetime
-from dotenv import load_dotenv
-from decimal import Decimal
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-import urllib.parse
+            return conn
 
 # Cargar variables de entorno
 load_dotenv()
-
-app = Flask(__name__)
 
 # Configuración de MySQL AWS RDS
 app.config['MYSQL_HOST'] = os.getenv('DB_HOST', 'wawalu.czi4a8qyuwk5.us-east-1.rds.amazonaws.com')
@@ -286,7 +296,7 @@ def register():
                 return jsonify({
                     "success": False,
                     "message": "Rol no válido para registro público"
-                }), 400
+                }, 400)
 
             # Crear cursor para la base de datos
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -1171,7 +1181,7 @@ def order_confirmation(order_id):
         return redirect(url_for('login'))
     
     try:
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor = mysql.connection.cursor()
         
         # Obtener información de la orden
         cursor.execute('''
@@ -1219,11 +1229,11 @@ def news():
         {
             'id': 2,
             'title': 'Taller de música para padres e hijos',
-            'excerpt': 'Únete a nuestra sesión especial donde padres e hijos aprenderán juntos...',
-            'image': 'news2.jpg',
-            'date': '20 de Septiembre, 2025',
-            'category': 'Actividades',
-            'is_featured': True
+                'excerpt': 'Únete a nuestro taller especial de música y movimiento para padres e hijos. Fortalece los vínculos familiares mientras desarrollas habilidades musicales y motoras.',
+                'image': 'news2.jpg',
+                'date': '20 de Septiembre, 2025',
+                'category': 'Eventos',
+                'is_featured': True
         },
         {
             'id': 3,
@@ -2192,6 +2202,67 @@ def update_user(user_id):
             "success": False,
             "message": str(e)
         }), 500
+        
+# Ruta para Admisión (después de app = Flask(__name__))
+@app.route('/admision', methods=['GET', 'POST'])
+def admission():
+    errors = {}
+    if request.method == 'POST':
+        nombre = request.form.get('nombre', '').strip()
+        email = request.form.get('email', '').strip()
+        telefono = request.form.get('telefono', '').strip()
+        fecha_nacimiento = request.form.get('fecha_nacimiento', '').strip()
+        programa = request.form.get('programa', '').strip()
+        mensaje = request.form.get('mensaje', '').strip()
+
+        # Validaciones básicas
+        if not nombre:
+            errors['nombre'] = 'El nombre es obligatorio.'
+        if not email or '@' not in email:
+            errors['email'] = 'Correo electrónico válido es obligatorio.'
+        if telefono and not telefono.isdigit():
+            errors['telefono'] = 'El teléfono debe contener solo números.'
+        if fecha_nacimiento:
+            try:
+                datetime.strptime(fecha_nacimiento, '%Y-%m-%d')
+            except Exception:
+                errors['fecha_nacimiento'] = 'Fecha de nacimiento inválida.'
+        if not programa:
+            errors['programa'] = 'Indica el programa de interés.'
+
+        if errors:
+            for campo, msg in errors.items():
+                flash(f'{msg}', 'error')
+            return render_template('admission.html', errors=errors, request=request)
+
+        # Guardar en la base de datos
+        try:
+            cursor = mysql.connection.cursor()
+            cursor.execute('''
+                INSERT INTO admissions (nombre, email, telefono, fecha_nacimiento, programa, mensaje)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            ''', (nombre, email, telefono, fecha_nacimiento if fecha_nacimiento else None, programa, mensaje))
+            mysql.connection.commit()
+            cursor.close()
+        except Exception as e:
+            flash(f'Error al guardar la solicitud: {e}', 'error')
+            return render_template('admission.html', errors=errors, request=request)
+
+        # Notificación por email (al admin)
+        asunto = 'Nueva solicitud de admisión'
+        cuerpo = f"""
+        <b>Nombre:</b> {nombre}<br>
+        <b>Email:</b> {email}<br>
+        <b>Teléfono:</b> {telefono}<br>
+        <b>Fecha de nacimiento:</b> {fecha_nacimiento}<br>
+        <b>Programa de interés:</b> {programa}<br>
+        <b>Mensaje:</b> {mensaje}<br>
+        """
+        send_email(CONTACT_EMAIL, asunto, cuerpo, is_html=True)
+
+        flash('¡Solicitud de admisión enviada correctamente!', 'success')
+        return redirect(url_for('admission'))
+    return render_template('admission.html', errors=errors, request=request)
 
 @app.route('/admin/users/<int:user_id>', methods=['DELETE'])
 @admin_required

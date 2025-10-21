@@ -1,0 +1,31 @@
+/* styles for terms and conditions page */
+.terms-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    padding: 32px 24px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+.terms-container h1 {
+    font-size: 2.2rem;
+    margin-bottom: 1.2rem;
+    color: #1a202c;
+}
+.terms-container h2 {
+    font-size: 1.3rem;
+    margin-top: 2rem;
+    color: #2d3748;
+}
+.terms-container p, .terms-container ul {
+    font-size: 1rem;
+    color: #444;
+    margin-bottom: 1rem;
+}
+.terms-container ul {
+    padding-left: 1.5rem;
+}
+.terms-container li {
+    margin-bottom: 0.5rem;
+}

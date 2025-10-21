@@ -21,6 +21,7 @@ START TRANSACTION;
 -- ========================================
 -- TABLA DE USUARIOS (BASE)
 -- ========================================
+
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -87,6 +88,7 @@ CREATE TABLE IF NOT EXISTS parent_info (
 -- ========================================
 -- TABLA DE ESTUDIANTES
 -- ========================================
+
 CREATE TABLE IF NOT EXISTS students (
     id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
@@ -96,10 +98,10 @@ CREATE TABLE IF NOT EXISTS students (
     program_id INT,
     student_code VARCHAR(20) UNIQUE,
     blood_type VARCHAR(5),
-    allergies TEXT,
-    medical_notes TEXT,
-    special_needs TEXT,
-    emergency_contact VARCHAR(100),
+    quantity INT NOT NULL DEFAULT 1,
+    selected_size VARCHAR(10),
+    selected_color VARCHAR(30),
+    price_at_add DECIMAL(10,2) DEFAULT 0.00,
     emergency_phone VARCHAR(20),
     photo VARCHAR(255),
     birth_certificate VARCHAR(255),
@@ -229,6 +231,7 @@ CREATE TABLE IF NOT EXISTS products (
 -- ========================================
 -- TABLA DE CARRITO DE COMPRAS
 -- ========================================
+
 CREATE TABLE IF NOT EXISTS shopping_cart (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -241,8 +244,23 @@ CREATE TABLE IF NOT EXISTS shopping_cart (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_cart_item (user_id, product_id, selected_size, selected_color),
-    INDEX idx_user (user_id)
+    INDEX idx_user (user_id),
+    INDEX idx_product (product_id)
+);
+
+-- ========================================
+-- TABLA DE ADMISIONES
+-- ========================================
+CREATE TABLE IF NOT EXISTS admissions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    telefono VARCHAR(20),
+    fecha_nacimiento DATE,
+    programa VARCHAR(100),
+    mensaje TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- ========================================
@@ -527,6 +545,121 @@ CREATE TABLE IF NOT EXISTS reclamaciones (
 );
 
 -- ========================================
+-- SISTEMA DE INFORMES Y NOTIFICACIONES
+-- ========================================
+
+-- Tabla principal de informes de profesores a estudiantes
+CREATE TABLE IF NOT EXISTS reports (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,
+    teacher_id INT NOT NULL,
+    subject VARCHAR(100) NOT NULL COMMENT 'Materia o asunto del informe',
+    title VARCHAR(200) NOT NULL COMMENT 'Título del informe',
+    content TEXT NOT NULL COMMENT 'Contenido del informe',
+    report_type ENUM('academic', 'behavioral', 'medical', 'general') DEFAULT 'general',
+    status ENUM('draft', 'sent', 'read') DEFAULT 'sent',
+    priority ENUM('low', 'normal', 'high', 'urgent') DEFAULT 'normal',
+    is_private BOOLEAN DEFAULT FALSE COMMENT 'Si es confidencial solo para padres',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    read_at TIMESTAMP NULL COMMENT 'Fecha cuando el padre leyó el informe',
+    teacher_notes TEXT NULL COMMENT 'Notas adicionales del profesor',
+    parent_response TEXT NULL COMMENT 'Respuesta del padre al informe',
+    response_at TIMESTAMP NULL COMMENT 'Fecha de respuesta del padre',
+    INDEX idx_student_id (student_id),
+    INDEX idx_teacher_id (teacher_id),
+    INDEX idx_created_at (created_at),
+    INDEX idx_status (status),
+    INDEX idx_priority (priority),
+    INDEX idx_report_type (report_type),
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (teacher_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci 
+COMMENT='Tabla principal para informes de profesores a estudiantes';
+
+-- Tabla para adjuntos de informes
+CREATE TABLE IF NOT EXISTS report_attachments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    report_id INT NOT NULL,
+    filename VARCHAR(255) NOT NULL COMMENT 'Nombre del archivo en el servidor',
+    original_filename VARCHAR(255) NOT NULL COMMENT 'Nombre original del archivo',
+    file_path VARCHAR(500) NOT NULL COMMENT 'Ruta completa del archivo',
+    file_type VARCHAR(50) NOT NULL COMMENT 'Tipo MIME del archivo',
+    file_size INT NOT NULL COMMENT 'Tamaño en bytes',
+    file_category ENUM('image', 'document', 'audio', 'video', 'other') DEFAULT 'other',
+    description TEXT NULL COMMENT 'Descripción del adjunto',
+    uploaded_by INT NOT NULL COMMENT 'ID del usuario que subió el archivo',
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE,
+    download_count INT DEFAULT 0 COMMENT 'Contador de descargas',
+    INDEX idx_report_id (report_id),
+    INDEX idx_file_type (file_type),
+    INDEX idx_uploaded_by (uploaded_by),
+    INDEX idx_file_category (file_category),
+    FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE,
+    FOREIGN KEY (uploaded_by) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Tabla para adjuntos de informes (fotos, documentos, etc.)';
+
+-- Tabla para notificaciones de informes
+CREATE TABLE IF NOT EXISTS report_notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    report_id INT NOT NULL,
+    recipient_id INT NOT NULL COMMENT 'ID del padre/tutor que recibe la notificación',
+    notification_type ENUM('email', 'sms', 'push', 'in_app') DEFAULT 'email',
+    notification_method ENUM('immediate', 'daily_digest', 'weekly_digest') DEFAULT 'immediate',
+    status ENUM('pending', 'sent', 'delivered', 'failed', 'bounced') DEFAULT 'pending',
+    priority ENUM('low', 'normal', 'high') DEFAULT 'normal',
+    subject VARCHAR(200) NOT NULL COMMENT 'Asunto de la notificación',
+    message TEXT NOT NULL COMMENT 'Contenido de la notificación',
+    recipient_email VARCHAR(255) NULL COMMENT 'Email del destinatario',
+    recipient_phone VARCHAR(20) NULL COMMENT 'Teléfono del destinatario',
+    sent_at TIMESTAMP NULL COMMENT 'Fecha de envío',
+    delivered_at TIMESTAMP NULL COMMENT 'Fecha de entrega confirmada',
+    read_at TIMESTAMP NULL COMMENT 'Fecha de lectura (para notificaciones in-app)',
+    error_message TEXT NULL COMMENT 'Mensaje de error si falló',
+    retry_count INT DEFAULT 0 COMMENT 'Número de reintentos',
+    max_retries INT DEFAULT 3 COMMENT 'Máximo número de reintentos',
+    next_retry_at TIMESTAMP NULL COMMENT 'Próximo intento programado',
+    metadata JSON NULL COMMENT 'Datos adicionales de la notificación',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_report_id (report_id),
+    INDEX idx_recipient_id (recipient_id),
+    INDEX idx_status (status),
+    INDEX idx_notification_type (notification_type),
+    INDEX idx_priority (priority),
+    INDEX idx_sent_at (sent_at),
+    INDEX idx_next_retry_at (next_retry_at),
+    FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE,
+    FOREIGN KEY (recipient_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Tabla para notificaciones de informes (email, SMS, push, etc.)';
+
+-- Tabla para preferencias de notificación
+CREATE TABLE IF NOT EXISTS notification_preferences (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    notification_type ENUM('email', 'sms', 'push', 'in_app') NOT NULL,
+    report_type ENUM('academic', 'behavioral', 'medical', 'general', 'all') DEFAULT 'all',
+    is_enabled BOOLEAN DEFAULT TRUE,
+    frequency ENUM('immediate', 'daily_digest', 'weekly_digest', 'monthly_digest') DEFAULT 'immediate',
+    quiet_hours_start TIME NULL COMMENT 'Hora de inicio del período silencioso',
+    quiet_hours_end TIME NULL COMMENT 'Hora de fin del período silencioso',
+    weekend_notifications BOOLEAN DEFAULT TRUE,
+    priority_filter ENUM('all', 'normal_and_high', 'high_only', 'urgent_only') DEFAULT 'all',
+    language_code VARCHAR(5) DEFAULT 'es' COMMENT 'Idioma preferido para notificaciones',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_user_type_report (user_id, notification_type, report_type),
+    INDEX idx_user_id (user_id),
+    INDEX idx_notification_type (notification_type),
+    INDEX idx_is_enabled (is_enabled),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Preferencias de notificación por usuario';
+
+-- ========================================
 -- DATOS INICIALES Y CONFIGURACIÓN
 -- ========================================
 
@@ -569,7 +702,7 @@ INSERT IGNORE INTO programs (id, name, description, age_range, capacity, price, 
 
 -- Usuarios administradores y de ejemplo (contraseñas hasheadas)
 INSERT IGNORE INTO users (id, name, email, password, role, is_admin, phone, email_verified, created_at) VALUES 
-(1, 'Administrador Principal', 'admin@wawalu.edu.pe', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewKyNi2JL8MgWcl2', 'admin', TRUE, '999888777', TRUE, NOW()),
+(1, 'Administrador Principal', 'admin@wawalu.edu.pe', 'scrypt:32768:8:1$NNn24Eg4T1e0jJ0L$895a609bea50f49b0792bd7f872ae5b07f734a1b354f1d0fa4270ad886fb82b84aa3d62aef5f499b1d7cb2e39098cb17cdd79e32332fbd1d54814a685b6a1574', 'admin', TRUE, '999888777', TRUE, NOW()),
 (2, 'Diego Centeno', 'diego.centeno@vallegrande.edu.pe', '$2b$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', TRUE, '999888778', TRUE, NOW()),
 (3, 'María García', 'maria.garcia@example.com', '$2b$12$K4vGzaHCh8Hw1fHcPmC1vuZtHv.VgsP8rLPkJqZoThHKUhQm8bUNW', 'madre', FALSE, '987654321', TRUE, NOW()),
 (4, 'Juan Pérez', 'juan.perez@example.com', '$2b$12$K4vGzaHCh8Hw1fHcPmC1vuZtHv.VgsP8rLPkJqZoThHKUhQm8bUNW', 'padre', FALSE, '987654322', TRUE, NOW()),
@@ -584,10 +717,6 @@ INSERT IGNORE INTO products (id, name, description, price, cost_price, stock, ca
 (4, 'Short Deportivo', 'Short deportivo con logo institucional y tela absorbente', 35.90, 18.00, 30, 'uniformes', '6', 'SHO-001-T6', 'short.jpg', TRUE, FALSE),
 (5, 'Medias Escolares', 'Par de medias escolares color blanco, material suave', 12.90, 6.00, 100, 'uniformes', NULL, 'MED-001', 'socks.jpg', TRUE, FALSE),
 (6, 'Casaca Institucional', 'Casaca con logo bordado y cierre frontal resistente', 89.90, 45.00, 25, 'uniformes', '10', 'CAS-001-T10', 'jacket.jpg', TRUE, TRUE),
-
--- ÚTILES ESCOLARES
-(7, 'Kit de Arte Completo', 'Kit completo de arte con pinceles, témperas, papel y más accesorios', 45.90, 25.00, 40, 'utiles', NULL, 'ART-001', 'artkit.jpg', TRUE, TRUE),
-(8, 'Cuaderno Institucional A4', 'Cuaderno institucional tamaño A4 con logo, 100 hojas', 8.90, 4.50, 200, 'utiles', NULL, 'CUA-001', 'notebook.jpg', TRUE, FALSE),
 (9, 'Set de Lápices de Colores', 'Set de lápices de colores de 24 unidades, no tóxicos', 15.90, 8.00, 80, 'utiles', NULL, 'LAP-001', 'pencils.jpg', TRUE, FALSE),
 (10, 'Plastilina Educativa', 'Set de plastilina no tóxica de 6 colores brillantes', 12.90, 6.50, 60, 'utiles', NULL, 'PLA-001', 'clay.jpg', TRUE, FALSE),
 (11, 'Tijeras de Seguridad', 'Tijeras punta roma de seguridad para niños, ergonómicas', 5.90, 3.00, 150, 'utiles', NULL, 'TIJ-001', 'scissors.jpg', TRUE, FALSE),
@@ -798,120 +927,11 @@ INSERT IGNORE INTO reclamaciones (
  'PENDIENTE', DATE_SUB(NOW(), INTERVAL 5 DAY),
  NULL, NULL);
 
--- ========================================
--- SISTEMA DE INFORMES Y NOTIFICACIONES
--- ========================================
 
--- Tabla principal de informes de profesores a estudiantes
-CREATE TABLE IF NOT EXISTS reports (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    student_id INT NOT NULL,
-    teacher_id INT NOT NULL,
-    subject VARCHAR(100) NOT NULL COMMENT 'Materia o asunto del informe',
-    title VARCHAR(200) NOT NULL COMMENT 'Título del informe',
-    content TEXT NOT NULL COMMENT 'Contenido del informe',
-    report_type ENUM('academic', 'behavioral', 'medical', 'general') DEFAULT 'general',
-    status ENUM('draft', 'sent', 'read') DEFAULT 'sent',
-    priority ENUM('low', 'normal', 'high', 'urgent') DEFAULT 'normal',
-    is_private BOOLEAN DEFAULT FALSE COMMENT 'Si es confidencial solo para padres',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    read_at TIMESTAMP NULL COMMENT 'Fecha cuando el padre leyó el informe',
-    teacher_notes TEXT NULL COMMENT 'Notas adicionales del profesor',
-    parent_response TEXT NULL COMMENT 'Respuesta del padre al informe',
-    response_at TIMESTAMP NULL COMMENT 'Fecha de respuesta del padre',
-    INDEX idx_student_id (student_id),
-    INDEX idx_teacher_id (teacher_id),
-    INDEX idx_created_at (created_at),
-    INDEX idx_status (status),
-    INDEX idx_priority (priority),
-    INDEX idx_report_type (report_type),
-    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
-    FOREIGN KEY (teacher_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci 
-COMMENT='Tabla principal para informes de profesores a estudiantes';
 
--- Tabla para adjuntos de informes
-CREATE TABLE IF NOT EXISTS report_attachments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    report_id INT NOT NULL,
-    filename VARCHAR(255) NOT NULL COMMENT 'Nombre del archivo en el servidor',
-    original_filename VARCHAR(255) NOT NULL COMMENT 'Nombre original del archivo',
-    file_path VARCHAR(500) NOT NULL COMMENT 'Ruta completa del archivo',
-    file_type VARCHAR(50) NOT NULL COMMENT 'Tipo MIME del archivo',
-    file_size INT NOT NULL COMMENT 'Tamaño en bytes',
-    file_category ENUM('image', 'document', 'audio', 'video', 'other') DEFAULT 'other',
-    description TEXT NULL COMMENT 'Descripción del adjunto',
-    uploaded_by INT NOT NULL COMMENT 'ID del usuario que subió el archivo',
-    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_active BOOLEAN DEFAULT TRUE,
-    download_count INT DEFAULT 0 COMMENT 'Contador de descargas',
-    INDEX idx_report_id (report_id),
-    INDEX idx_file_type (file_type),
-    INDEX idx_uploaded_by (uploaded_by),
-    INDEX idx_file_category (file_category),
-    FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE,
-    FOREIGN KEY (uploaded_by) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-COMMENT='Tabla para adjuntos de informes (fotos, documentos, etc.)';
-
--- Tabla para notificaciones de informes
-CREATE TABLE IF NOT EXISTS report_notifications (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    report_id INT NOT NULL,
-    recipient_id INT NOT NULL COMMENT 'ID del padre/tutor que recibe la notificación',
-    notification_type ENUM('email', 'sms', 'push', 'in_app') DEFAULT 'email',
-    notification_method ENUM('immediate', 'daily_digest', 'weekly_digest') DEFAULT 'immediate',
-    status ENUM('pending', 'sent', 'delivered', 'failed', 'bounced') DEFAULT 'pending',
-    priority ENUM('low', 'normal', 'high') DEFAULT 'normal',
-    subject VARCHAR(200) NOT NULL COMMENT 'Asunto de la notificación',
-    message TEXT NOT NULL COMMENT 'Contenido de la notificación',
-    recipient_email VARCHAR(255) NULL COMMENT 'Email del destinatario',
-    recipient_phone VARCHAR(20) NULL COMMENT 'Teléfono del destinatario',
-    sent_at TIMESTAMP NULL COMMENT 'Fecha de envío',
-    delivered_at TIMESTAMP NULL COMMENT 'Fecha de entrega confirmada',
-    read_at TIMESTAMP NULL COMMENT 'Fecha de lectura (para notificaciones in-app)',
-    error_message TEXT NULL COMMENT 'Mensaje de error si falló',
-    retry_count INT DEFAULT 0 COMMENT 'Número de reintentos',
-    max_retries INT DEFAULT 3 COMMENT 'Máximo número de reintentos',
-    next_retry_at TIMESTAMP NULL COMMENT 'Próximo intento programado',
-    metadata JSON NULL COMMENT 'Datos adicionales de la notificación',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_report_id (report_id),
-    INDEX idx_recipient_id (recipient_id),
-    INDEX idx_status (status),
-    INDEX idx_notification_type (notification_type),
-    INDEX idx_priority (priority),
-    INDEX idx_sent_at (sent_at),
-    INDEX idx_next_retry_at (next_retry_at),
-    FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE,
-    FOREIGN KEY (recipient_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-COMMENT='Tabla para notificaciones de informes (email, SMS, push, etc.)';
-
--- Tabla para preferencias de notificación
-CREATE TABLE IF NOT EXISTS notification_preferences (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    notification_type ENUM('email', 'sms', 'push', 'in_app') NOT NULL,
-    report_type ENUM('academic', 'behavioral', 'medical', 'general', 'all') DEFAULT 'all',
-    is_enabled BOOLEAN DEFAULT TRUE,
-    frequency ENUM('immediate', 'daily_digest', 'weekly_digest', 'monthly_digest') DEFAULT 'immediate',
-    quiet_hours_start TIME NULL COMMENT 'Hora de inicio del período silencioso',
-    quiet_hours_end TIME NULL COMMENT 'Hora de fin del período silencioso',
-    weekend_notifications BOOLEAN DEFAULT TRUE,
-    priority_filter ENUM('all', 'normal_and_high', 'high_only', 'urgent_only') DEFAULT 'all',
-    language_code VARCHAR(5) DEFAULT 'es' COMMENT 'Idioma preferido para notificaciones',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_user_type_report (user_id, notification_type, report_type),
-    INDEX idx_user_id (user_id),
-    INDEX idx_notification_type (notification_type),
-    INDEX idx_is_enabled (is_enabled),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-COMMENT='Preferencias de notificación por usuario';
+-- Asegurar que existan los registros necesarios para claves foráneas
+INSERT IGNORE INTO students (id, first_name, last_name, birth_date) VALUES (1, 'Alumno', 'Ejemplo', '2018-01-01');
+INSERT IGNORE INTO users (id, name, email, password, role) VALUES (1, 'Profesor Ejemplo', 'profesor@wawalu.edu.pe', 'hash', 'staff');
 
 -- Datos de ejemplo para el sistema de informes
 INSERT INTO reports (student_id, teacher_id, subject, title, content, report_type, priority, status) VALUES

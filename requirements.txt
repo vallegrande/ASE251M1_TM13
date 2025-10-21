@@ -2,57 +2,57 @@
 # Dependencias de Python para el proyecto Flask
 
 # Framework principal
-Flask==2.3.3
+Flask
 
 # Base de datos MySQL
-Flask-MySQLdb==1.0.1
-PyMySQL==1.1.0
+Flask-MySQLdb
+PyMySQL
 
 # Seguridad y autenticación
-bcrypt==4.0.1
-Werkzeug==2.3.7
+bcrypt
+Werkzeug
 
 # Variables de entorno
-python-dotenv==1.0.0
+python-dotenv
 
 # Servidor de producción
-gunicorn==21.2.0
+gunicorn
 
 # Utilidades para fechas
-python-dateutil==2.8.2
+python-dateutil
 
 # Manejo de archivos de imagen (opcional)
-Pillow==10.0.1
+Pillow
 
 # Validación de formularios
-WTForms==3.0.1
-Flask-WTF==1.1.1
+WTForms
+Flask-WTF
 
 # Paginación y utilidades
-Flask-Paginate==2022.1.8
+Flask-Paginate
 
 # Manejo de emails (para notificaciones)
-Flask-Mail==0.9.1
+Flask-Mail
 
 # Logs y debugging
-python-decouple==3.8
+python-decouple
 
 # Procesamiento de archivos CSV/Excel (para reportes admin)
-pandas==2.1.1
-openpyxl==3.1.2
+pandas
+openpyxl
 
 # Generación de QR codes (para pagos)
-qrcode==7.4.2
+qrcode
 
 # Validación de datos
-validators==0.22.0
+validators
 
 # Timezone handling
-pytz==2023.3
+pytz
 
 # Testing (desarrollo)
-pytest==7.4.2
-pytest-flask==1.2.0
+pytest
+pytest-flask
 
 # Desarrollo
-flask-debugtoolbar==0.13.1
+flask-debugtoolbar
