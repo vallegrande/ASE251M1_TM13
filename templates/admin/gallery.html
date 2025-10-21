@@ -43,7 +43,8 @@
         {% if images %}
             {% for image in images %}
             <div class="gallery-item" data-category="{{ image.category }}" data-title="{{ image.title }}" data-description="{{ image.description or '' }}" data-image-id="{{ image.id }}">
-                <img src="{{ url_for('static', filename='img/' + image.image_url) }}" alt="{{ image.title }}">
+                {% set img = image.image_url if image.image_url is defined and image.image_url else 'placeholder.png' %}
+                <img src="{{ url_for('static', filename='img/' + img) }}" alt="{{ image.title }}">
                 <div class="gallery-overlay">
                     <h3 class="font-semibold text-center mb-2">{{ image.title }}</h3>
                     <p class="text-sm text-center mb-3">{{ image.category.title() }}</p>

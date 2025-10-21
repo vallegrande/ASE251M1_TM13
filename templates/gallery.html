@@ -14,7 +14,7 @@
     <!-- Hero Section -->
     <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
         <div class="container mx-auto px-4 max-w-6xl">
-            <h1 class="text-5xl font-bold mb-4 text-center">Nuestra Galería</h1>
+            <h1 class="text-4xl md:text-5xl font-bold mb-8 mt-12 text-center">Nuestra Galería</h1>
             <p class="text-xl text-center text-blue-100 max-w-2xl mx-auto">
                 Explora nuestros espacios y momentos especiales
             </p>
@@ -92,20 +92,27 @@
             {% if images %}
                 {% for image in images %}
                 <div class="gallery-item flip-card {{ image.category }} overflow-visible rounded-lg shadow-lg" data-category="{{ image.category }}" data-title="{{ image.title }}">
-                                    <div class="flip-card-inner aspect-square">
-                                        <div class="flip-card-front w-full h-full rounded-lg overflow-hidden flex items-center justify-center">
-                                            <img src="{{ url_for('static', filename='img/' + image.image_url) }}"
-                                                     alt="{{ image.title }}"
-                                                     class="w-full h-full object-cover rounded-lg"
-                                                     loading="lazy">
-                                        </div>
-                                                                                                    <div class="flip-card-back w-full h-full rounded-lg flex flex-col justify-center items-center bg-gradient-to-br from-white via-blue-100 to-blue-200 p-6 relative overflow-hidden">
-                                                                                                        <span class="material-icons text-5xl mb-2 animate-bounce text-yellow-400 opacity-80 absolute top-6 right-6 pointer-events-none">auto_awesome</span>
-                                                                                                        <h3 class="text-2xl font-extrabold mb-2 drop-shadow-lg animate-fadein text-blue-900 text-center">{{ image.title }}</h3>
-                                                                                                        <p class="text-lg text-center mb-2 animate-fadein2 text-blue-800 font-medium">{{ image.description or image.category.title() }}</p>
-                                                                                                        <a href="{{ url_for('static', filename='img/' + image.image_url) }}" data-lightbox="gallery" data-title="{{ image.title }}" class="mt-4 inline-block px-6 py-2 bg-yellow-400 text-blue-900 font-bold rounded-full shadow hover:bg-yellow-300 transition-all duration-300 animate-fadein3">Ver grande</a>
-                                                                                                    </div>
-                                    </div>
+                    <div class="flip-card-inner aspect-square">
+                        <div class="flip-card-front w-full h-full rounded-lg overflow-hidden flex items-center justify-center">
+                            {% if image.image_url %}
+                                <img src="{{ url_for('static', filename='img/' + image.image_url) }}"
+                                     alt="{{ image.title }}"
+                                     class="w-full h-full object-cover rounded-lg"
+                                     loading="lazy">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='img/placeholder.jpg') }}"
+                                     alt="Sin imagen"
+                                     class="w-full h-full object-cover rounded-lg"
+                                     loading="lazy">
+                            {% endif %}
+                        </div>
+                        <div class="flip-card-back w-full h-full rounded-lg flex flex-col justify-center items-center bg-gradient-to-br from-white via-blue-100 to-blue-200 p-6 relative overflow-hidden">
+                            <span class="material-icons text-5xl mb-2 animate-bounce text-yellow-400 opacity-80 absolute top-6 right-6 pointer-events-none">auto_awesome</span>
+                            <h3 class="text-2xl font-extrabold mb-2 drop-shadow-lg animate-fadein text-blue-900 text-center">{{ image.title }}</h3>
+                            <p class="text-lg text-center mb-2 animate-fadein2 text-blue-800 font-medium">{{ image.description or image.category.title() }}</p>
+                            <a href="{{ url_for('static', filename='img/' + (image.image_url or 'placeholder.jpg')) }}" data-lightbox="gallery" data-title="{{ image.title }}" class="mt-4 inline-block px-6 py-2 bg-yellow-400 text-blue-900 font-bold rounded-full shadow hover:bg-yellow-300 transition-all duration-300 animate-fadein3">Ver grande</a>
+                        </div>
+                    </div>
                 </div>
                 {% endfor %}
             {% else %}

@@ -10,12 +10,45 @@
         <div class="slider">
             <div class="slide" aria-hidden="false">
                 <img src="{{ url_for('static', filename='img/imagen1.jpg') }}" alt="Niños jugando" class="slide-img">
+                <div class="absolute inset-0 flex flex-col justify-center items-start px-8 md:px-16 bg-gradient-to-r from-black/40 to-transparent">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">¡Despierta el potencial de tu hijo!</h2>
+                    <p class="text-lg md:text-xl text-white mb-6 max-w-xl drop-shadow">En Wawalu, cada día es una oportunidad para aprender jugando, crecer feliz y descubrir talentos únicos en un ambiente seguro y estimulante.</p>
+                    <a href="{{ url_for('enrollment') }}" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition">Inscríbelo hoy</a>
+                </div>
             </div>
             <div class="slide" aria-hidden="true">
                 <img src="{{ url_for('static', filename='img/imagen2.jpg') }}" alt="Actividades creativas" class="slide-img">
+                <div class="absolute inset-0 flex flex-col justify-center items-start px-8 md:px-16 bg-gradient-to-r from-indigo-900/40 to-transparent">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Educación con valores y creatividad</h2>
+                    <p class="text-lg md:text-xl text-white mb-6 max-w-xl drop-shadow">Nuestros programas integran arte, ciencia y juego para formar niños curiosos, seguros y con valores sólidos. ¡Tu familia es parte de nuestra comunidad!</p>
+                    <a href="{{ url_for('programs') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition">Conoce los programas</a>
+                </div>
             </div>
             <div class="slide" aria-hidden="true">
                 <img src="{{ url_for('static', filename='img/imagen3.jpg') }}" alt="Espacios educativos" class="slide-img">
+                <div class="absolute inset-0 flex flex-col justify-center items-start px-8 md:px-16 bg-gradient-to-r from-green-900/40 to-transparent">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Ambientes seguros y modernos</h2>
+                    <p class="text-lg md:text-xl text-white mb-6 max-w-xl drop-shadow">Instalaciones diseñadas para el bienestar, la exploración y el aprendizaje. ¡Ven a visitarnos y vive la experiencia Wawalu!</p>
+                    <a href="{{ url_for('contact') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition">Agenda tu visita</a>
+                </div>
+            </div>
+            <!-- Nueva imagen para el slider -->
+            <div class="slide" aria-hidden="true">
+                <img src="{{ url_for('static', filename='img/imagen13.jpg') }}" alt="Aprendizaje divertido" class="slide-img">
+                <div class="absolute inset-0 flex flex-col justify-center items-start px-8 md:px-16 bg-gradient-to-r from-pink-900/40 to-transparent">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Diversión y aprendizaje cada día</h2>
+                    <p class="text-lg md:text-xl text-white mb-6 max-w-xl drop-shadow">Actividades lúdicas y educativas para que tu hijo aprenda feliz y seguro en Wawalu.</p>
+                    <a href="{{ url_for('enrollment') }}" class="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition">¡Quiero saber más!</a>
+                </div>
+            </div>
+            <!-- Slide especial con botón de matrícula destacado -->
+            <div class="slide" aria-hidden="true">
+                <img src="{{ url_for('static', filename='img/imagen12.jpg') }}" alt="Matricúlate en Wawalu" class="slide-img">
+                <div class="absolute inset-0 flex flex-col justify-center items-start px-8 md:px-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">¡Matricula a tu hijo hoy!</h2>
+                    <p class="text-lg md:text-xl text-white mb-6 max-w-xl">Accede a nuestra plataforma y asegura el mejor inicio educativo para tu pequeño.</p>
+                    <a href="{{ url_for('enrollment') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition">Ir a Matrícula</a>
+                </div>
             </div>
         </div>
         <div class="slider-dots"></div>
@@ -25,21 +58,11 @@
         <button class="slider-control slider-next" aria-label="Siguiente">
             <span class="material-icons">chevron_right</span>
         </button>
-        <!-- Hero overlay fijo sobre todas las imágenes -->
-        <div class="hero-overlay" aria-hidden="false">
-            <div class="hero-inner">
-                <h1>Wawalu</h1>
-                <h2>Aprendizaje a través del juego</h2>
-                <div class="mt-6">
-                    <a href="{{ url_for('enrollment') }}" class="btn-matricula">Matrícula</a>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Menú Dinámico -->
             <div class="mb-12">
-                <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Nuestros Servicios</h2>
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-8 mt-12">Nuestros Servicios</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Servicio 1 -->
                     <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
@@ -114,7 +137,7 @@
 
             <!-- Propuesta de Valor -->
             <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
-                <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">¿Por qué Wawalu?</h2>
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-8 mt-12">¿Por qué Wawalu?</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Característica 1 -->
                     <div class="flex items-start space-x-4">
@@ -147,7 +170,7 @@
 
             <!-- Testimonios -->
             <div class="mb-12">
-                <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Lo que dicen nuestras familias</h2>
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-10 mt-12">Lo que dicen nuestras familias</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Testimonio 1 -->
                     <div class="bg-white rounded-xl p-6 shadow-lg">
@@ -181,7 +204,7 @@
 
     <!-- Nuestros Programas -->
     <section class="mb-16">
-        <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">Nuestros Programas</h2>
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-10 mt-12">Nuestros Programas</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <!-- Programa 1 -->
             <div class="bg-white rounded-xl shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300">
@@ -265,7 +288,7 @@
 
     <!-- Nuestra Metodología -->
     <section class="mb-16 bg-white rounded-xl shadow-lg p-8">
-        <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">Nuestra Metodología</h2>
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-10 mt-12">Nuestra Metodología</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div class="space-y-6">
                 <p class="text-gray-600 text-lg leading-relaxed">
@@ -306,7 +329,7 @@
 
     <!-- Testimonios -->
     <section class="mb-16">
-        <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">Lo que dicen las familias Wawalu</h2>
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-10 mt-12">Lo que dicen las familias Wawalu</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <!-- Testimonio 1 -->
             <div class="bg-white rounded-xl p-6 shadow-lg">
@@ -354,7 +377,7 @@
 
     <!-- Galería -->
     <section class="mb-16">
-        <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">Momentos Wawalu</h2>
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-10 mt-12">Momentos Wawalu</h2>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <img src="{{ url_for('static', filename='img/imagen11.jpg') }}" alt="Momento Wawalu 1" class="w-full h-48 object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
             <img src="{{ url_for('static', filename='img/imagen12.jpg') }}" alt="Momento Wawalu 2" class="w-full h-48 object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
@@ -362,29 +385,18 @@
             <img src="{{ url_for('static', filename='img/imagen1.jpg') }}" alt="Momento Wawalu 4" class="w-full h-48 object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
         </div>
         <div class="text-center mt-8">
-            <a href="{{ url_for('gallery') }}" class="inline-flex items-center justify-center px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg text-lg font-medium hover:bg-blue-600 hover:text-white transition duration-300">
+            <a href="{{ url_for('gallery') }}" class="inline-flex items-center justify-center px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-300">
                 <span class="material-icons mr-2">photo_library</span>
-                Ver galería completa
+                Ver Galería
             </a>
         </div>
     </section>
 
-    <!-- CTA Final -->
-    <section class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-10 text-white text-center">
-        <div class="max-w-3xl mx-auto">
-            <h2 class="text-3xl font-bold mb-6">¡Únete a nuestra familia Wawalu!</h2>
-            <p class="text-lg mb-8">Agenda una visita y conoce nuestras instalaciones. ¡Tu pequeño merece la mejor educación desde el principio!</p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="{{ url_for('contact') }}" class="inline-flex items-center justify-center px-6 py-3 border-2 border-white rounded-lg text-lg font-medium hover:bg-white hover:text-blue-600 transition duration-300">
-                    <span class="material-icons mr-2">calendar_today</span>
-                    Agendar Visita
-                </a>
-                <a href="{{ url_for('contact') }}" class="inline-flex items-center justify-center px-6 py-3 bg-white text-blue-600 rounded-lg text-lg font-medium hover:bg-blue-50 transition duration-300">
-                    <span class="material-icons mr-2">phone</span>
-                    Contactar Ahora
-                </a>
-            </div>
-        </div>
-    </section>
+    <!-- Llamado a la Acción Final -->
+    <div class="bg-blue-600 rounded-xl p-8 text-center text-white mb-16">
+        <h2 class="text-3xl font-bold mb-4">¡Únete a la Familia Wawalu!</h2>
+        <p class="text-lg mb-6">Descubre un mundo de aprendizaje, creatividad y amor. Inscribe a tu hijo hoy y sé parte de nuestra comunidad.</p>
+        <a href="{{ url_for('enrollment') }}" class="bg-white text-blue-600 font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-gray-100 transition-all duration-300">¡Quiero Inscribir a Mi Hijo!</a>
+    </div>
 </div>
 {% endblock %}

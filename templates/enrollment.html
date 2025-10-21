@@ -3,70 +3,19 @@
 {% block title %}Matrícula - Wawalu{% endblock %}
 
 {% block head %}
-<style>
-    .step-indicator {
-        transition: all 0.3s ease;
-    }
-    .step-indicator.active {
-        background-color: #3B82F6;
-        color: white;
-    }
-    .step-indicator.completed {
-        background-color: #10B981;
-        color: white;
-    }
-    .step-content {
-        transition: all 0.3s ease;
-    }
-    .step-content.hidden {
-        display: none;
-    }
-    .form-field.error input,
-    .form-field.error select,
-    .form-field.error textarea {
-        border-color: #EF4444;
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-    }
-    .form-field.success input,
-    .form-field.success select,
-    .form-field.success textarea {
-        border-color: #10B981;
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-    }
-    .field-error {
-        color: #EF4444;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
-    }
-    .field-success {
-        color: #10B981;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
-    }
-    .loading-overlay {
-        background: rgba(255, 255, 255, 0.9);
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 50;
-    }
-</style>
+    <link href="{{ url_for('static', filename='css/admission.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
+<header class="bg-blue-600 text-white py-32">
+    <div class="container mx-auto px-4 max-w-6xl text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-8 text-center">Admisión</h1>
+        <p class="text-xl text-blue-100 max-w-3xl mx-auto text-center">Completa los datos para solicitar la admisión a nuestros programas</p>
+    </div>
+</header>
 <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
-        <!-- Encabezado -->
-        <div class="text-center mb-12">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Formulario de Matrícula</h1>
-            <p class="text-lg text-gray-600">Complete los datos para matricular a su hijo/a en nuestros programas</p>
-        </div>
-
+        <!-- Mensaje de inicio de sesión -->
         {% if not session.logged_in %}
         <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8">
             <div class="flex">

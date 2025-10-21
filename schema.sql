@@ -686,6 +686,21 @@ COMMENT='Preferencias de notificación por usuario';
 -- TRUNCATE TABLE users;
 -- SET FOREIGN_KEY_CHECKS = 1;
 
+INSERT INTO gallery (title, description, category, image_url) VALUES
+('Niños jugando', 'Momento de juego y aprendizaje', 'actividades', 'imagen1.jpg'),
+('Actividades creativas', 'Desarrollo de la creatividad en el aula', 'actividades', 'imagen2.jpg'),
+('Espacios educativos', 'Ambientes modernos y seguros', 'espacios', 'imagen3.jpg'),
+('Área de Juegos', 'Zona de recreación y desarrollo motriz', 'espacios', 'imagen4.jpg'),
+('Programa Bebés', 'Estimulación temprana para los más pequeños', 'programas', 'imagen5.jpg'),
+('Programa Inicial', 'Primeros pasos en la educación', 'programas', 'imagen6.jpg'),
+('Taller de música', 'Aprendizaje musical en grupo', 'actividades', 'imagen7.jpg'),
+('Arte y expresión', 'Niños explorando el arte', 'actividades', 'imagen8.jpg'),
+('Exploración sensorial', 'Descubriendo el mundo a través de los sentidos', 'actividades', 'imagen9.jpg'),
+('Ambiente seguro', 'Instalaciones pensadas para el bienestar', 'espacios', 'imagen10.jpg'),
+('Momento Wawalu 1', 'Recuerdos inolvidables', 'eventos', 'imagen11.jpg'),
+('Momento Wawalu 2', 'Diversión y aprendizaje', 'eventos', 'imagen12.jpg'),
+('Momento Wawalu 3', 'Juegos en grupo', 'eventos', 'imagen13.jpg');
+
 -- Actualizar usuarios existentes para marcar staff como admins
 UPDATE users SET is_admin = TRUE WHERE role IN ('staff', 'admin');
 

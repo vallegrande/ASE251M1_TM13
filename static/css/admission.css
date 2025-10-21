@@ -1,0 +1,52 @@
+/* Estilos personalizados para el formulario de admisión */
+.step-indicator {
+    transition: all 0.3s ease;
+}
+.step-indicator.active {
+    background-color: #3B82F6;
+    color: white;
+}
+.step-indicator.completed {
+    background-color: #10B981;
+    color: white;
+}
+.step-content {
+    transition: all 0.3s ease;
+}
+.step-content.hidden {
+    display: none;
+}
+.form-field.error input,
+.form-field.error select,
+.form-field.error textarea {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+.form-field.success input,
+.form-field.success select,
+.form-field.success textarea {
+    border-color: #10B981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+.field-error {
+    color: #EF4444;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+.field-success {
+    color: #10B981;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+.loading-overlay {
+    background: rgba(255, 255, 255, 0.9);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+}

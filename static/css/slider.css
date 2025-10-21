@@ -3,12 +3,14 @@
     position: relative;
     width: 100vw;
     /* fill the viewport minus the fixed header (h-20 = 5rem) */
-    height: calc(100vh - 5rem);
+    height: 520px;
     left: 50%;
     right: 50%;
     margin-left: -50vw;
     margin-right: -50vw;
     overflow: hidden;
+    z-index: 1; /* Asegura que el slider esté detrás de los botones de otras secciones */
+    margin-bottom: 2.5rem; /* Espacio extra debajo del slider */
 }
 
 /* Reset rápido para evitar márgenes del navegador o padding que generen la franja */
@@ -70,9 +72,6 @@ nav.fixed, nav { box-shadow: none !important; border-bottom: none !important; }
     border-radius: 9999px;
     background-color: rgba(255, 255, 255, 0.5);
     transition: all 300ms ease;
-    cursor: pointer;
-    border: none;
-    padding: 0;
 }
 
 .slider-dot.active {
@@ -112,7 +111,7 @@ nav.fixed, nav { box-shadow: none !important; border-bottom: none !important; }
     height: 100%;
     display: flex;
     align-items: center;
-    z-index: 20;
+    z-index: 2; /* Overlay por encima del slider pero debajo de otros botones */
     pointer-events: none;
 }
 
@@ -142,7 +141,7 @@ nav.fixed, nav { box-shadow: none !important; border-bottom: none !important; }
 
 @media (max-width: 768px) {
     .hero-overlay .hero-inner { margin-left: 1rem; }
-    .slider-container { height: calc(70vh); }
+    .slider-container { height: 120px; }
 }
 
 /* Si el header está fijo, no dejar espacio extra: mantenemos el slider pegado al header */
