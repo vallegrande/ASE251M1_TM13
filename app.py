@@ -17,55 +17,48 @@ from flask import send_file
 # Inicialización de Flask
 app = Flask(__name__)
 
-# ...código existente...
 from pathlib import Path
 
-# Database adapter: try to use flask_mysqldb (mysqlclient) first, otherwise fall back to PyMySQL shim
+import sys
 try:
     from flask_mysqldb import MySQL
     import MySQLdb.cursors
-except Exception:
-    # Fallback for environments where compiling mysqlclient is difficult (eg. Windows)
-    # Use PyMySQL and provide a lightweight MySQL class with a `.connection` property
+except ImportError:
     import pymysql
     pymysql.install_as_MySQLdb()
-    import MySQLdb.cursors  # now available via the shim
-
+    import MySQLdb.cursors
+    # Provide a shim for Flask-MySQLdb API
     class MySQL:
         def __init__(self, app=None):
             self.app = None
             if app is not None:
                 self.init_app(app)
-
         def init_app(self, app):
             self.app = app
-
         @property
         def connection(self):
             if not self.app:
                 raise RuntimeError("MySQL not initialized with Flask app")
             cfg = self.app.config
-            conn = pymysql.connect(
-                host=cfg.get('MYSQL_HOST', 'wawalu3.ckn8dbslcc2x.us-east-1.rds.amazonaws.com'),
+            return pymysql.connect(
+                host=cfg.get('MYSQL_HOST', 'localhost'),
                 user=cfg.get('MYSQL_USER', 'root'),
-                password=cfg.get('MYSQL_PASSWORD', 'diego123456'),
+                password=cfg.get('MYSQL_PASSWORD', 'diego1416'),
                 db=cfg.get('MYSQL_DB', 'wawalu_db'),
                 port=int(cfg.get('MYSQL_PORT', 3306)),
                 cursorclass=pymysql.cursors.DictCursor,
                 autocommit=cfg.get('MYSQL_AUTOCOMMIT', True),
                 connect_timeout=cfg.get('MYSQL_CONNECT_TIMEOUT', 60)
             )
-            return conn
-
 # Cargar variables de entorno
 load_dotenv()
 
 # Configuración de MySQL AWS RDS
 app.config['MYSQL_HOST'] = 'wawalu3.ckn8dbslcc2x.us-east-1.rds.amazonaws.com'
-app.config['MYSQL_USER'] = os.getenv('DB_USER', 'root')
-app.config['MYSQL_PASSWORD'] = os.getenv('DB_PASSWORD', 'diego123456')
-app.config['MYSQL_DB'] = os.getenv('DB_NAME', 'wawalu_db')
-app.config['MYSQL_PORT'] = int(os.getenv('DB_PORT', 3306))
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'diego1416'
+app.config['MYSQL_DB'] = 'wawalu_db'
+app.config['MYSQL_PORT'] = 3306
 
 # Configuraciones adicionales para AWS RDS
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
@@ -117,9 +110,9 @@ def send_email(to_email, subject, body, is_html=False):
             print("5. Agrega SMTP_PASSWORD=tu-contraseña-generada en .env")
             return False
             
-        print(f"📧 Intentando enviar email a: {to_email}")
-        print(f"📧 Desde: {SMTP_EMAIL}")
-        print(f"📧 Servidor: {SMTP_SERVER}:{SMTP_PORT}")
+        print(f" Intentando enviar email a: {to_email}")
+        print(f"Desde: {SMTP_EMAIL}")
+        print(f"Servidor: {SMTP_SERVER}:{SMTP_PORT}")
             
         msg = MIMEMultipart()
         msg['From'] = SMTP_EMAIL
@@ -138,11 +131,11 @@ def send_email(to_email, subject, body, is_html=False):
         server.sendmail(SMTP_EMAIL, to_email, text)
         server.quit()
         
-        print("✅ Email enviado exitosamente!")
+        print("Email enviado exitosamente!")
         return True
     except Exception as e:
-        print(f"❌ Error enviando correo: {e}")
-        print(f"📧 Verifica tu configuración SMTP en .env")
+        print(f"Error enviando correo: {e}")
+        print(f"Verifica tu configuración SMTP en .env")
         return False
 
 def generate_whatsapp_url(message):
@@ -212,10 +205,10 @@ def test_db_connection():
         cursor.execute("SELECT 1")
         result = cursor.fetchone()
         cursor.close()
-        print("✅ Conexión exitosa a AWS RDS MySQL")
+        print(" Conexión exitosa a AWS RDS MySQL")
         return True
     except Exception as e:
-        print(f"❌ Error conectando a AWS RDS: {e}")
+        print(f" Error conectando a AWS RDS: {e}")
         return False
 
 def get_menu_images():
@@ -343,11 +336,11 @@ Ya puede iniciar sesión y proceder con la matrícula de estudiantes.
 """
             
             # Intentar enviar correo
-            print(f"🔄 Intentando enviar email de nuevo registro...")
-            print(f"📧 Destinatario: {CONTACT_EMAIL}")
-            print(f"📧 Asunto: {email_subject}")
+            print(f" Intentando enviar email de nuevo registro...")
+            print(f" Destinatario: {CONTACT_EMAIL}")
+            print(f" Asunto: {email_subject}")
             email_sent = send_email(CONTACT_EMAIL, email_subject, email_body)
-            print(f"📧 Resultado del envío: {'✅ Exitoso' if email_sent else '❌ Falló'}")
+            print(f" Resultado del envío: {' Exitoso' if email_sent else ' Falló'}")
             
             return jsonify({
                 "success": True,
@@ -424,11 +417,11 @@ def contact():
             """
             
             # Intentar enviar correo
-            print(f"🔄 Intentando enviar email desde formulario de contacto...")
-            print(f"📧 Destinatario: {CONTACT_EMAIL}")
-            print(f"📧 Asunto: {email_subject}")
+            print(f" Intentando enviar email desde formulario de contacto...")
+            print(f" Destinatario: {CONTACT_EMAIL}")
+            print(f" Asunto: {email_subject}")
             email_sent = send_email(CONTACT_EMAIL, email_subject, email_body)
-            print(f"📧 Resultado del envío: {'✅ Exitoso' if email_sent else '❌ Falló'}")
+            print(f"Resultado del envío: {' Exitoso' if email_sent else ' Falló'}")
             
             # Generar URL de WhatsApp como alternativa
             whatsapp_message = f"Hola, soy {name}. {message}"
@@ -1158,11 +1151,11 @@ Por favor, revise y procese esta orden en el panel de administración.
 """
         
         # Enviar email al administrador
-        print(f"🔄 Intentando enviar email de nueva orden...")
-        print(f"📧 Destinatario: {CONTACT_EMAIL}")
-        print(f"📧 Asunto: {admin_email_subject}")
+        print(f"Intentando enviar email de nueva orden...")
+        print(f"Destinatario: {CONTACT_EMAIL}")
+        print(f" Asunto: {admin_email_subject}")
         email_sent = send_email(CONTACT_EMAIL, admin_email_subject, admin_email_body)
-        print(f"📧 Resultado del envío: {'✅ Exitoso' if email_sent else '❌ Falló'}")
+        print(f" Resultado del envío: {' Exitoso' if email_sent else ' Falló'}")
         
         return jsonify({
             'success': True, 
@@ -2850,11 +2843,11 @@ Por favor, revise y procese esta solicitud en el panel de administración.
 """
         
         # Intentar enviar correo
-        print(f"🔄 Intentando enviar email de matrícula...")
-        print(f"📧 Destinatario: {CONTACT_EMAIL}")
-        print(f"📧 Asunto: {email_subject}")
+        print(f"Intentando enviar email de matrícula...")
+        print(f" Destinatario: {CONTACT_EMAIL}")
+        print(f"Asunto: {email_subject}")
         email_sent = send_email(CONTACT_EMAIL, email_subject, email_body)
-        print(f"📧 Resultado del envío: {'✅ Exitoso' if email_sent else '❌ Falló'}")
+        print(f"Resultado del envío: {' Exitoso' if email_sent else ' Falló'}")
         
         return jsonify({
             "success": True,
