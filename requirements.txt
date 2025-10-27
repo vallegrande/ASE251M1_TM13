@@ -1,58 +1,22 @@
-# Requirements - Wawalu Centro Educativo
-# Dependencias de Python para el proyecto Flask
-
-# Framework principal
 Flask
-
-# Base de datos MySQL
+python-dotenv
 Flask-MySQLdb
 PyMySQL
-
-# Seguridad y autenticación
-bcrypt
 Werkzeug
-
-# Variables de entorno
-python-dotenv
-
-# Servidor de producción
 gunicorn
-
-# Utilidades para fechas
-python-dateutil
-
-# Manejo de archivos de imagen (opcional)
-Pillow
-
-# Validación de formularios
+qrcode
+Flask-Mail
 WTForms
 Flask-WTF
-
-# Paginación y utilidades
+Pillow
+python-dateutil
+pytz
+validators
 Flask-Paginate
-
-# Manejo de emails (para notificaciones)
-Flask-Mail
-
-# Logs y debugging
 python-decouple
-
-# Procesamiento de archivos CSV/Excel (para reportes admin)
+bcrypt
 pandas
 openpyxl
-
-# Generación de QR codes (para pagos)
-qrcode
-
-# Validación de datos
-validators
-
-# Timezone handling
-pytz
-
-# Testing (desarrollo)
 pytest
 pytest-flask
-
-# Desarrollo
 flask-debugtoolbar

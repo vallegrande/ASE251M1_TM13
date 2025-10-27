@@ -46,7 +46,7 @@ except Exception:
                 raise RuntimeError("MySQL not initialized with Flask app")
             cfg = self.app.config
             conn = pymysql.connect(
-                host=cfg.get('MYSQL_HOST', 'wawalu.czi4a8qyuwk5.us-east-1.rds.amazonaws.com'),
+                host=cfg.get('MYSQL_HOST', 'wawalu3.ckn8dbslcc2x.us-east-1.rds.amazonaws.com'),
                 user=cfg.get('MYSQL_USER', 'root'),
                 password=cfg.get('MYSQL_PASSWORD', 'diego123456'),
                 db=cfg.get('MYSQL_DB', 'wawalu_db'),
@@ -61,7 +61,7 @@ except Exception:
 load_dotenv()
 
 # Configuración de MySQL AWS RDS
-app.config['MYSQL_HOST'] = os.getenv('DB_HOST', 'wawalu.czi4a8qyuwk5.us-east-1.rds.amazonaws.com')
+app.config['MYSQL_HOST'] = 'wawalu3.ckn8dbslcc2x.us-east-1.rds.amazonaws.com'
 app.config['MYSQL_USER'] = os.getenv('DB_USER', 'root')
 app.config['MYSQL_PASSWORD'] = os.getenv('DB_PASSWORD', 'diego123456')
 app.config['MYSQL_DB'] = os.getenv('DB_NAME', 'wawalu_db')
@@ -108,8 +108,8 @@ def send_email(to_email, subject, body, is_html=False):
     """Función para enviar correos electrónicos"""
     try:
         if not SMTP_PASSWORD:
-            print("❌ ERROR: SMTP_PASSWORD no configurado en .env")
-            print("📧 Para configurar Gmail:")
+            print("ERROR: SMTP_PASSWORD no configurado en .env")
+            print("Para configurar Gmail:")
             print("1. Ve a https://myaccount.google.com/security")
             print("2. Activa 'Verificación en 2 pasos'")
             print("3. Ve a 'Contraseñas de aplicaciones'")
